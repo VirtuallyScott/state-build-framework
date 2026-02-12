@@ -11,13 +11,53 @@ A scalable, containerized FastAPI service for managing multi-cloud IaaS image bu
 - **Containerization**: Multi-stage Docker builds
 - **Load Balancing**: Nginx with least-connections algorithm
 
-## Features
+## Database Configuration
 
-- ✅ JWT and API key authentication
-- ✅ RESTful API for build state management
-- ✅ Horizontal scaling with multiple containers
-- ✅ Nginx reverse proxy with load balancing
-- ✅ Redis caching for performance
+The API supports both SQLite and PostgreSQL databases. Database type is configured via environment variables:
+
+### Environment Variables
+
+- `DATABASE_TYPE`: `auto` (default), `sqlite`, or `postgresql`
+- `DATABASE_URL`: Database connection string
+
+### Auto-Detection
+
+When `DATABASE_TYPE=auto`, the database type is automatically detected from `DATABASE_URL`:
+
+- `postgresql://user:pass@host:port/db` → PostgreSQL
+- `postgres://user:pass@host:port/db` → PostgreSQL
+- `sqlite:///path/to/db.db` → SQLite
+- `path/to/db.db` → SQLite (fallback)
+
+### Examples
+
+**SQLite (default):**
+```bash
+DATABASE_TYPE=auto
+DATABASE_URL=sqlite:///builds.db
+```
+
+**PostgreSQL:**
+```bash
+DATABASE_TYPE=postgresql
+DATABASE_URL=postgresql://user:password@localhost:5432/builds
+```
+
+**Docker Compose (PostgreSQL):**
+```bash
+cd docker
+DATABASE_TYPE=postgresql docker-compose up
+```
+
+### Switching Databases
+
+You can switch between SQLite and PostgreSQL without rebuilding the application:
+
+1. Set `DATABASE_TYPE` to the desired database
+2. Update `DATABASE_URL` to point to the new database
+3. Restart the application
+
+The same container image works for both database types.
 - ✅ Health checks and monitoring
 - ✅ SQLite/PostgreSQL support
 - ✅ Multi-stage Docker builds
