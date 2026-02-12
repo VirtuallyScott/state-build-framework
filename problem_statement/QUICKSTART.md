@@ -9,45 +9,207 @@ This framework introduces state codes (0-100, incrementing by 5) for resumable m
 - Cross-platform status communication
 - Scalable state numbering
 - Intelligent failure handling
+- **Centralized tracking** via FastAPI service
+- **CLI tooling** for easy management
+- **Dashboard and reporting** capabilities
 
-## 1. Choose Your Storage Backend
+## Architecture Overview
 
-### Option A: SQLite + S3 (Recommended)
+The framework consists of three main components:
+
+1. **FastAPI Service** (`api_service/`) - REST API for build state tracking, user management, and reporting
+2. **CLI Tool** (`buildstate_cli/`) - Command-line interface for interacting with the service
+3. **Documentation** (`problem_statement/`) - Framework concepts and implementation guides
+
+## 1. Quick Setup
+
+### Start the Services
 ```bash
-# Local SQLite for performance, S3 for durability
-apt-get install sqlite3 awscli  # or equivalent
+cd api_service
+make up  # Starts API service with PostgreSQL and Redis
 ```
 
-### Option B: DynamoDB (AWS Native)
+### Install CLI Tool
 ```bash
-# Use AWS SDK for DynamoDB access
-pip install boto3
+cd buildstate_cli
+pip install -e .
 ```
 
-### Option C: JSON Files (Simple)
+### Verify Installation
 ```bash
-# Just need file system access
-# Good for testing or single-worker setups
+# Check API service health
+curl http://localhost:8000/health
+
+# Check CLI tool
+bldst_cli --help
 ```
 
-## 2. Set Up State Database
+## 2. Create Your First Build
 
-### SQLite Schema
-```sql
-CREATE TABLE builds (
-    build_id TEXT PRIMARY KEY,
-    current_state INTEGER NOT NULL,
-    cloud_provider TEXT NOT NULL,
-    image_type TEXT NOT NULL,
-    start_time DATETIME NOT NULL,
-    last_update DATETIME NOT NULL,
-    status TEXT NOT NULL
-);
+### Using the CLI (Recommended)
+```bash
+# Create a user
+bldst_cli user create --username "builder" --email "builder@example.com"
 
-CREATE TABLE state_history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    build_id TEXT NOT NULL,
-    state INTEGER NOT NULL,
+# Create an API token
+bldst_cli token create --username "builder" --description "Build pipeline token"
+
+# Start a new build
+bldst_cli build create --platform "aws" --image-type "rhel8" --description "RHEL 8 base image"
+
+# Update build state
+bldst_cli build update <build-id> --state 10 --status "completed"
+```
+
+### Using curl (Not Recommended for Production)
+```bash
+# Create a build (curl example - use CLI instead)
+curl -X POST http://localhost:8000/builds \
+  -H "Content-Type: application/json" \
+  -d '{"platform": "aws", "image_type": "rhel8", "description": "RHEL 8 base image"}'
+```
+
+## 3. State Code System
+
+State codes range from 0 (nothing) to 100 (complete), incrementing by 5:
+
+| State | Description | Notes |
+|-------|-------------|-------|
+| 0 | Initial state | Pipeline triggered |
+| 5-45 | Infrastructure setup | OS, networking, security |
+| 50-80 | Application deployment | Services, configuration |
+| 85-95 | Testing and validation | Quality assurance |
+| 100 | Complete and delivered | Image published |
+
+## 4. Integration with Build Pipelines
+
+### Concourse CI Example
+```yaml
+- task: update-build-state
+  config:
+    platform: linux
+    image_resource:
+      type: docker-image
+      source: { repository: python, tag: "3.11" }
+    inputs:
+    - name: buildstate-cli
+    run:
+      path: buildstate-cli/bldst_cli
+      args:
+      - build
+      - update
+      - ((build-id))
+      - --state
+      - "10"
+      - --status
+      - "completed"
+```
+
+### GitHub Actions Example
+```yaml
+- name: Update Build State
+  run: |
+    bldst_cli build update ${{ env.BUILD_ID }} --state 10 --status completed
+```
+
+## 5. Monitoring and Reporting
+
+### Health Checks
+```bash
+# API service health
+curl http://localhost:8000/health
+
+# Readiness check
+curl http://localhost:8000/ready
+
+# Status overview
+curl http://localhost:8000/status
+```
+
+### CLI Reporting
+```bash
+# List all builds
+bldst_cli build list
+
+# Get build details
+bldst_cli build get <build-id>
+
+# View state history
+bldst_cli build history <build-id>
+```
+
+## 6. Production Deployment
+
+### Docker Compose (Recommended)
+```bash
+cd api_service
+docker-compose -f docker/docker-compose.yml up -d
+```
+
+### Environment Variables
+```bash
+# API Service
+export DATABASE_URL="postgresql://user:pass@localhost:5432/builds"
+export REDIS_URL="redis://localhost:6379"
+export SECRET_KEY="your-secret-key"
+
+# CLI Tool
+export BUILDSTATE_API_URL="http://localhost:8000"
+export BUILDSTATE_API_TOKEN="your-api-token"
+```
+
+## 7. Best Practices
+
+### State Management
+- **Always advance states** on successful completion
+- **Stay at current state** on failure (don't rollback)
+- **Use descriptive status messages** for debugging
+- **Implement retry logic** at the pipeline level
+
+### Security
+- **Use API tokens** instead of basic auth
+- **Rotate tokens regularly** for production use
+- **Enable HTTPS** in production deployments
+- **Use environment variables** for secrets
+
+### Monitoring
+- **Monitor state transitions** for pipeline health
+- **Alert on stuck builds** (same state for too long)
+- **Track build success rates** by platform/image type
+- **Use dashboards** for visibility into build pipelines
+
+## 8. Troubleshooting
+
+### Common Issues
+```bash
+# API service not responding
+curl http://localhost:8000/health
+
+# CLI authentication issues
+bldst_cli auth login
+
+# Database connection problems
+cd api_service && make logs
+```
+
+### Debug Mode
+```bash
+# Enable debug logging
+export BUILDSTATE_DEBUG=1
+bldst_cli --verbose build list
+```
+
+## Next Steps
+
+1. **Read the complete framework guide**: `README.md`
+2. **Explore sample implementations**: `sample-implementation.md`
+3. **Understand failure handling**: `failure-handling.md`
+4. **Customize for your cloud provider**: See state definitions in `states.md`
+
+---
+
+**Framework Version**: 1.0
+**Last Updated**: February 12, 2026
     timestamp DATETIME NOT NULL,
     status TEXT NOT NULL,
     error_message TEXT
@@ -137,9 +299,7 @@ EOF
   "provisioners": [{
     "type": "shell",
     "inline": [
-      "curl -o /tmp/update-state.sh https://example.com/scripts/update-state.sh",
-      "chmod +x /tmp/update-state.sh",
-      "BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed"
+      "bldst_cli build update ${BUILD_ID} --state 10 --status completed --message 'Packer provisioner completed'"
     ]
   }]
 }
@@ -157,7 +317,7 @@ EOF
         state: present
 
     - name: Mark state 55 as completed
-      command: /usr/local/bin/update-state.sh {{ build_id }} 55 completed
+      command: bldst_cli build update {{ build_id }} --state 55 --status completed --message "Application deployment completed"
       when: not ansible_failed_tasks
 ```
 

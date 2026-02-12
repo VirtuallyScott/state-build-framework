@@ -18,14 +18,11 @@ aws-rhel8-webserver/
 │   │   └── ...
 │   └── roles/                  # Ansible roles
 ├── scripts/
-│   ├── init-build.sh           # Initialize build state
-│   ├── update-state.sh         # Update build state
-│   ├── resume-build.sh         # Resume failed build
+│   ├── init-build.sh           # Initialize build state via CLI
+│   ├── resume-build.sh         # Resume failed build via CLI
 │   └── validate-state.sh       # Validate state transitions
 ├── concourse/
 │   └── pipeline.yml            # Concourse pipeline definition
-└── state/
-    └── build.db                # SQLite state database (created at runtime)
 ```
 
 ## Packer Configuration
@@ -57,9 +54,8 @@ aws-rhel8-webserver/
       "type": "shell",
       "inline": [
         "sudo mv /tmp/kickstart.cfg /root/kickstart.cfg",
-        "curl -o /tmp/update-state.sh https://raw.githubusercontent.com/sap/state-builds/main/scripts/update-state.sh",
-        "chmod +x /tmp/update-state.sh",
-        "BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed"
+        "# Update build state using CLI (assumes bldst_cli is available)",
+        "bldst_cli build update ${BUILD_ID} --state 10 --status completed --message 'Kickstart configuration applied'"
       ]
     }
   ],
@@ -131,10 +127,8 @@ echo "ansible ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers.d/ansible
 # Enable SSH service
 systemctl enable sshd
 
-# Update state
-curl -o /tmp/update-state.sh https://raw.githubusercontent.com/sap/state-builds/main/scripts/update-state.sh
-chmod +x /tmp/update-state.sh
-BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed
+# Update state using CLI
+bldst_cli build update ${BUILD_ID} --state 10 --status completed --message "Base OS configuration applied"
 %end
 ```
 
@@ -152,7 +146,7 @@ BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed
     
   pre_tasks:
     - name: Update state to 15 in progress
-      command: /usr/local/bin/update-state.sh {{ build_id }} 15 in_progress
+      command: bldst_cli build update {{ build_id }} --state 15 --status in_progress --message "Starting base configuration"
       
   tasks:
     - name: Update package cache
@@ -190,7 +184,7 @@ BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed
         
   post_tasks:
     - name: Update state to 15 completed
-      command: /usr/local/bin/update-state.sh {{ build_id }} 15 completed
+      command: bldst_cli build update {{ build_id }} --state 15 --status completed --message "Base configuration completed"
       when: not ansible_failed_tasks
 ```
 
@@ -206,7 +200,7 @@ BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed
     
   pre_tasks:
     - name: Update state to 20 in progress
-      command: /usr/local/bin/update-state.sh {{ build_id }} 20 in_progress
+      command: bldst_cli build update {{ build_id }} --state 20 --status in_progress --message "Starting AWS-specific setup"
       
   tasks:
     - name: Install AWS CLI
@@ -243,47 +237,42 @@ BUILD_ID=${BUILD_ID} /tmp/update-state.sh 10 completed
         
   post_tasks:
     - name: Update state to 20 completed
-      command: /usr/local/bin/update-state.sh {{ build_id }} 20 completed
+      command: bldst_cli build update {{ build_id }} --state 20 --status completed --message "AWS setup completed"
       when: not ansible_failed_tasks
 ```
 
-## State Management Scripts
+## State Management with CLI
 
-### update-state.sh
+Instead of custom scripts, use the `bldst_cli` tool for all state management operations. The CLI handles authentication, error handling, and provides consistent interfaces.
+
+### CLI State Updates
 ```bash
-#!/bin/bash
-# Update build state in SQLite database and sync to S3
+# Update to next state on success
+bldst_cli build update $BUILD_ID --state 15 --status completed --message "Task completed successfully"
 
-BUILD_ID=$1
-STATE=$2
-STATUS=${3:-completed}  # completed, failed, in_progress
-ERROR_MSG=${4:-}
+# Mark current state as failed (don't advance)
+bldst_cli build update $BUILD_ID --state 15 --status failed --message "Task failed: connection timeout"
 
-DB_PATH="/var/lib/state-builds/${BUILD_ID}.db"
-S3_BUCKET="state-builds"
-CLOUD_PROVIDER="aws"
+# Mark as in progress
+bldst_cli build update $BUILD_ID --state 20 --status in_progress --message "Starting AWS setup"
+```
 
-# For successful completion, advance to next state
-if [ "$STATUS" = "completed" ]; then
-    NEXT_STATE=$((STATE + 5))
-    sqlite3 $DB_PATH << EOF
-    UPDATE builds SET current_state = $NEXT_STATE, last_update = datetime('now'), status = 'running' WHERE build_id = '$BUILD_ID';
-    INSERT INTO state_history (build_id, state, timestamp, status, error_message)
-    VALUES ('$BUILD_ID', $STATE, datetime('now'), 'completed', '');
-EOF
-    echo "Advanced build $BUILD_ID from state $STATE to $NEXT_STATE"
-    
-# For failures, stay at current state but mark as failed
-elif [ "$STATUS" = "failed" ]; then
-    sqlite3 $DB_PATH << EOF
-    UPDATE builds SET last_update = datetime('now'), status = 'failed' WHERE build_id = '$BUILD_ID';
-    INSERT INTO state_history (build_id, state, timestamp, status, error_message)
-    VALUES ('$BUILD_ID', $STATE, datetime('now'), 'failed', '$ERROR_MSG');
-EOF
-    echo "Marked build $BUILD_ID state $STATE as failed: $ERROR_MSG"
-    
-# For in-progress updates
-elif [ "$STATUS" = "in_progress" ]; then
+### CLI Installation in Build Environments
+```bash
+# Install CLI in your build environment
+pip install git+https://github.com/VirtuallyScott/state-build-framework.git#subdirectory=buildstate_cli
+
+# Or copy from build artifacts
+cp /path/to/bldst_cli /usr/local/bin/
+chmod +x /usr/local/bin/bldst_cli
+```
+
+### Environment Variables
+```bash
+export BUILDSTATE_API_URL="https://api.example.com"
+export BUILDSTATE_API_TOKEN="your-api-token"
+export BUILD_ID="unique-build-identifier"
+```
     sqlite3 $DB_PATH << EOF
     UPDATE builds SET last_update = datetime('now') WHERE build_id = '$BUILD_ID';
     INSERT INTO state_history (build_id, state, timestamp, status, error_message)
@@ -358,24 +347,24 @@ run_state_task() {
     echo "Executing state $state for build $build_id"
     
     # Mark state as in progress
-    ./scripts/update-state.sh $build_id $state in_progress
-    
+    bldst_cli build update $build_id --state $state --status in_progress --message "Starting state $state"
+
     case $state in
         5)
             echo "Running kickstart..."
             if packer build -var build_id=$build_id packer/rhel8.json; then
-                ./scripts/update-state.sh $build_id $state completed
+                bldst_cli build update $build_id --state $state --status completed --message "Packer build completed"
             else
-                ./scripts/update-state.sh $build_id $state failed "Packer build failed"
+                bldst_cli build update $build_id --state $state --status failed --message "Packer build failed"
                 return 1
             fi
             ;;
         10)
             echo "Running base configuration..."
             if ansible-playbook -i ansible/inventory/aws ansible/playbooks/15-base-config.yml; then
-                ./scripts/update-state.sh $build_id $state completed
+                bldst_cli build update $build_id --state $state --status completed --message "Base config completed"
             else
-                ./scripts/update-state.sh $build_id $state failed "Base config playbook failed"
+                bldst_cli build update $build_id --state $state --status failed --message "Base config playbook failed"
                 return 1
             fi
             ;;

@@ -8,6 +8,33 @@ This framework introduces a standardized state code system for building IaaS ima
 - **Cross-Platform Communication**: Unambiguous status reporting across all cloud providers
 - **Scalable Architecture**: State codes increment by 5s, allowing insertion of new steps without renumbering
 - **Process Transparency**: Clear milestones from initial setup (state 0) to delivery (state 100)
+- **Centralized Tracking**: FastAPI service for data management, dashboarding, and reporting
+- **CLI Tooling**: Command-line interface for easy interaction and automation
+
+## Architecture
+
+The framework consists of three main components:
+
+### 1. FastAPI Service (`../api_service/`)
+- **REST API** for build state management
+- **User authentication** and API token management
+- **Database persistence** with PostgreSQL/SQLite
+- **Caching** with Redis for performance
+- **Health monitoring** and readiness checks
+- **Dashboard endpoints** for reporting and analytics
+
+### 2. CLI Tool (`../buildstate_cli/`)
+- **Command-line interface** for service interaction
+- **User and token management** commands
+- **Build lifecycle management** (create, update, query)
+- **Authentication handling** (login, token management)
+- **Rich output formatting** for better UX
+
+### 3. Documentation (`problem_statement/`)
+- **Framework concepts** and state definitions
+- **Implementation guides** and examples
+- **Failure handling** strategies
+- **Storage architecture** options
 
 ## State Code System
 
