@@ -41,7 +41,7 @@ pip install -e .
 curl http://localhost:8000/health
 
 # Check CLI tool
-bldst_cli --help
+bldst --help
 ```
 
 ## 2. Create Your First Build
@@ -49,16 +49,16 @@ bldst_cli --help
 ### Using the CLI (Recommended)
 ```bash
 # Create a user
-bldst_cli user create --username "builder" --email "builder@example.com"
+bldst user create --username "builder" --email "builder@example.com"
 
 # Create an API token
-bldst_cli token create --username "builder" --description "Build pipeline token"
+bldst token create --username "builder" --description "Build pipeline token"
 
 # Start a new build
-bldst_cli build create --platform "aws" --image-type "rhel8" --description "RHEL 8 base image"
+bldst build create --platform "aws" --image-type "rhel8" --description "RHEL 8 base image"
 
 # Update build state
-bldst_cli build update <build-id> --state 10 --status "completed"
+bldst build update <build-id> --state 10 --status "completed"
 ```
 
 ### Using curl (Not Recommended for Production)
@@ -129,13 +129,13 @@ curl http://localhost:8000/status
 ### CLI Reporting
 ```bash
 # List all builds
-bldst_cli build list
+bldst build list
 
 # Get build details
-bldst_cli build get <build-id>
+bldst build get <build-id>
 
 # View state history
-bldst_cli build history <build-id>
+bldst build history <build-id>
 ```
 
 ## 6. Production Deployment
@@ -196,7 +196,7 @@ cd api_service && make logs
 ```bash
 # Enable debug logging
 export BUILDSTATE_DEBUG=1
-bldst_cli --verbose build list
+bldst --verbose build list
 ```
 
 ## Next Steps

@@ -33,7 +33,7 @@ dev = [
 ]
 
 [project.scripts]
-bldst_cli = "buildstate.cli.main:app"
+bldst = "buildstate.cli.main:app"
 
 [project.urls]
 Homepage = "https://github.com/sap/buildstate_cli"
