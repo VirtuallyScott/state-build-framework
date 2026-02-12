@@ -35,14 +35,14 @@ fi
 echo "Copying State-Based Build Framework to: $TARGET_DIR"
 
 # Copy the framework
-cp -r .copilot/ "$TARGET_DIR/"
+cp -r . "$TARGET_DIR/"
 
 echo "Framework copied successfully!"
 echo ""
 echo "Next steps:"
 echo "1. cd $TARGET_DIR"
-echo "2. cat .copilot/README.md (to understand the framework)"
-echo "3. cat .copilot/sample-implementation.md (for concrete examples)"
+echo "2. cat README.md (to understand the framework)"
+echo "3. cat sample-implementation.md (for concrete examples)"
 echo "4. Start implementing based on your cloud provider and image type"
 echo ""
 echo "Happy building! 🚀"

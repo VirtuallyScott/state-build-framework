@@ -363,9 +363,9 @@ WHERE build_id = '${BUILD_ID}' ORDER BY timestamp DESC LIMIT 10;
 ## Support
 
 For detailed documentation, see:
-- `.copilot/README.md` - Complete framework guide
-- `.copilot/sample-implementation.md` - Full AWS example
-- `.copilot/failure-handling.md` - Failure handling details
+- `README.md` - Complete framework guide
+- `sample-implementation.md` - Full AWS example
+- `failure-handling.md` - Failure handling details
 
 ---
 

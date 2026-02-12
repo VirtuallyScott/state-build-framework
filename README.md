@@ -2,24 +2,32 @@
 
 This workspace contains a reusable framework for implementing state-based build pipelines for multi-cloud IaaS image creation.
 
+## What This Is
+
+The **State-Based Build Framework** solves the critical problem of non-resumable build pipelines that lose all progress when interrupted. By implementing numerical state codes (0-100) and resumable workflows, this framework enables reliable, fault-tolerant image building across AWS, Azure, GCP, and private clouds.
+
+**Why State-Based?** Traditional monolithic pipelines fail completely on interruption. State-based pipelines can resume from any failure point, saving hours of rebuild time and ensuring consistent, reliable deployments.
+
+📖 **[Complete Documentation](problem_statement/)** - Framework overview, implementation guides, and examples
+
 ## Getting Started
 
-**🚀 Quick Start**: Read `.copilot/QUICKSTART.md` for a step-by-step implementation guide!
+**🚀 Quick Start**: Read `problem_statement/QUICKSTART.md` for a step-by-step implementation guide!
 
-The complete framework documentation and implementation guides are in the `.copilot/` directory:
+The complete framework documentation and implementation guides are in the `problem_statement/` directory:
 
 ```bash
 # Quick start guide (recommended)
-cat .copilot/QUICKSTART.md
+cat problem_statement/QUICKSTART.md
 
 # Complete framework overview
-cat .copilot/README.md
+cat problem_statement/README.md
 
 # See the setup script for copying to new workspaces
-.copilot/setup.sh --help
+problem_statement/setup.sh --help
 
 # Copy framework to a new project
-.copilot/setup.sh /path/to/new/image-build-project
+problem_statement/setup.sh /path/to/new/image-build-project
 ```
 
 ## Framework Summary
@@ -32,13 +40,13 @@ cat .copilot/README.md
 
 ## Files
 
-- `.copilot/index.md` - Framework overview and quick start guide
-- `.copilot/README.md` - Complete framework documentation
-- `.copilot/states.md` - Detailed state code definitions
-- `.copilot/storage-implementation.md` - Storage architecture and APIs
-- `.copilot/sample-implementation.md` - AWS RHEL 8 concrete example
-- `.copilot/failure-handling.md` - Failure handling and retry logic
-- `.copilot/setup.sh` - Script to copy framework to new workspaces
+- `problem_statement/index.md` - Framework overview and quick start guide
+- `problem_statement/README.md` - Complete framework documentation
+- `problem_statement/states.md` - Detailed state code definitions
+- `problem_statement/storage-implementation.md` - Storage architecture and APIs
+- `problem_statement/sample-implementation.md` - AWS RHEL 8 concrete example
+- `problem_statement/failure-handling.md` - Failure handling and retry logic
+- `problem_statement/setup.sh` - Script to copy framework to new workspaces
 
 ---
 
