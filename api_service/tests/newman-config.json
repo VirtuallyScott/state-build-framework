@@ -1,0 +1,10 @@
+{
+  "collection": "./build-state-api-tests.postman_collection.json",
+  "environment": "./build-state-api-tests.postman_environment.json",
+  "reporters": ["cli", "json"],
+  "reporter-json-export": "./test-results.json",
+  "timeout": 30000,
+  "delayRequest": 1000,
+  "bail": false,
+  "suppressExitCode": false
+}

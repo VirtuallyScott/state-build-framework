@@ -1,0 +1,142 @@
+version: '3.8'
+
+services:
+  # API Service Instances (Horizontal Scaling)
+  api01:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - DATABASE_URL=postgresql://buildapi:change-this-password@postgres:5432/builds
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-secret-key-change-in-production}
+      - REDIS_URL=redis://redis:6379/0
+      - API_KEYS=${API_KEYS:-dev-key-12345,prod-key-67890}
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 40s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      timeout: 10s
+    networks:
+      - api-network
+    restart: unless-stopped
+
+  api02:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - DATABASE_URL=postgresql://buildapi:change-this-password@postgres:5432/builds
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-secret-key-change-in-production}
+      - REDIS_URL=redis://redis:6379/0
+      - API_KEYS=${API_KEYS:-dev-key-12345,prod-key-67890}
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 40s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      timeout: 10s
+    networks:
+      - api-network
+    restart: unless-stopped
+
+  api03:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - CACHE_ENABLED=${CACHE_ENABLED:-true}
+      - DATABASE_URL=postgresql://buildapi:change-this-password@postgres:5432/builds
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-dev-secret-key-change-in-production}
+      - REDIS_URL=redis://redis:6379/0
+      - API_KEYS=${API_KEYS:-dev-key-12345,prod-key-67890}
+    healthcheck:
+      interval: 30s
+      retries: 3
+      start_period: 40s
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      timeout: 10s
+    networks:
+      - api-network
+    restart: unless-stopped
+
+  # Load Balancer / Reverse Proxy
+  nginx:
+    build:
+      context: ..
+      dockerfile: docker/nginx.Dockerfile
+    depends_on:
+      api01:
+        condition: service_healthy
+      api02:
+        condition: service_healthy
+      api03:
+        condition: service_healthy
+    healthcheck:
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      timeout: 5s
+    networks:
+      - api-network
+    ports:
+      - "8080:80"
+    restart: unless-stopped
+
+  # PostgreSQL Database
+  postgres:
+    environment:
+      - POSTGRES_DB=builds
+      - POSTGRES_PASSWORD=change-this-password
+      - POSTGRES_USER=buildapi
+    healthcheck:
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      test: ["CMD-SHELL", "pg_isready -U buildapi -d builds"]
+      timeout: 5s
+    image: postgres:15-alpine
+    networks:
+      - api-network
+    restart: unless-stopped
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+
+  # Redis for caching and session storage
+  redis:
+    command: redis-server --appendonly yes
+    healthcheck:
+      interval: 10s
+      retries: 3
+      start_period: 30s
+      test: ["CMD", "redis-cli", "ping"]
+      timeout: 3s
+    image: redis:7-alpine
+    networks:
+      - api-network
+    restart: unless-stopped
+    volumes:
+      - ./data/redis:/data
+
+networks:
+  api-network:
+    driver: bridge
