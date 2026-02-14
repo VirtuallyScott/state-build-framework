@@ -1,64 +1,73 @@
--- State-Based Build Framework Database Schema
--- Compatible with SQLite and PostgreSQL
+-- State-Based Build Framework Database Schema for PostgreSQL
 -- Uses UUID for primary keys, ISO UTC timestamps
 
--- Enable foreign keys in SQLite
-PRAGMA foreign_keys = ON;
-
--- Platforms table (Azure, AWS, GCP, etc.)
 CREATE TABLE platforms (
-    id TEXT PRIMARY KEY,  -- UUID
+    id UUID PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     display_name TEXT NOT NULL,
     cloud_provider TEXT NOT NULL,  -- 'azure', 'aws', 'gcp', 'openstack', 'cloudfoundry'
     region TEXT,  -- Optional region specification
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),  -- ISO UTC
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc')
 );
 
 -- OS Versions table (RHEL 8.8, SLES 15, Ubuntu 20, etc.)
 CREATE TABLE os_versions (
-    id TEXT PRIMARY KEY,  -- UUID
+    id UUID PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     display_name TEXT NOT NULL,
     os_family TEXT NOT NULL,  -- 'rhel', 'sles', 'ubuntu'
     major_version INTEGER NOT NULL,
     minor_version INTEGER,
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc')
+);
+
+-- Projects table
+CREATE TABLE projects (
+    id UUID PRIMARY KEY,
+    name TEXT NOT NULL UNIQUE,
+    description TEXT,
+    parent_project_id UUID, -- Self-referencing for parent-child
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+
+    FOREIGN KEY (parent_project_id) REFERENCES projects(id)
 );
 
 -- Image Types table (Base, HANA, SAPAPP, OpenVPN, etc.)
 CREATE TABLE image_types (
-    id TEXT PRIMARY KEY,  -- UUID
+    id UUID PRIMARY KEY,
     name TEXT NOT NULL UNIQUE,
     display_name TEXT NOT NULL,
     description TEXT,
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now'))
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc')
 );
 
 -- Builds table (main build records)
 CREATE TABLE builds (
-    id TEXT PRIMARY KEY,  -- UUID
+    id UUID PRIMARY KEY,
     build_number TEXT NOT NULL UNIQUE,  -- e.g., 'rhel-8.8-base-aws-commercial-20240212-001'
-    platform_id TEXT NOT NULL,
-    os_version_id TEXT NOT NULL,
-    image_type_id TEXT NOT NULL,
+    project_id UUID,
+    platform_id UUID NOT NULL,
+    os_version_id UUID NOT NULL,
+    image_type_id UUID NOT NULL,
     current_state INTEGER NOT NULL DEFAULT 0,  -- 0-100
     status TEXT NOT NULL DEFAULT 'pending',  -- 'pending', 'running', 'completed', 'failed', 'cancelled'
-    start_time TEXT,  -- ISO UTC timestamp
-    end_time TEXT,  -- ISO UTC timestamp
+    start_time TIMESTAMPTZ,
+    end_time TIMESTAMPTZ,
     duration_seconds INTEGER,  -- Computed field
-    concourse_pipeline_url TEXT,  -- Link to Concourse pipeline
+    concourse_pipeline_url TEXT,
     concourse_job_name TEXT,
     ami_id TEXT,  -- For AWS AMIs
     image_id TEXT,  -- For Azure/GCP images
-    packer_manifest TEXT,  -- JSON manifest from Packer
+    packer_manifest JSONB,
     created_by TEXT,  -- User who triggered the build
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+    updated_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
 
+    FOREIGN KEY (project_id) REFERENCES projects(id),
     FOREIGN KEY (platform_id) REFERENCES platforms(id),
     FOREIGN KEY (os_version_id) REFERENCES os_versions(id),
     FOREIGN KEY (image_type_id) REFERENCES image_types(id)
@@ -66,34 +75,34 @@ CREATE TABLE builds (
 
 -- Build States History table (state transitions)
 CREATE TABLE build_states (
-    id TEXT PRIMARY KEY,  -- UUID
-    build_id TEXT NOT NULL,
+    id UUID PRIMARY KEY,
+    build_id UUID NOT NULL,
     state INTEGER NOT NULL,  -- 0-100
     status TEXT NOT NULL,  -- 'started', 'completed', 'failed', 'skipped'
-    start_time TEXT NOT NULL,  -- ISO UTC
-    end_time TEXT,  -- ISO UTC
+    start_time TIMESTAMPTZ NOT NULL,
+    end_time TIMESTAMPTZ,
     duration_seconds INTEGER,
     error_message TEXT,
     retry_count INTEGER DEFAULT 0,
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
 
     FOREIGN KEY (build_id) REFERENCES builds(id)
 );
 
 -- Build Failures table (detailed failure tracking)
 CREATE TABLE build_failures (
-    id TEXT PRIMARY KEY,  -- UUID
-    build_id TEXT NOT NULL,
+    id UUID PRIMARY KEY,
+    build_id UUID NOT NULL,
     state INTEGER NOT NULL,
     failure_type TEXT NOT NULL,  -- 'packer_error', 'ansible_error', 'network_error', 'validation_error'
     error_message TEXT NOT NULL,
-    error_details TEXT,  -- JSON with stack traces, logs, etc.
+    error_details JSONB,  -- JSON with stack traces, logs, etc.
     component TEXT,  -- 'packer', 'ansible', 'concourse', 'aws_api', etc.
     retry_attempt INTEGER DEFAULT 1,
     resolved BOOLEAN DEFAULT FALSE,
     resolution_notes TEXT,
-    created_at TEXT NOT NULL DEFAULT (datetime('now')),
-    resolved_at TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT (now() at time zone 'utc'),
+    resolved_at TIMESTAMPTZ,
 
     FOREIGN KEY (build_id) REFERENCES builds(id)
 );

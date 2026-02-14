@@ -17,6 +17,7 @@ The API supports both SQLite and PostgreSQL databases. Database type is configur
 
 ### Environment Variables
 
+- `ENVIRONMENT`: `production` (default), `development`, `staging` - Controls dummy data loading
 - `DATABASE_TYPE`: `auto` (default), `sqlite`, or `postgresql`
 - `DATABASE_URL`: Database connection string
 
@@ -63,6 +64,34 @@ The same container image works for both database types.
 - ✅ Multi-stage Docker builds
 - ✅ Comprehensive error handling
 
+## Dummy Data
+
+The application automatically loads comprehensive dummy data when running in development mode. This includes:
+
+- **Users & Profiles**: Admin user, test users, and employee profiles
+- **API Tokens**: Authentication tokens with different permission scopes
+- **Platforms**: AWS, Azure, GCP, and other cloud providers
+- **OS Versions**: Various Linux distributions and versions
+- **Image Types**: Base images, SAP HANA, web servers, databases, etc.
+- **Build Records**: Sample build jobs with different states
+- **Build States**: Success, failed, running, and cancelled builds
+- **Build Failures**: Detailed error information for failed builds
+
+### Loading Dummy Data
+
+Set the `ENVIRONMENT` variable to `development` to automatically load dummy data on startup:
+
+```bash
+# Environment variable
+ENVIRONMENT=development
+
+# Or in docker-compose.yml
+environment:
+  - ENVIRONMENT=development
+```
+
+The dummy data is loaded from `dummy-data.sql` and includes realistic sample data for testing and development.
+
 ## Quick Start
 
 ### Prerequisites
@@ -70,42 +99,49 @@ The same container image works for both database types.
 - Docker and Docker Compose
 - Git
 
-### 1. Clone and Setup
+### Development Setup with Dummy Data
 
-```bash
-cd /path/to/your/project
-git clone <repository-url> api_service
-cd api_service
+1. **Start the services:**
+   ```bash
+   cd docker
+   docker-compose up --build -d
+   ```
 
-# Copy environment template
-cp .env.example .env
+2. **Verify services are running:**
+   ```bash
+   docker-compose ps
+   ```
 
-# Edit environment variables
-nano .env
-```
+3. **Check logs:**
+   ```bash
+   docker-compose logs api01
+   ```
 
-### 2. Build and Run
+4. **Test the API:**
+   ```bash
+   # Health check (no auth required)
+   curl http://localhost:8080/health
 
-```bash
-# Build and start all services
-docker-compose up --build
+   # Get dashboard summary (requires API key)
+   curl -H "X-API-Key: dev-key-12345" http://localhost:8080/dashboard/summary
 
-# Or run in background
-docker-compose up -d --build
-```
+   # Get recent builds
+   curl -H "X-API-Key: dev-key-12345" http://localhost:8080/dashboard/recent
+   ```
 
-### 3. Verify Deployment
+### Environment Variables
 
-```bash
-# Check if services are running
-docker-compose ps
+- `ENVIRONMENT=development`: Enables automatic loading of dummy data on startup
+- `API_KEYS`: Comma-separated list of valid API keys (default: "dev-key-12345,prod-key-67890")
 
-# Test API health
-curl http://localhost:8080/
+### Dummy Data
 
-# Get API documentation
-open http://localhost:8080/docs
-```
+When `ENVIRONMENT=development`, the API automatically loads comprehensive dummy data including:
+- 10 sample builds across AWS, Azure, and Google Cloud platforms
+- Multiple image types (Base Image, SAP HANA, Web Server, etc.)
+- User accounts and API tokens
+- Platform and OS version configurations
+- Build states and failure records
 
 ## API Usage
 

@@ -13,9 +13,9 @@ echo "🚀 Starting Build State API Newman Tests"
 echo "=========================================="
 
 # Check if Docker Compose is running
-if ! docker-compose ps | grep -q "Up"; then
-    echo "❌ Docker Compose services are not running. Please start them first:"
-    echo "   docker-compose up -d"
+if ! docker-compose -f docker/docker-compose.yml ps | grep -q "Up"; then
+    echo "❌ Docker Compose services are not running. Please start them first from the 'docker' directory:"
+    echo "   cd docker && docker-compose up -d"
     exit 1
 fi
 
@@ -25,7 +25,7 @@ max_attempts=30
 attempt=1
 
 while [ $attempt -le $max_attempts ]; do
-    if curl -s -f http://localhost:8080/health > /dev/null 2>&1; then
+    if curl -s -f http://127.0.0.1:8000/health/liveness > /dev/null 2>&1; then
         echo "✅ API is ready!"
         break
     fi
@@ -55,7 +55,6 @@ fi
 echo ""
 echo "🧪 Running Basic API Tests..."
 newman run tests/build-state-api-tests.postman_collection.json \
-  --environment tests/build-state-api-tests.postman_environment.json \
   --reporters cli,json \
   --reporter-json-export tests/test-results.json \
   --timeout 30000 \

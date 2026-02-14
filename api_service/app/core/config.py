@@ -36,10 +36,8 @@ class Settings:
     cache_enabled: bool = os.getenv("CACHE_ENABLED", "true").lower() == "true"
     cache_ttl: int = int(os.getenv("CACHE_TTL", "300"))  # 5 minutes default
 
-    # Server
-    host: str = os.getenv("HOST", "0.0.0.0")
-    port: int = int(os.getenv("PORT", "8000"))
-    debug: bool = os.getenv("DEBUG", "false").lower() == "true"
+    # Environment
+    environment: str = os.getenv("ENVIRONMENT", "production")  # development, staging, production
 
 
 # Global settings instance

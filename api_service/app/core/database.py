@@ -1,69 +1,38 @@
 """
 Database connection and operations for the Build State API.
 """
-import sqlite3
-import psycopg2
-from psycopg2.extras import RealDictCursor
 import redis
 from typing import Optional, Dict, Any, List
 from contextlib import contextmanager
-import json
-from datetime import datetime
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker, Session
 
 from .config import settings
+
+engine = create_engine(settings.database_url, pool_pre_ping=True)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 class Database:
     """Database connection manager supporting SQLite and PostgreSQL."""
 
     def __init__(self):
-        self.db_type = self._determine_db_type()
+        self.engine = engine
+        self.SessionLocal = SessionLocal
         self.redis_client = redis.from_url(settings.redis_url) if settings.cache_enabled else None
 
-    def _determine_db_type(self) -> str:
-        """Determine database type from configuration."""
-        if settings.database_type != "auto":
-            return settings.database_type
-
-        # Auto-detect from URL
-        url = settings.database_url.lower()
-        if url.startswith("postgresql://") or url.startswith("postgres://"):
-            return "postgresql"
-        elif url.startswith("sqlite:///") or url.endswith(".db"):
-            return "sqlite"
-        else:
-            # Default fallback
-            return "sqlite"
+    def get_session(self) -> Session:
+        """Get a new database session."""
+        return self.SessionLocal()
 
     @contextmanager
     def get_connection(self):
         """Get database connection with proper cleanup."""
-        if self.db_type == "sqlite":
-            conn = sqlite3.connect(settings.database_url)
-            conn.row_factory = sqlite3.Row
-            try:
-                yield conn
-            finally:
-                conn.close()
-        else:
-            conn = psycopg2.connect(settings.database_url, cursor_factory=RealDictCursor)
-            try:
-                yield conn
-            finally:
-                conn.close()
-
-    def execute_query(self, query: str, params: tuple = None, fetch: bool = True) -> List[Dict]:
-        """Execute a database query."""
-        with self.get_connection() as conn:
-            cursor = conn.cursor()
-            cursor.execute(query, params or ())
-
-            if fetch and (query.strip().upper().startswith("SELECT") or "RETURNING" in query.upper()):
-                results = cursor.fetchall()
-                return [dict(row) for row in results] if self.db_type == "sqlite" else results
-            else:
-                conn.commit()
-                return []
+        db_session = self.get_session()
+        try:
+            yield db_session
+        finally:
+            db_session.close()
 
     def cache_get(self, key: str) -> Optional[str]:
         """Get value from Redis cache."""
@@ -87,22 +56,21 @@ db = Database()
 
 
 def init_database():
-    """Initialize database schema."""
-    schema_file = "init-db.sql"
-    try:
-        with open(schema_file, 'r') as f:
-            schema_sql = f.read()
+    """Initialize database with dummy data in development environment."""
+    if settings.environment == "development":
+        dummy_data_file = "dummy-data.sql"
+        try:
+            with open(dummy_data_file, 'r') as f:
+                dummy_sql = f.read()
+            
+            with db.get_connection() as conn:
+                conn.execute(text(dummy_sql))
+                conn.commit()
 
-        # Split on semicolons and execute each statement
-        statements = [stmt.strip() for stmt in schema_sql.split(';') if stmt.strip()]
+            print("Dummy data loaded successfully")
 
-        for statement in statements:
-            if statement:
-                db.execute_query(statement, fetch=False)
-
-        print("Database initialized successfully")
-    except FileNotFoundError:
-        print(f"Warning: {schema_file} not found, skipping database initialization")
-    except Exception as e:
-        print(f"Error initializing database: {e}")
-        raise
+        except Exception as e:
+            print(f"Error loading dummy data: {e}")
+            raise
+    else:
+        print("Database initialized (production mode - no dummy data)")

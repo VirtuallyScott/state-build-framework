@@ -1,86 +1,83 @@
 # BuildState CLI
 
-A modern, type-safe command-line interface for the Build State API. Provides a clean alternative to curl commands for pipeline integration and interactive use.
+A modern, type-safe command-line interface for the Build State API. Manage platforms, OS versions, image types, projects, and builds from the command line with proper authentication and authorization.
+
+## 🚀 Quick Start
+
+```bash
+# Install
+cd buildstate_cli
+pip install -e .
+
+# Configure
+bldst config set-url http://localhost:8080
+bldst auth set-key dev-key-12345
+
+# Use
+bldst platform list
+bldst os-version list
+bldst image-type list
+```
+
+## 📚 Documentation
+
+- **[Complete CLI Documentation](README_FULL.md)** - Comprehensive guide with all commands
+- **[Quick Start Guide](CLI_QUICKSTART.md)** - Get started in 5 minutes
+- **[API Reference](../api_service/docs/API_REFERENCE.md)** - Full API documentation
+- **[Authentication Guide](../api_service/docs/AUTHENTICATION.md)** - Auth & authorization
 
 ## 🚀 Installation
 
 ### From Source (Development)
 ```bash
-git clone <repository-url>
 cd buildstate_cli
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -e .
 ```
 
-### From Wheel (Production)
+### Verify Installation
+```bash
+bldst --help
+```
+
+### Virtual Environment (Recommended)
 ```bash
 # Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Download and install the wheel
-pip install buildstate_cli-0.1.0.tar.gz
-
-# Or from private PyPI
-pip install --index-url https://your-private-pypi.com/ buildstate_cli
-```
-
-### Virtual Environment Best Practices
-We strongly recommend using virtual environments to avoid conflicts with system Python packages:
-
-```bash
-# Create virtual environment
-python -m venv venv
-
-# Activate (Linux/Mac)
-source venv/bin/activate
-
-# Activate (Windows)
-venv\Scripts\activate
-
-# Install the package
-pip install buildstate_cli
-
-# Deactivate when done
-deactivate
+# Install
+pip install -e .
 ```
 
 ## ⚙️ Configuration
 
 ### Set API URL
 ```bash
-buildctl config set-url http://localhost:8080
+bldst config set-url http://localhost:8080
 ```
 
-### Authentication Options
-
-#### API Key (for Pipelines)
+For production:
 ```bash
-# Secure storage (recommended)
-buildctl auth set-key your-api-key
-
-# Or environment variable
-export BUILDCTL_API_KEY=your-api-key
+bldst config set-url https://api.buildstate.example.com
 ```
 
-#### JWT Token (for Interactive Use)
+### Authentication
+
+#### API Key (Recommended for automation)
 ```bash
-# Login interactively
-buildctl auth login
-
-# Or set token directly
-export BUILDCTL_JWT_TOKEN=your-jwt-token
+# Securely stored in system keyring
+bldst auth set-key dev-key-12345
 ```
 
-### Configuration File
-Create `.buildctl.yaml` in your project root or home directory:
+#### JWT Token (For interactive use)
+```bash
+# Login with username/password
+bldst auth login
+```
 
-```yaml
-api_url: http://localhost:8080
-api_key: your-api-key  # Not recommended for production
-default_platform: aws-commercial
-default_os_version: rhel-8.8
+### View Configuration
+```bash
+bldst config show
 ```
 
 ## 📋 Usage Examples

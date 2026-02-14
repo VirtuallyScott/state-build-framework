@@ -10,7 +10,22 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from .core.config import settings
 from .core.database import init_database
-from .routers import health, auth, users, builds, dashboard
+from .routers import (
+    health,
+    auth,
+    users,
+    builds,
+    dashboard,
+    projects,
+    state_codes,
+    platforms,
+    os_versions,
+    image_types,
+    artifacts,
+    variables,
+    resume,
+)
+
 
 
 @asynccontextmanager
@@ -48,11 +63,34 @@ app.add_middleware(
 )
 
 # Include routers
+print("Including routers...")
 app.include_router(health.router, tags=["Health"])
+print("Health router included")
 app.include_router(auth.router, tags=["Authentication"])
+print("Auth router included")
 app.include_router(users.router, tags=["Users"])
+print("Users router included")
+app.include_router(projects.router, tags=["Projects"])
+print("Projects router included")
+app.include_router(state_codes.router, tags=["State Codes"])
+print("State Codes router included")
+app.include_router(platforms.router, tags=["Platforms"])
+print("Platforms router included")
+app.include_router(os_versions.router, tags=["OS Versions"])
+print("OS Versions router included")
+app.include_router(image_types.router, tags=["Image Types"])
+print("Image Types router included")
 app.include_router(builds.router, tags=["Builds"])
+print("Builds router included")
 app.include_router(dashboard.router, tags=["Dashboard"])
+print("Dashboard router included")
+app.include_router(artifacts.router, tags=["Artifacts"])
+print("Artifacts router included")
+app.include_router(variables.router, tags=["Variables"])
+print("Variables router included")
+app.include_router(resume.router, tags=["Resume"])
+print("Resume router included")
+print("All routers included successfully")
 
 
 @app.get("/", response_model=dict)

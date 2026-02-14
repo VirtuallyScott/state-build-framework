@@ -139,7 +139,7 @@ CREATE INDEX IF NOT EXISTS idx_api_keys_active ON api_keys(active) WHERE active 
 -- Insert sample data
 INSERT INTO users (id, username, email, first_name, last_name, employee_id, hashed_password, is_active, is_superuser) VALUES
 ('admin-user', 'admin', 'admin@company.com', 'Admin', 'User', 'EMP001', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeCt1uB0YwBqXs.3e', true, true),
-('test-user', 'testuser', 'test@company.com', 'Test', 'User', 'EMP002', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeCt1uB0YwBqXs.3e', true, false)
+('test-user', 'testuser', 'test@company.com', 'Test', 'User', 'EMP002', '$2b$12$C6s5n/PeB0diECBZ0IO1WuDMuCkMPwURbS3ZKGxlaOFI193gin82u', true, false)
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO user_profiles (id, user_id, first_name, last_name, employee_id, email, start_date) VALUES
@@ -149,7 +149,7 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO api_tokens (id, user_id, name, token_hash, scopes) VALUES
 ('admin-token', 'admin-user', 'Admin Token', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeCt1uB0YwBqXs.3e', ARRAY['read', 'write', 'admin']),
-('test-token', 'test-user', 'Test Token', '$2b$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LeCt1uB0YwBqXs.3e', ARRAY['read', 'write'])
+('test-token', 'test-user', 'Test Token', '$2b$12$rHr37bE5MMVL0XeMmawHve6MmDT7cQEqiWlxupOgtFAhi9bpAUcna', ARRAY['read', 'write'])
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO platforms (id, name, cloud_provider, region) VALUES

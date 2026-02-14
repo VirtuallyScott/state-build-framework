@@ -9,15 +9,26 @@ import asyncio
 from typing import Dict, List, Optional, Any, Union
 import json
 from pathlib import Path
+import os
+import uuid
 
 import httpx
-from pydantic import ValidationError
+from pydantic import ValidationError, BaseModel
 
 from .models import (
-    BuildCreate, BuildResponse, StateTransition, StateResponse,
-    FailureRecord, DashboardSummary, TokenRequest, TokenResponse, APIError,
-    UserCreate, UserUpdate, UserResponse, UserProfileResponse,
-    APITokenCreate, APITokenResponse, APITokenCreateResponse, IDMLoginRequest
+    BuildCreate, BuildResponse, BuildUpdate,
+    BuildStateCreate, BuildStateResponse,
+    BuildFailureCreate, BuildFailureResponse,
+    ProjectCreate, ProjectUpdate, ProjectResponse,
+    PlatformCreate, PlatformUpdate, PlatformResponse,
+    OSVersionCreate, OSVersionUpdate, OSVersionResponse,
+    ImageTypeCreate, ImageTypeUpdate, ImageTypeResponse,
+    OSDistributionCreate, OSDistributionUpdate, OSDistributionResponse,
+    CloudProviderCreate, CloudProviderUpdate, CloudProviderResponse,
+    ImageVariantCreate, ImageVariantUpdate, ImageVariantResponse,
+    StateCodeCreate, StateCodeUpdate, StateCodeResponse,
+    TokenRequest, TokenResponse,
+    UserCreate, UserUpdate, UserResponse,
 )
 
 
@@ -52,7 +63,8 @@ class BuildStateClient:
         # Create httpx client
         self.client = httpx.AsyncClient(
             timeout=httpx.Timeout(timeout),
-            headers=self._get_default_headers()
+            headers=self._get_default_headers(),
+            follow_redirects=True
         )
 
     def _get_default_headers(self) -> Dict[str, str]:
@@ -75,48 +87,36 @@ class BuildStateClient:
         endpoint: str,
         data: Optional[Dict[str, Any]] = None,
         params: Optional[Dict[str, Any]] = None
-    ) -> Dict[str, Any]:
+    ) -> Any:
         """Make HTTP request with error handling."""
         url = f"{self.base_url}{endpoint}"
 
         try:
-            if data:
-                response = await self.client.request(method, url, json=data, params=params)
-            else:
-                response = await self.client.request(method, url, params=params)
+            response = await self.client.request(method, url, json=data, params=params)
 
-            # Handle different response status codes
-            if response.status_code == 200:
+            if 200 <= response.status_code < 300:
+                if response.status_code == 204:
+                    return None
                 return response.json()
-            elif response.status_code == 201:
-                return response.json()
-            elif response.status_code == 204:
-                return {}
-            elif response.status_code in (400, 401, 403, 404, 422):
-                error_data = response.json()
-                if 'detail' in error_data:
-                    raise BuildStateAPIError(
-                        error_data['detail'],
-                        status_code=response.status_code,
-                        errors=error_data.get('errors')
-                    )
-                else:
-                    raise BuildStateAPIError(
-                        f"API error: {response.text}",
-                        status_code=response.status_code
-                    )
             else:
+                error_data = {}
+                try:
+                    error_data = response.json()
+                except json.JSONDecodeError:
+                    pass
+                detail = error_data.get('detail', response.text)
                 raise BuildStateAPIError(
-                    f"Unexpected status code: {response.status_code}",
-                    status_code=response.status_code
+                    str(detail),
+                    status_code=response.status_code,
+                    errors=error_data
                 )
 
-        except httpx.TimeoutException:
-            raise BuildStateAPIError("Request timeout")
-        except httpx.ConnectError:
-            raise BuildStateAPIError(f"Connection failed to {url}")
-        except json.JSONDecodeError:
-            raise BuildStateAPIError("Invalid JSON response from API")
+        except httpx.TimeoutException as e:
+            raise BuildStateAPIError(f"Request timeout: {e}", status_code=408)
+        except httpx.ConnectError as e:
+            raise BuildStateAPIError(f"Connection failed to {url}: {e}", status_code=503)
+        except json.JSONDecodeError as e:
+            raise BuildStateAPIError(f"Invalid JSON response from API: {e}", status_code=500)
 
     async def close(self):
         """Close the HTTP client."""
@@ -132,159 +132,178 @@ class BuildStateClient:
     async def login(self, username: str, password: str) -> TokenResponse:
         """Authenticate and get JWT token."""
         request = TokenRequest(username=username, password=password)
-        response = await self._make_request('POST', '/token', request.dict())
-        return TokenResponse(**response)
+        # FastAPI's OAuth2PasswordRequestForm expects form data
+        response = await self.client.post(
+            f"{self.base_url}/token",
+            data=request.dict()
+        )
+        if response.status_code != 200:
+            raise BuildStateAPIError(f"Authentication failed: {response.text}", status_code=response.status_code)
+        return TokenResponse(**response.json())
+
+    # Generic CRUD methods
+    async def _create_item(self, endpoint: str, create_model: BaseModel, response_model: BaseModel) -> BaseModel:
+        response = await self._make_request('POST', endpoint, create_model.dict())
+        return response_model(**response)
+
+    async def _get_item(self, endpoint: str, item_id: Union[str, uuid.UUID], response_model: BaseModel) -> BaseModel:
+        response = await self._make_request('GET', f"{endpoint}/{item_id}")
+        return response_model(**response)
+
+    async def _list_items(self, endpoint: str, response_model: BaseModel, skip: int = 0, limit: int = 100) -> List[BaseModel]:
+        response = await self._make_request('GET', endpoint, params={"skip": skip, "limit": limit})
+        return [response_model(**item) for item in response]
+
+    async def _update_item(self, endpoint: str, item_id: Union[str, uuid.UUID], update_model: BaseModel, response_model: BaseModel) -> BaseModel:
+        response = await self._make_request('PUT', f"{endpoint}/{item_id}", update_model.dict(exclude_unset=True))
+        return response_model(**response)
+
+    async def _delete_item(self, endpoint: str, item_id: Union[str, uuid.UUID]) -> None:
+        await self._make_request('DELETE', f"{endpoint}/{item_id}")
+
+    # Cloud Provider methods
+    async def create_cloud_provider(self, data: CloudProviderCreate) -> CloudProviderResponse:
+        return await self._create_item("/cloud-providers", data, CloudProviderResponse)
+    async def get_cloud_provider(self, item_id: uuid.UUID) -> CloudProviderResponse:
+        return await self._get_item("/cloud-providers", item_id, CloudProviderResponse)
+    async def list_cloud_providers(self, skip: int = 0, limit: int = 100) -> List[CloudProviderResponse]:
+        return await self._list_items("/cloud-providers", CloudProviderResponse, skip, limit)
+    async def update_cloud_provider(self, item_id: uuid.UUID, data: CloudProviderUpdate) -> CloudProviderResponse:
+        return await self._update_item("/cloud-providers", item_id, data, CloudProviderResponse)
+    async def delete_cloud_provider(self, item_id: uuid.UUID) -> None:
+        await self._delete_item("/cloud-providers", item_id)
+
+    # OS Distribution methods
+    async def create_os_distribution(self, data: OSDistributionCreate) -> OSDistributionResponse:
+        return await self._create_item("/os-distributions", data, OSDistributionResponse)
+    async def get_os_distribution(self, item_id: uuid.UUID) -> OSDistributionResponse:
+        return await self._get_item("/os-distributions", item_id, OSDistributionResponse)
+    async def list_os_distributions(self, skip: int = 0, limit: int = 100) -> List[OSDistributionResponse]:
+        return await self._list_items("/os-distributions", OSDistributionResponse, skip, limit)
+    async def update_os_distribution(self, item_id: uuid.UUID, data: OSDistributionUpdate) -> OSDistributionResponse:
+        return await self._update_item("/os-distributions", item_id, data, OSDistributionResponse)
+    async def delete_os_distribution(self, item_id: uuid.UUID) -> None:
+        await self._delete_item("/os-distributions", item_id)
+
+    # Image Variant methods
+    async def create_image_variant(self, data: ImageVariantCreate) -> ImageVariantResponse:
+        return await self._create_item("/image-variants", data, ImageVariantResponse)
+    async def get_image_variant(self, item_id: uuid.UUID) -> ImageVariantResponse:
+        return await self._get_item("/image-variants", item_id, ImageVariantResponse)
+    async def list_image_variants(self, skip: int = 0, limit: int = 100) -> List[ImageVariantResponse]:
+        return await self._list_items("/image-variants", ImageVariantResponse, skip, limit)
+    async def update_image_variant(self, item_id: uuid.UUID, data: ImageVariantUpdate) -> ImageVariantResponse:
+        return await self._update_item("/image-variants", item_id, data, ImageVariantResponse)
+    async def delete_image_variant(self, item_id: uuid.UUID) -> None:
+        await self._delete_item("/image-variants", item_id)
+
+    # Platform methods
+    async def create_platform(self, data: PlatformCreate) -> PlatformResponse:
+        return await self._create_item("/platforms/", data, PlatformResponse)
+    async def get_platform(self, item_id: str) -> PlatformResponse:
+        return await self._get_item("/platforms", item_id, PlatformResponse)
+    async def list_platforms(self, skip: int = 0, limit: int = 100) -> List[PlatformResponse]:
+        return await self._list_items("/platforms/", PlatformResponse, skip, limit)
+    async def update_platform(self, item_id: str, data: PlatformUpdate) -> PlatformResponse:
+        return await self._update_item("/platforms", item_id, data, PlatformResponse)
+    async def delete_platform(self, item_id: str) -> None:
+        await self._delete_item("/platforms", item_id)
+
+    # OS Version methods
+    async def create_os_version(self, data: OSVersionCreate) -> OSVersionResponse:
+        return await self._create_item("/os_versions/", data, OSVersionResponse)
+    async def get_os_version(self, item_id: str) -> OSVersionResponse:
+        return await self._get_item("/os_versions", item_id, OSVersionResponse)
+    async def list_os_versions(self, skip: int = 0, limit: int = 100) -> List[OSVersionResponse]:
+        return await self._list_items("/os_versions/", OSVersionResponse, skip, limit)
+    async def update_os_version(self, item_id: str, data: OSVersionUpdate) -> OSVersionResponse:
+        return await self._update_item("/os_versions", item_id, data, OSVersionResponse)
+    async def delete_os_version(self, item_id: str) -> None:
+        await self._delete_item("/os_versions", item_id)
+
+    # Image Type methods
+    async def create_image_type(self, data: ImageTypeCreate) -> ImageTypeResponse:
+        return await self._create_item("/image_types/", data, ImageTypeResponse)
+    async def get_image_type(self, item_id: str) -> ImageTypeResponse:
+        return await self._get_item("/image_types", item_id, ImageTypeResponse)
+    async def list_image_types(self, skip: int = 0, limit: int = 100) -> List[ImageTypeResponse]:
+        return await self._list_items("/image_types/", ImageTypeResponse, skip, limit)
+    async def update_image_type(self, item_id: str, data: ImageTypeUpdate) -> ImageTypeResponse:
+        return await self._update_item("/image_types", item_id, data, ImageTypeResponse)
+    async def delete_image_type(self, item_id: str) -> None:
+        await self._delete_item("/image_types", item_id)
+
+    # Project methods
+    async def create_project(self, data: ProjectCreate) -> ProjectResponse:
+        return await self._create_item("/projects", data, ProjectResponse)
+    async def get_project(self, item_id: uuid.UUID) -> ProjectResponse:
+        return await self._get_item("/projects", item_id, ProjectResponse)
+    async def list_projects(self, skip: int = 0, limit: int = 100) -> List[ProjectResponse]:
+        return await self._list_items("/projects", ProjectResponse, skip, limit)
+    async def update_project(self, item_id: uuid.UUID, data: ProjectUpdate) -> ProjectResponse:
+        return await self._update_item("/projects", item_id, data, ProjectResponse)
+    async def delete_project(self, item_id: uuid.UUID) -> None:
+        await self._delete_item("/projects", item_id)
 
     # Build methods
-    async def create_build(self, build: BuildCreate) -> str:
-        """Create a new build."""
-        response = await self._make_request('POST', '/builds', build.dict())
-        return response['id']
+    async def create_build(self, build: BuildCreate) -> BuildResponse:
+        return await self._create_item("/builds", build, BuildResponse)
+    async def get_build(self, build_id: uuid.UUID) -> BuildResponse:
+        return await self._get_item("/builds", build_id, BuildResponse)
+    async def list_builds(self, skip: int = 0, limit: int = 100) -> List[BuildResponse]:
+        return await self._list_items("/builds", BuildResponse, skip, limit)
+    async def update_build(self, build_id: uuid.UUID, data: BuildUpdate) -> BuildResponse:
+        return await self._update_item("/builds", build_id, data, BuildResponse)
 
-    async def get_build(self, build_id: str) -> BuildResponse:
-        """Get build details."""
-        response = await self._make_request('GET', f'/builds/{build_id}')
-        return BuildResponse(**response)
+    # Build State methods
+    async def add_build_state(self, build_id: uuid.UUID, state_data: BuildStateCreate) -> BuildStateResponse:
+        response = await self._make_request('POST', f'/builds/{build_id}/states', state_data.dict())
+        return BuildStateResponse(**response)
+    async def get_build_states(self, build_id: uuid.UUID) -> List[BuildStateResponse]:
+        response = await self._make_request('GET', f'/builds/{build_id}/states')
+        return [BuildStateResponse(**item) for item in response]
 
-    async def list_builds_by_platform(self, platform: str, limit: int = 50) -> List[Dict[str, Any]]:
-        """List builds for a specific platform."""
-        response = await self._make_request(
-            'GET',
-            f'/dashboard/platform/{platform}',
-            params={'limit': limit}
-        )
-        return response.get('builds', [])
+    # Build Failure methods
+    async def add_build_failure(self, build_id: uuid.UUID, failure_data: BuildFailureCreate) -> BuildFailureResponse:
+        response = await self._make_request('POST', f'/builds/{build_id}/failures', failure_data.dict())
+        return BuildFailureResponse(**response)
+    async def get_build_failures(self, build_id: uuid.UUID) -> List[BuildFailureResponse]:
+        response = await self._make_request('GET', f'/builds/{build_id}/failures')
+        return [BuildFailureResponse(**item) for item in response]
 
-    # State methods
-    async def transition_state(self, build_id: str, transition: StateTransition) -> None:
-        """Transition build to new state."""
-        await self._make_request(
-            'POST',
-            f'/builds/{build_id}/state',
-            transition.dict()
-        )
+    # State Code methods
+    async def create_state_code(self, data: StateCodeCreate) -> StateCodeResponse:
+        return await self._create_item("/state-codes", data, StateCodeResponse)
+    async def get_state_code(self, item_id: uuid.UUID) -> StateCodeResponse:
+        return await self._get_item("/state-codes", item_id, StateCodeResponse)
+    async def list_state_codes(self, skip: int = 0, limit: int = 100) -> List[StateCodeResponse]:
+        return await self._list_items("/state-codes", StateCodeResponse, skip, limit)
+    async def update_state_code(self, item_id: uuid.UUID, data: StateCodeUpdate) -> StateCodeResponse:
+        return await self._update_item("/state-codes", item_id, data, StateCodeResponse)
+    async def delete_state_code(self, item_id: uuid.UUID) -> None:
+        await self._delete_item("/state-codes", item_id)
 
-    async def get_current_state(self, build_id: str) -> StateResponse:
-        """Get current state of a build."""
-        response = await self._make_request('GET', f'/builds/{build_id}/state')
-        return StateResponse(**response)
-
-    # Failure methods
-    async def record_failure(self, build_id: str, failure: FailureRecord) -> None:
-        """Record a build failure."""
-        await self._make_request(
-            'POST',
-            f'/builds/{build_id}/failure',
-            failure.dict()
-        )
-
-    # Dashboard methods
-    async def get_dashboard_summary(self) -> DashboardSummary:
-        """Get dashboard summary."""
-        response = await self._make_request('GET', '/dashboard/summary')
-        return DashboardSummary(**response)
-
-    async def get_recent_builds(self, limit: int = 10) -> List[Dict[str, Any]]:
-        """Get recent builds."""
-        response = await self._make_request('GET', '/dashboard/recent')
-        return response.get('recent_builds', [])
-
-    # Health check
-    async def health_check(self) -> bool:
-        """Check if API is healthy."""
-        try:
-            response = await self.client.get(f"{self.base_url}/health")
-            return response.status_code == 200
-        except Exception:
-            return False
-
-    # User management methods
-    async def create_user(
-        self,
-        username: str,
-        email: str,
-        password: str,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
-        employee_id: Optional[str] = None,
-        is_superuser: bool = False
-    ) -> str:
-        """Create a new user."""
-        user_data = UserCreate(
-            username=username,
-            email=email,
-            password=password,
-            first_name=first_name,
-            last_name=last_name,
-            employee_id=employee_id,
-            is_superuser=is_superuser
-        )
-        response = await self._make_request('POST', '/users', user_data.dict())
-        return response['id']
-
-    async def get_user(self, user_id: str) -> UserResponse:
-        """Get user details."""
-        response = await self._make_request('GET', f'/users/{user_id}')
+    # User methods
+    async def create_user(self, data: UserCreate) -> UserResponse:
+        return await self._create_item("/users", data, UserResponse)
+    async def get_user(self, user_id: int) -> UserResponse:
+        response = await self._make_request('GET', f"/users/{user_id}")
+        return UserResponse(**response)
+    async def get_current_user(self) -> UserResponse:
+        response = await self._make_request('GET', "/users/me")
+        return UserResponse(**response)
+    async def update_user(self, user_id: int, data: UserUpdate) -> UserResponse:
+        response = await self._make_request('PUT', f"/users/{user_id}", data.dict(exclude_unset=True))
         return UserResponse(**response)
 
-    async def update_user(
-        self,
-        user_id: str,
-        email: Optional[str] = None,
-        first_name: Optional[str] = None,
-        last_name: Optional[str] = None,
-        employee_id: Optional[str] = None,
-        is_active: Optional[bool] = None,
-        is_superuser: Optional[bool] = None
-    ) -> None:
-        """Update user details."""
-        update_data = UserUpdate(
-            email=email,
-            first_name=first_name,
-            last_name=last_name,
-            employee_id=employee_id,
-            is_active=is_active,
-            is_superuser=is_superuser
-        )
-        await self._make_request('PUT', f'/users/{user_id}', update_data.dict())
+    # Health check
+    async def health_check(self) -> Dict[str, Any]:
+        """Check if API is healthy."""
+        return await self._make_request('GET', "/health/liveness")
 
-    async def get_user_profile(self, user_id: str) -> UserProfileResponse:
-        """Get user profile."""
-        response = await self._make_request('GET', f'/users/{user_id}/profile')
-        return UserProfileResponse(**response)
-
-    # API Token methods
-    async def create_api_token(
-        self,
-        user_id: str,
-        name: str,
-        scopes: list[str],
-        expires_at: Optional[str] = None
-    ) -> APITokenCreateResponse:
-        """Create API token for user."""
-        token_data = APITokenCreate(
-            name=name,
-            scopes=scopes,
-            expires_at=expires_at
-        )
-        response = await self._make_request('POST', f'/users/{user_id}/tokens', token_data.dict())
-        return APITokenCreateResponse(**response)
-
-    async def get_api_tokens(self, user_id: str) -> list[APITokenResponse]:
-        """Get API tokens for user."""
-        response = await self._make_request('GET', f'/users/{user_id}/tokens')
-        return [APITokenResponse(**token) for token in response.get('tokens', [])]
-
-    async def revoke_api_token(self, token_id: str, user_id: str) -> None:
-        """Revoke API token."""
-        await self._make_request('DELETE', f'/users/{user_id}/tokens/{token_id}')
-
-    # IDM Authentication
-    async def idm_login(self, username: str, idm_token: str) -> TokenResponse:
-        """Authenticate with IDM token."""
-        request = IDMLoginRequest(username=username, idm_token=idm_token)
-        response = await self._make_request('POST', '/auth/idm', request.dict())
-        return TokenResponse(**response)
+    async def readiness_check(self) -> Dict[str, Any]:
+        """Check if API is ready to serve traffic."""
+        return await self._make_request('GET', "/health/readiness")
 
 
 class BuildStateAPIError(Exception):
@@ -302,9 +321,10 @@ class BuildStateAPIError(Exception):
         self.errors = errors or {}
 
     def __str__(self):
+        error_details = json.dumps(self.errors, indent=2)
         if self.status_code:
-            return f"API Error ({self.status_code}): {self.message}"
-        return f"API Error: {self.message}"
+            return f"API Error ({self.status_code}): {self.message}\nDetails: {error_details}"
+        return f"API Error: {self.message}\nDetails: {error_details}"
 
 
 # Convenience functions for CLI usage
@@ -312,36 +332,22 @@ async def create_client_from_config(config_path: Optional[Path] = None) -> Build
     """
     Create client from configuration file or environment variables.
 
-    Looks for configuration in this order:
-    1. Explicit config_path
-    2. .buildctl.yaml in current directory
-    3. Environment variables
+    Uses the Config class to load settings from:
+    1. Environment variables
+    2. Keyring (for API key)
+    3. YAML config file
     """
-    config = {}
-
-    # Try to load from config file
-    if config_path and config_path.exists():
-        import yaml
-        with open(config_path) as f:
-            config = yaml.safe_load(f) or {}
-    elif Path('.buildctl.yaml').exists():
-        import yaml
-        with open('.buildctl.yaml') as f:
-            config = yaml.safe_load(f) or {}
-    elif (Path.home() / '.buildctl.yaml').exists():
-        import yaml
-        with open(Path.home() / '.buildctl.yaml') as f:
-            config = yaml.safe_load(f) or {}
-
-    # Override with environment variables
-    api_url = config.get('api_url') or os.getenv('BUILDCTL_API_URL')
-    api_key = config.get('api_key') or os.getenv('BUILDCTL_API_KEY')
-    jwt_token = config.get('jwt_token') or os.getenv('BUILDCTL_JWT_TOKEN')
+    from .config import Config
+    
+    config = Config(config_path)
+    
+    api_url = config.api_url
+    api_key = config.api_key
+    jwt_token = config.jwt_token
 
     if not api_url:
         raise ValueError(
-            "API URL not found. Set BUILDCTL_API_URL environment variable "
-            "or add 'api_url' to .buildctl.yaml"
+            "API URL not found. Run 'bldst config set-url <url>' to configure the API."
         )
 
     return BuildStateClient(
@@ -349,7 +355,3 @@ async def create_client_from_config(config_path: Optional[Path] = None) -> Build
         api_key=api_key,
         jwt_token=jwt_token
     )
-
-
-# Import os here to avoid circular imports
-import os

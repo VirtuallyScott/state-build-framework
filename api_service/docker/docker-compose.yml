@@ -10,6 +10,7 @@ services:
       redis:
         condition: service_healthy
     environment:
+      - ENVIRONMENT=development
       - CACHE_ENABLED=${CACHE_ENABLED:-true}
       - DATABASE_TYPE=postgresql
       - DATABASE_URL=postgresql://buildapi:change-this-password@postgres:5432/builds
@@ -25,6 +26,8 @@ services:
     networks:
       - api-network
     restart: unless-stopped
+    volumes:
+      - ../dummy-data.sql:/app/dummy-data.sql
 
   api02:
     build:
@@ -36,6 +39,7 @@ services:
       redis:
         condition: service_healthy
     environment:
+      - ENVIRONMENT=development
       - CACHE_ENABLED=${CACHE_ENABLED:-true}
       - DATABASE_TYPE=postgresql
       - DATABASE_URL=postgresql://buildapi:change-this-password@postgres:5432/builds
@@ -51,6 +55,8 @@ services:
     networks:
       - api-network
     restart: unless-stopped
+    volumes:
+      - ../dummy-data.sql:/app/dummy-data.sql
 
   api03:
     build:
@@ -62,6 +68,7 @@ services:
       redis:
         condition: service_healthy
     environment:
+      - ENVIRONMENT=development
       - CACHE_ENABLED=${CACHE_ENABLED:-true}
       - DATABASE_TYPE=postgresql
       - DATABASE_URL=postgresql://buildapi:change-this-password@postgres:5432/builds
@@ -77,6 +84,8 @@ services:
     networks:
       - api-network
     restart: unless-stopped
+    volumes:
+      - ../dummy-data.sql:/app/dummy-data.sql
 
   # Load Balancer / Reverse Proxy
   nginx:
@@ -107,7 +116,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./data/postgres:/var/lib/postgresql/data
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+      - /Users/scottsmith/tmp/state-builds/api_service/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
 
   # Redis for caching and session storage
   redis:
