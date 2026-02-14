@@ -154,6 +154,12 @@ curl -H "X-API-Key: dev-key-12345" http://localhost:8080/dashboard/summary
 - **[Sample Implementation](problem_statement/sample-implementation.md)** - Worked example
 - **[Failure Handling](problem_statement/failure-handling.md)** - Recovery strategies
 
+### CI/CD & DevOps
+- **[CI/CD Pipeline](docs/CI_CD_PIPELINE.md)** - Automated builds, semantic versioning, container registry
+- **[Resumable Builds Design](docs/RESUMABLE_BUILDS_DESIGN.md)** - Advanced resumability architecture
+- **[Resumable Builds Quick Start](docs/RESUMABLE_BUILDS_QUICKSTART.md)** - Usage guide
+- **[Documentation Index](docs/INDEX.md)** - Complete documentation hub
+
 ## 🎓 Key Concepts
 
 ### State Codes (0-100)

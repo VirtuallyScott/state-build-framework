@@ -41,6 +41,24 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
   - Common workflows
   - Examples
 
+### CI/CD & Deployment
+- **[CI/CD Pipeline](CI_CD_PIPELINE.md)** - Automated builds and versioning
+  - GitHub Actions workflows
+  - Semantic versioning
+  - Container registry publishing
+  - Release process
+  
+- **[Resumable Builds Design](RESUMABLE_BUILDS_DESIGN.md)** - Advanced resumability
+  - Architecture overview
+  - Artifact and variable tracking
+  - Resume operations
+  - Build orchestration
+  
+- **[Resumable Builds Quick Start](RESUMABLE_BUILDS_QUICKSTART.md)** - Usage guide
+  - Getting started
+  - API examples
+  - Integration patterns
+
 ### Framework Documentation
 - **[Framework Overview](../problem_statement/README.md)** - Complete design
   - State-based architecture

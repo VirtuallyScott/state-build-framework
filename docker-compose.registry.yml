@@ -1,0 +1,133 @@
+# Docker Compose - GitHub Container Registry Images
+# Use pre-built images from GHCR instead of building locally
+#
+# Setup:
+#   1. Authenticate: echo $GITHUB_TOKEN | docker login ghcr.io -u <username> --password-stdin
+#   2. Edit image names to match your repository
+#   3. Run: docker compose -f docker-compose.registry.yml up
+#
+# Environment variables:
+#   GHCR_OWNER      - GitHub username or org (default: replace with your username)
+#   IMAGE_VERSION   - Image version to use (default: latest)
+
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: buildstate-postgres
+    environment:
+      POSTGRES_DB: buildstate
+      POSTGRES_USER: buildstate
+      POSTGRES_PASSWORD: buildstate123
+      POSTGRES_HOST_AUTH_METHOD: md5
+    volumes:
+      - ./api_service/data/postgres:/var/lib/postgresql/data
+      - ./api_service/init-db.sql:/docker-entrypoint-initdb.d/01-init-db.sql
+      - ./api_service/schema_extension.sql:/docker-entrypoint-initdb.d/02-schema-extension.sql
+      - ./api_service/dummy-data.sql:/docker-entrypoint-initdb.d/03-dummy-data.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U buildstate -d buildstate"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - buildstate-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: buildstate-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - ./api_service/data/redis:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    networks:
+      - buildstate-network
+
+  api-1:
+    # Replace 'YOUR_GITHUB_USERNAME' with your GitHub username or org
+    image: ghcr.io/${GHCR_OWNER:-YOUR_GITHUB_USERNAME}/state-builds-api:${IMAGE_VERSION:-latest}
+    container_name: buildstate-api-1
+    environment:
+      DATABASE_URL: postgresql://buildstate:buildstate123@postgres:5432/buildstate
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: your-secret-key-change-in-production
+      ALLOWED_ORIGINS: http://localhost:8080,http://localhost:3000
+      LOG_LEVEL: INFO
+      INSTANCE_ID: api-1
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - buildstate-network
+
+  api-2:
+    image: ghcr.io/${GHCR_OWNER:-YOUR_GITHUB_USERNAME}/state-builds-api:${IMAGE_VERSION:-latest}
+    container_name: buildstate-api-2
+    environment:
+      DATABASE_URL: postgresql://buildstate:buildstate123@postgres:5432/buildstate
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: your-secret-key-change-in-production
+      ALLOWED_ORIGINS: http://localhost:8080,http://localhost:3000
+      LOG_LEVEL: INFO
+      INSTANCE_ID: api-2
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - buildstate-network
+
+  api-3:
+    image: ghcr.io/${GHCR_OWNER:-YOUR_GITHUB_USERNAME}/state-builds-api:${IMAGE_VERSION:-latest}
+    container_name: buildstate-api-3
+    environment:
+      DATABASE_URL: postgresql://buildstate:buildstate123@postgres:5432/buildstate
+      REDIS_URL: redis://redis:6379/0
+      SECRET_KEY: your-secret-key-change-in-production
+      ALLOWED_ORIGINS: http://localhost:8080,http://localhost:3000
+      LOG_LEVEL: INFO
+      INSTANCE_ID: api-3
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - buildstate-network
+
+  nginx:
+    image: ghcr.io/${GHCR_OWNER:-YOUR_GITHUB_USERNAME}/state-builds-nginx:${IMAGE_VERSION:-latest}
+    container_name: buildstate-nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - api-1
+      - api-2
+      - api-3
+    networks:
+      - buildstate-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+
+networks:
+  buildstate-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
