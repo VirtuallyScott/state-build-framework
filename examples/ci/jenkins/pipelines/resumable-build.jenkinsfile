@@ -1,0 +1,440 @@
+// Resumable Build Workflow Example
+//
+// This example demonstrates how to implement resumable builds with checkpoints.
+// If a build fails, it can be resumed from the last successful checkpoint instead
+// of starting from scratch, saving time and resources.
+
+@Library('buildstate-lib') _
+
+pipeline {
+    agent any
+    
+    parameters {
+        choice(
+            name: 'BUILD_MODE',
+            choices: ['NEW', 'RESUME'],
+            description: 'Start a new build or resume a previous one'
+        )
+        string(
+            name: 'RESUME_BUILD_ID',
+            defaultValue: '',
+            description: 'Build ID to resume (required if BUILD_MODE=RESUME)'
+        )
+        string(
+            name: 'RESUME_FROM_STATE',
+            defaultValue: '',
+            description: 'State code to resume from (optional, uses last successful if empty)'
+        )
+    }
+    
+    environment {
+        // Build State API Configuration
+        BUILDSTATE_API_URL = 'https://buildstate-api.example.com'
+        BUILDSTATE_API_KEY = credentials('buildstate-api-key')
+        
+        // Project Configuration  
+        PROJECT_ID = 'resumable-project-uuid'
+        PLATFORM = 'aws'
+        OS_VERSION = 'rhel-8'
+        IMAGE_TYPE = 'custom-image'
+    }
+    
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    if (params.BUILD_MODE == 'RESUME') {
+                        resumeBuild()
+                    } else {
+                        startNewBuild()
+                    }
+                }
+            }
+        }
+        
+        stage('Provision Infrastructure') {
+            when {
+                expression { shouldRunStage(100) }
+            }
+            steps {
+                script {
+                    buildState.updateState(100, 'Provisioning cloud infrastructure')
+                    
+                    // Provision VPC, subnets, security groups, etc.
+                    sh '''
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Creating VPC..."
+                        VPC_ID=$(aws ec2 create-vpc \
+                            --cidr-block 10.0.0.0/16 \
+                            --query 'Vpc.VpcId' \
+                            --output text)
+                        echo "${VPC_ID}" > vpc_id.txt
+                        
+                        echo "Creating subnet..."
+                        SUBNET_ID=$(aws ec2 create-subnet \
+                            --vpc-id ${VPC_ID} \
+                            --cidr-block 10.0.1.0/24 \
+                            --query 'Subnet.SubnetId' \
+                            --output text)
+                        echo "${SUBNET_ID}" > subnet_id.txt
+                        
+                        echo "Infrastructure provisioned successfully"
+                    '''
+                    
+                    // Save critical state variables
+                    def vpcId = readFile('vpc_id.txt').trim()
+                    def subnetId = readFile('subnet_id.txt').trim()
+                    
+                    buildState.setVariable('vpc_id', vpcId, [required: true, stateCode: 100])
+                    buildState.setVariable('subnet_id', subnetId, [required: true, stateCode: 100])
+                    
+                    echo "✓ Checkpoint: Infrastructure provisioned"
+                }
+            }
+        }
+        
+        stage('Launch Build VM') {
+            when {
+                expression { shouldRunStage(200) }
+            }
+            steps {
+                script {
+                    buildState.updateState(200, 'Launching build VM')
+                    
+                    // Use VPC/subnet from previous stage or resumed state
+                    def vpcId = buildState.getVariable('vpc_id') ?: readFile('vpc_id.txt').trim()
+                    def subnetId = buildState.getVariable('subnet_id') ?: readFile('subnet_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Launching EC2 instance in subnet ${subnetId}..."
+                        INSTANCE_ID=\$(aws ec2 run-instances \
+                            --image-id ami-0c55b159cbfafe1f0 \
+                            --instance-type t2.medium \
+                            --subnet-id ${subnetId} \
+                            --query 'Instances[0].InstanceId' \
+                            --output text)
+                        
+                        echo "\${INSTANCE_ID}" > instance_id.txt
+                        
+                        aws ec2 wait instance-running --instance-ids \${INSTANCE_ID}
+                        echo "Instance running: \${INSTANCE_ID}"
+                    """
+                    
+                    def instanceId = readFile('instance_id.txt').trim()
+                    buildState.setVariable('instance_id', instanceId, [required: true, stateCode: 200])
+                    
+                    echo "✓ Checkpoint: Build VM launched"
+                }
+            }
+        }
+        
+        stage('Install Base Software') {
+            when {
+                expression { shouldRunStage(300) }
+            }
+            steps {
+                script {
+                    buildState.updateState(300, 'Installing base software')
+                    
+                    def instanceId = buildState.getVariable('instance_id') ?: readFile('instance_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        INSTANCE_IP=\$(aws ec2 describe-instances \
+                            --instance-ids ${instanceId} \
+                            --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                            --output text)
+                        
+                        echo "Installing base packages on \${INSTANCE_IP}..."
+                        ssh -o StrictHostKeyChecking=no ec2-user@\${INSTANCE_IP} '
+                            sudo yum update -y
+                            sudo yum install -y git gcc make python3 docker
+                            sudo systemctl enable docker
+                            sudo systemctl start docker
+                        '
+                    """
+                    
+                    echo "✓ Checkpoint: Base software installed"
+                }
+            }
+        }
+        
+        stage('Build Application') {
+            when {
+                expression { shouldRunStage(400) }
+            }
+            steps {
+                script {
+                    buildState.updateState(400, 'Building application')
+                    
+                    def instanceId = buildState.getVariable('instance_id') ?: readFile('instance_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        INSTANCE_IP=\$(aws ec2 describe-instances \
+                            --instance-ids ${instanceId} \
+                            --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                            --output text)
+                        
+                        echo "Building application on \${INSTANCE_IP}..."
+                        ssh -o StrictHostKeyChecking=no ec2-user@\${INSTANCE_IP} '
+                            cd /home/ec2-user
+                            git clone https://github.com/your-org/your-app.git
+                            cd your-app
+                            make build
+                        '
+                        
+                        echo "Application built successfully"
+                    """
+                    
+                    echo "✓ Checkpoint: Application built"
+                }
+            }
+        }
+        
+        stage('Create Snapshot') {
+            when {
+                expression { shouldRunStage(500) }
+            }
+            steps {
+                script {
+                    buildState.updateState(500, 'Creating VM snapshot')
+                    
+                    def instanceId = buildState.getVariable('instance_id') ?: readFile('instance_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Creating snapshot..."
+                        SNAPSHOT_ID=\$(aws ec2 create-snapshot \
+                            --instance-id ${instanceId} \
+                            --description "Build snapshot - state 500" \
+                            --query 'SnapshotId' \
+                            --output text)
+                        
+                        echo "\${SNAPSHOT_ID}" > snapshot_id.txt
+                        
+                        aws ec2 wait snapshot-completed --snapshot-ids \${SNAPSHOT_ID}
+                        echo "Snapshot completed: \${SNAPSHOT_ID}"
+                    """
+                    
+                    def snapshotId = readFile('snapshot_id.txt').trim()
+                    
+                    // Record as resumable artifact (critical checkpoint!)
+                    buildState.recordArtifact(
+                        type: 'vm-snapshot',
+                        location: "snapshot:${snapshotId}",
+                        stateCode: 500,
+                        isResumable: true,
+                        isFinal: false
+                    )
+                    
+                    buildState.setVariable('snapshot_id', snapshotId, [required: true, stateCode: 500])
+                    
+                    echo "✓ Checkpoint: Snapshot created (resumable)"
+                }
+            }
+        }
+        
+        stage('Create AMI') {
+            when {
+                expression { shouldRunStage(600) }
+            }
+            steps {
+                script {
+                    buildState.updateState(600, 'Creating AMI')
+                    
+                    def snapshotId = buildState.getVariable('snapshot_id') ?: readFile('snapshot_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Creating AMI from snapshot ${snapshotId}..."
+                        AMI_ID=\$(aws ec2 register-image \
+                            --name "custom-rhel8-${BUILD_NUMBER}" \
+                            --root-device-name /dev/sda1 \
+                            --block-device-mappings "DeviceName=/dev/sda1,Ebs={SnapshotId=${snapshotId}}" \
+                            --architecture x86_64 \
+                            --virtualization-type hvm \
+                            --query 'ImageId' \
+                            --output text)
+                        
+                        echo "\${AMI_ID}" > ami_id.txt
+                        
+                        aws ec2 wait image-available --image-ids \${AMI_ID}
+                        echo "AMI created: \${AMI_ID}"
+                    """
+                    
+                    def amiId = readFile('ami_id.txt').trim()
+                    
+                    buildState.recordArtifact(
+                        type: 'ami',
+                        location: "ami:${amiId}",
+                        stateCode: 600,
+                        isResumable: false,
+                        isFinal: true
+                    )
+                    
+                    buildState.setVariable('ami_id', amiId, [stateCode: 600])
+                    
+                    echo "✓ Checkpoint: AMI created"
+                }
+            }
+        }
+        
+        stage('Test and Validate') {
+            when {
+                expression { shouldRunStage(700) }
+            }
+            steps {
+                script {
+                    buildState.updateState(700, 'Testing and validating')
+                    
+                    def amiId = buildState.getVariable('ami_id') ?: readFile('ami_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Testing AMI ${amiId}..."
+                        # Run your validation tests
+                        echo "Tests passed"
+                    """
+                    
+                    echo "✓ Checkpoint: Testing completed"
+                }
+            }
+        }
+        
+        stage('Complete') {
+            steps {
+                script {
+                    def amiId = buildState.getVariable('ami_id') ?: readFile('ami_id.txt').trim()
+                    
+                    buildState.complete(
+                        "Resumable build completed successfully. AMI: ${amiId}",
+                        999
+                    )
+                    
+                    echo "=== Build Complete ==="
+                    echo "This build can be resumed from multiple checkpoints if needed"
+                }
+            }
+        }
+    }
+    
+    post {
+        failure {
+            script {
+                def errorMsg = "Build failed at stage: ${env.STAGE_NAME}"
+                buildState.fail(errorMsg, -1)
+                
+                echo """
+                ═══════════════════════════════════════════════════
+                BUILD FAILED - But it can be resumed!
+                
+                To resume this build, trigger a new build with:
+                - BUILD_MODE: RESUME
+                - RESUME_BUILD_ID: ${env.BUILDSTATE_BUILD_ID}
+                
+                The build will resume from the last successful checkpoint.
+                ═══════════════════════════════════════════════════
+                """
+            }
+        }
+        
+        always {
+            script {
+                // Cleanup (optional - you may want to keep resources for resume)
+                if (params.BUILD_MODE == 'NEW' || currentBuild.result == 'SUCCESS') {
+                    echo "Cleaning up resources..."
+                    // Add cleanup logic here
+                } else {
+                    echo "Keeping resources for potential resume"
+                }
+            }
+        }
+    }
+}
+
+// Helper Functions
+
+/**
+ * Start a new build from scratch
+ */
+def startNewBuild() {
+    echo "=== Starting New Build ==="
+    
+    buildState.start(
+        project: env.PROJECT_ID,
+        name: "Resumable-Build-${env.BUILD_NUMBER}",
+        platform: env.PLATFORM,
+        osVersion: env.OS_VERSION,
+        imageType: env.IMAGE_TYPE,
+        startState: 0,
+        metadata: [
+            jenkins_job: env.JOB_NAME,
+            jenkins_build: env.BUILD_NUMBER,
+            build_mode: 'NEW'
+        ]
+    )
+    
+    // Track stages to run
+    env.RESUME_FROM_STATE = '0'
+    
+    echo "✓ New build initialized"
+}
+
+/**
+ * Resume a previous build from a checkpoint
+ */
+def resumeBuild() {
+    echo "=== Resuming Previous Build ==="
+    
+    if (!params.RESUME_BUILD_ID) {
+        error "RESUME_BUILD_ID parameter is required when BUILD_MODE=RESUME"
+    }
+    
+    def resumeFromState = params.RESUME_FROM_STATE ? params.RESUME_FROM_STATE.toInteger() : null
+    
+    // Get resume context (variables, artifacts, last state)
+    def context = buildState.resume(params.RESUME_BUILD_ID, resumeFromState)
+    
+    echo "Resume context retrieved:"
+    echo "- Build ID: ${params.RESUME_BUILD_ID}"
+    echo "- Last successful state: ${context.last_successful_state}"
+    echo "- Variables available: ${context.variables?.size() ?: 0}"
+    echo "- Artifacts available: ${context.artifacts?.size() ?: 0}"
+    
+    // Store the state we're resuming from
+    env.RESUME_FROM_STATE = context.last_successful_state.toString()
+    
+    echo "✓ Build will resume from state ${env.RESUME_FROM_STATE}"
+}
+
+/**
+ * Determine if a stage should run based on resume state
+ */
+def shouldRunStage(Integer stageState) {
+    def resumeFrom = (env.RESUME_FROM_STATE ?: '0').toInteger()
+    
+    // Run stage if we haven't passed it yet
+    def shouldRun = stageState > resumeFrom
+    
+    if (!shouldRun) {
+        echo "⊘ Skipping stage (state ${stageState}) - already completed in previous run"
+    }
+    
+    return shouldRun
+}

@@ -1,0 +1,350 @@
+// Image Build with Artifact Tracking Example
+//
+// This example demonstrates building a cloud image (AMI, Azure Image, etc.) 
+// with comprehensive artifact tracking for VM snapshots, disk images, and final outputs.
+
+@Library('buildstate-lib') _
+
+pipeline {
+    agent { label 'packer-builder' }  // Agent with Packer installed
+    
+    environment {
+        // Build State API Configuration
+        BUILDSTATE_API_URL = 'https://buildstate-api.example.com'
+        BUILDSTATE_API_KEY = credentials('buildstate-api-key')
+        
+        // Project Configuration
+        PROJECT_ID = 'image-builder-project-uuid'
+        PLATFORM = 'aws'
+        OS_VERSION = 'ubuntu-22.04'
+        IMAGE_TYPE = 'base-image'
+        
+        // AWS Configuration
+        AWS_REGION = 'us-east-1'
+        AWS_CREDENTIALS = credentials('aws-credentials')
+    }
+    
+    stages {
+        stage('Initialize Build') {
+            steps {
+                script {
+                    echo "=== Starting Image Build with Artifact Tracking ==="
+                    
+                    // Start build state tracking
+                    buildState.start(
+                        project: env.PROJECT_ID,
+                        name: "Image-${env.OS_VERSION}-${env.BUILD_NUMBER}",
+                        platform: env.PLATFORM,
+                        osVersion: env.OS_VERSION,
+                        imageType: env.IMAGE_TYPE,
+                        metadata: [
+                            jenkins_job: env.JOB_NAME,
+                            jenkins_build: env.BUILD_NUMBER,
+                            aws_region: env.AWS_REGION,
+                            build_timestamp: new Date().format('yyyy-MM-dd HH:mm:ss')
+                        ]
+                    )
+                }
+            }
+        }
+        
+        stage('Prepare Base VM') {
+            steps {
+                script {
+                    buildState.updateState(100, 'Creating base VM instance')
+                    
+                    // Launch EC2 instance for image building
+                    sh '''
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Launching EC2 instance..."
+                        INSTANCE_ID=$(aws ec2 run-instances \
+                            --image-id ami-0c55b159cbfafe1f0 \
+                            --instance-type t2.micro \
+                            --region ${AWS_REGION} \
+                            --query 'Instances[0].InstanceId' \
+                            --output text)
+                        
+                        echo "Instance ID: ${INSTANCE_ID}"
+                        echo "${INSTANCE_ID}" > instance_id.txt
+                        
+                        echo "Waiting for instance to be running..."
+                        aws ec2 wait instance-running \
+                            --instance-ids ${INSTANCE_ID} \
+                            --region ${AWS_REGION}
+                    '''
+                    
+                    def instanceId = readFile('instance_id.txt').trim()
+                    
+                    // Store instance ID as build variable (needed for resume)
+                    buildState.setVariable(
+                        'ec2_instance_id',
+                        instanceId,
+                        [required: true, stateCode: 100]
+                    )
+                    
+                    echo "✓ Base VM created: ${instanceId}"
+                }
+            }
+        }
+        
+        stage('Install Software') {
+            steps {
+                script {
+                    buildState.updateState(200, 'Installing software packages')
+                    
+                    def instanceId = readFile('instance_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Getting instance IP..."
+                        INSTANCE_IP=\$(aws ec2 describe-instances \
+                            --instance-ids ${instanceId} \
+                            --region ${AWS_REGION} \
+                            --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                            --output text)
+                        
+                        echo "Installing software on \${INSTANCE_IP}..."
+                        ssh -o StrictHostKeyChecking=no ubuntu@\${INSTANCE_IP} '
+                            sudo apt-get update
+                            sudo apt-get install -y nginx docker.io python3-pip
+                            sudo systemctl enable nginx docker
+                        '
+                    """
+                }
+            }
+        }
+        
+        stage('Create VM Snapshot') {
+            steps {
+                script {
+                    buildState.updateState(300, 'Creating VM snapshot')
+                    
+                    def instanceId = readFile('instance_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Creating snapshot of instance ${instanceId}..."
+                        SNAPSHOT_ID=\$(aws ec2 create-snapshot \
+                            --instance-id ${instanceId} \
+                            --description "Build ${BUILD_NUMBER} snapshot" \
+                            --region ${AWS_REGION} \
+                            --query 'SnapshotId' \
+                            --output text)
+                        
+                        echo "Snapshot ID: \${SNAPSHOT_ID}"
+                        echo "\${SNAPSHOT_ID}" > snapshot_id.txt
+                        
+                        echo "Waiting for snapshot to complete..."
+                        aws ec2 wait snapshot-completed \
+                            --snapshot-ids \${SNAPSHOT_ID} \
+                            --region ${AWS_REGION}
+                    """
+                    
+                    def snapshotId = readFile('snapshot_id.txt').trim()
+                    
+                    // Record snapshot as resumable artifact
+                    buildState.recordArtifact(
+                        type: 'vm-snapshot',
+                        location: "aws:${env.AWS_REGION}:snapshot:${snapshotId}",
+                        stateCode: 300,
+                        isResumable: true,
+                        isFinal: false,
+                        metadata: [
+                            instance_id: instanceId,
+                            region: env.AWS_REGION,
+                            snapshot_id: snapshotId
+                        ]
+                    )
+                    
+                    buildState.setVariable('snapshot_id', snapshotId, [required: true])
+                    
+                    echo "✓ VM Snapshot created and recorded: ${snapshotId}"
+                }
+            }
+        }
+        
+        stage('Create AMI') {
+            steps {
+                script {
+                    buildState.updateState(400, 'Creating AMI from snapshot')
+                    
+                    def snapshotId = readFile('snapshot_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Creating AMI from snapshot ${snapshotId}..."
+                        AMI_ID=\$(aws ec2 register-image \
+                            --name "ubuntu-22.04-build-${BUILD_NUMBER}" \
+                            --description "Ubuntu 22.04 base image - Build ${BUILD_NUMBER}" \
+                            --architecture x86_64 \
+                            --root-device-name /dev/sda1 \
+                            --block-device-mappings "DeviceName=/dev/sda1,Ebs={SnapshotId=${snapshotId}}" \
+                            --virtualization-type hvm \
+                            --region ${AWS_REGION} \
+                            --query 'ImageId' \
+                            --output text)
+                        
+                        echo "AMI ID: \${AMI_ID}"
+                        echo "\${AMI_ID}" > ami_id.txt
+                        
+                        echo "Waiting for AMI to become available..."
+                        aws ec2 wait image-available \
+                            --image-ids \${AMI_ID} \
+                            --region ${AWS_REGION}
+                    """
+                    
+                    def amiId = readFile('ami_id.txt').trim()
+                    
+                    // Record AMI as final artifact
+                    buildState.recordArtifact(
+                        type: 'ami',
+                        location: "aws:${env.AWS_REGION}:ami:${amiId}",
+                        stateCode: 400,
+                        isResumable: false,
+                        isFinal: true,
+                        metadata: [
+                            ami_id: amiId,
+                            region: env.AWS_REGION,
+                            ami_name: "ubuntu-22.04-build-${env.BUILD_NUMBER}",
+                            os_version: env.OS_VERSION
+                        ]
+                    )
+                    
+                    buildState.setVariable('ami_id', amiId, [required: false])
+                    
+                    echo "✓ AMI created and recorded: ${amiId}"
+                }
+            }
+        }
+        
+        stage('Test AMI') {
+            steps {
+                script {
+                    buildState.updateState(500, 'Testing AMI')
+                    
+                    def amiId = readFile('ami_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Launching test instance from AMI ${amiId}..."
+                        TEST_INSTANCE=\$(aws ec2 run-instances \
+                            --image-id ${amiId} \
+                            --instance-type t2.micro \
+                            --region ${AWS_REGION} \
+                            --query 'Instances[0].InstanceId' \
+                            --output text)
+                        
+                        echo "Test instance: \${TEST_INSTANCE}"
+                        
+                        echo "Waiting for instance to be running..."
+                        aws ec2 wait instance-running \
+                            --instance-ids \${TEST_INSTANCE} \
+                            --region ${AWS_REGION}
+                        
+                        echo "Running basic health checks..."
+                        # Add your test commands here
+                        sleep 5
+                        
+                        echo "Terminating test instance..."
+                        aws ec2 terminate-instances \
+                            --instance-ids \${TEST_INSTANCE} \
+                            --region ${AWS_REGION}
+                    """
+                    
+                    echo "✓ AMI testing completed successfully"
+                }
+            }
+        }
+        
+        stage('Publish') {
+            steps {
+                script {
+                    buildState.updateState(900, 'Publishing AMI')
+                    
+                    def amiId = readFile('ami_id.txt').trim()
+                    
+                    sh """
+                        #!/bin/bash
+                        set -e
+                        
+                        echo "Tagging AMI for production use..."
+                        aws ec2 create-tags \
+                            --resources ${amiId} \
+                            --tags Key=Environment,Value=production \
+                                   Key=BuildNumber,Value=${BUILD_NUMBER} \
+                                   Key=BuildDate,Value=\$(date +%Y-%m-%d) \
+                            --region ${AWS_REGION}
+                        
+                        echo "AMI published and ready for use"
+                    """
+                    
+                    echo "✓ AMI published: ${amiId}"
+                }
+            }
+        }
+        
+        stage('Complete') {
+            steps {
+                script {
+                    def amiId = readFile('ami_id.txt').trim()
+                    
+                    buildState.complete(
+                        "Image build completed successfully. AMI: ${amiId}",
+                        999
+                    )
+                    
+                    echo "=== Build Complete ==="
+                    echo "AMI ID: ${amiId}"
+                    echo "Region: ${env.AWS_REGION}"
+                }
+            }
+        }
+    }
+    
+    post {
+        always {
+            script {
+                // Cleanup: Terminate the build instance
+                if (fileExists('instance_id.txt')) {
+                    def instanceId = readFile('instance_id.txt').trim()
+                    
+                    sh """
+                        echo "Cleaning up build instance: ${instanceId}"
+                        aws ec2 terminate-instances \
+                            --instance-ids ${instanceId} \
+                            --region ${AWS_REGION} || true
+                    """
+                }
+            }
+        }
+        
+        failure {
+            script {
+                def errorMsg = "Image build failed at stage: ${env.STAGE_NAME}"
+                buildState.fail(errorMsg, -1)
+                
+                echo "Build failure recorded. Resources marked for cleanup."
+            }
+        }
+        
+        success {
+            script {
+                echo "✓ Image build and artifact tracking completed successfully"
+                
+                // List all artifacts
+                def artifacts = buildState.listArtifacts()
+                echo "Total artifacts recorded: ${artifacts.size()}"
+            }
+        }
+    }
+}
