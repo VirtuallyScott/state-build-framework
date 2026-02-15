@@ -23,8 +23,7 @@ router = APIRouter()
 @router.post(
     "/projects/{project_id}/resumable-states",
     response_model=models.ResumableStateResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["resume"]
+    status_code=status.HTTP_201_CREATED
 )
 def create_resumable_state(
     project_id: str,
@@ -81,8 +80,7 @@ def create_resumable_state(
 
 @router.get(
     "/projects/{project_id}/resumable-states",
-    response_model=List[models.ResumableStateResponse],
-    tags=["resume"]
+    response_model=List[models.ResumableStateResponse]
 )
 def list_resumable_states(
     project_id: str,
@@ -112,8 +110,7 @@ def list_resumable_states(
 
 @router.get(
     "/projects/{project_id}/resumable-states/{state_code}",
-    response_model=models.ResumableStateResponse,
-    tags=["resume"]
+    response_model=models.ResumableStateResponse
 )
 def get_resumable_state(
     project_id: str,
@@ -140,8 +137,7 @@ def get_resumable_state(
 
 @router.put(
     "/projects/{project_id}/resumable-states/{state_code}",
-    response_model=models.ResumableStateResponse,
-    tags=["resume"]
+    response_model=models.ResumableStateResponse
 )
 def update_resumable_state(
     project_id: str,
@@ -184,8 +180,7 @@ def update_resumable_state(
 @router.post(
     "/builds/{build_id}/resume",
     response_model=models.ResumeRequestResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["resume"]
+    status_code=status.HTTP_201_CREATED
 )
 def create_resume_request(
     build_id: str,
@@ -238,8 +233,7 @@ def create_resume_request(
 
 @router.get(
     "/builds/{build_id}/resume-requests",
-    response_model=List[models.ResumeRequestResponse],
-    tags=["resume"]
+    response_model=List[models.ResumeRequestResponse]
 )
 def list_resume_requests(
     build_id: str,
@@ -263,8 +257,7 @@ def list_resume_requests(
 
 @router.get(
     "/resume-requests/{request_id}",
-    response_model=models.ResumeRequestResponse,
-    tags=["resume"]
+    response_model=models.ResumeRequestResponse
 )
 def get_resume_request(
     request_id: str,
@@ -286,8 +279,7 @@ def get_resume_request(
 
 @router.patch(
     "/resume-requests/{request_id}",
-    response_model=models.ResumeRequestResponse,
-    tags=["resume"]
+    response_model=models.ResumeRequestResponse
 )
 def update_resume_request(
     request_id: str,
@@ -326,8 +318,7 @@ def update_resume_request(
 
 @router.get(
     "/builds/{build_id}/resume-context",
-    response_model=models.ResumeContext,
-    tags=["resume"]
+    response_model=models.ResumeContext
 )
 def get_resume_context(
     build_id: str,
@@ -421,8 +412,7 @@ def get_resume_context(
 @router.post(
     "/builds/{build_id}/jobs",
     response_model=models.BuildJobResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["resume"]
+    status_code=status.HTTP_201_CREATED
 )
 def create_build_job(
     build_id: str,
@@ -469,8 +459,7 @@ def create_build_job(
 
 @router.get(
     "/builds/{build_id}/jobs",
-    response_model=List[models.BuildJobResponse],
-    tags=["resume"]
+    response_model=List[models.BuildJobResponse]
 )
 def list_build_jobs(
     build_id: str,
@@ -494,8 +483,7 @@ def list_build_jobs(
 
 @router.patch(
     "/builds/{build_id}/jobs/{job_id}",
-    response_model=models.BuildJobResponse,
-    tags=["resume"]
+    response_model=models.BuildJobResponse
 )
 def update_build_job(
     build_id: str,

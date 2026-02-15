@@ -18,8 +18,7 @@ router = APIRouter()
 @router.post(
     "/builds/{build_id}/artifacts",
     response_model=models.BuildArtifactResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["artifacts"]
+    status_code=status.HTTP_201_CREATED
 )
 def create_artifact(
     build_id: str,
@@ -83,8 +82,7 @@ def create_artifact(
 
 @router.get(
     "/builds/{build_id}/artifacts",
-    response_model=List[models.BuildArtifactResponse],
-    tags=["artifacts"]
+    response_model=List[models.BuildArtifactResponse]
 )
 def list_artifacts(
     build_id: str,
@@ -127,8 +125,7 @@ def list_artifacts(
 
 @router.get(
     "/builds/{build_id}/artifacts/{artifact_id}",
-    response_model=models.BuildArtifactResponse,
-    tags=["artifacts"]
+    response_model=models.BuildArtifactResponse
 )
 def get_artifact(
     build_id: str,
@@ -156,8 +153,7 @@ def get_artifact(
 
 @router.patch(
     "/builds/{build_id}/artifacts/{artifact_id}",
-    response_model=models.BuildArtifactResponse,
-    tags=["artifacts"]
+    response_model=models.BuildArtifactResponse
 )
 def update_artifact(
     build_id: str,
@@ -196,8 +192,7 @@ def update_artifact(
 
 @router.delete(
     "/builds/{build_id}/artifacts/{artifact_id}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    tags=["artifacts"]
+    status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_artifact(
     build_id: str,

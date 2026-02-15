@@ -18,8 +18,7 @@ router = APIRouter()
 @router.post(
     "/builds/{build_id}/variables",
     response_model=models.BuildVariableResponse,
-    status_code=status.HTTP_201_CREATED,
-    tags=["variables"]
+    status_code=status.HTTP_201_CREATED
 )
 def set_variable(
     build_id: str,
@@ -78,8 +77,7 @@ def set_variable(
 
 @router.get(
     "/builds/{build_id}/variables",
-    response_model=List[models.BuildVariableResponse],
-    tags=["variables"]
+    response_model=List[models.BuildVariableResponse]
 )
 def list_variables(
     build_id: str,
@@ -109,8 +107,7 @@ def list_variables(
 
 @router.get(
     "/builds/{build_id}/variables/dict",
-    response_model=Dict[str, str],
-    tags=["variables"]
+    response_model=Dict[str, str]
 )
 def get_variables_dict(
     build_id: str,
@@ -151,8 +148,7 @@ def get_variables_dict(
 
 @router.get(
     "/builds/{build_id}/variables/{variable_key}",
-    response_model=models.BuildVariableResponse,
-    tags=["variables"]
+    response_model=models.BuildVariableResponse
 )
 def get_variable(
     build_id: str,
@@ -179,8 +175,7 @@ def get_variable(
 
 @router.patch(
     "/builds/{build_id}/variables/{variable_key}",
-    response_model=models.BuildVariableResponse,
-    tags=["variables"]
+    response_model=models.BuildVariableResponse
 )
 def update_variable(
     build_id: str,
@@ -218,8 +213,7 @@ def update_variable(
 
 @router.delete(
     "/builds/{build_id}/variables/{variable_key}",
-    status_code=status.HTTP_204_NO_CONTENT,
-    tags=["variables"]
+    status_code=status.HTTP_204_NO_CONTENT
 )
 def delete_variable(
     build_id: str,

@@ -20,7 +20,7 @@ async def root():
     return {"message": "Build State API", "version": "1.0.0"}
 
 
-@router.get("/health", response_model=models.HealthResponse, tags=["Health"])
+@router.get("/health", response_model=models.HealthResponse)
 async def health_check():
     """Basic health check endpoint."""
     return models.HealthResponse(
@@ -29,7 +29,7 @@ async def health_check():
     )
 
 
-@router.get("/ready", response_model=models.ReadinessResponse, tags=["Health"])
+@router.get("/ready", response_model=models.ReadinessResponse)
 def readiness_check(db: Session = Depends(get_db)):
     """
     Readiness check to verify database and cache connections.
@@ -61,7 +61,7 @@ def readiness_check(db: Session = Depends(get_db)):
     )
 
 
-@router.get("/status", response_model=models.StatusResponse, tags=["Health"])
+@router.get("/status", response_model=models.StatusResponse)
 def status_check(db: Session = Depends(get_db)):
     """
     Detailed status check endpoint providing component information.
