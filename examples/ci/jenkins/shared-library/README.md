@@ -437,6 +437,6 @@ See main repository LICENSE file.
 ## Support
 
 - **Documentation**: [Main README](../README.md)
-- **API Reference**: [API Docs](../../../api_service/docs/API_REFERENCE.md)
+- **API Reference**: [API Docs](../../../api_service/docs/API-REFERENCE.md)
 - **Issues**: GitHub Issues
 - **Questions**: Discussions or Slack channel

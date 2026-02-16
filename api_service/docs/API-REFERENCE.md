@@ -2,7 +2,7 @@
 
 Complete API Reference for the Build State Management System.
 
-> **💡 Recommended for Pipelines:** Use the [`bldst` CLI tool](../../buildstate_cli/README.md) for cleaner, more maintainable pipeline code. See [README.md](README.md) for CLI examples.
+> **💡 Recommended for Pipelines:** Use the [`bldst` CLI tool](../../bldst_cli/README.md) for cleaner, more maintainable pipeline code. See [README.md](README.md) for CLI examples.
 >
 > This document is the **complete API reference** for direct HTTP access, testing, and understanding the underlying API structure.
 
@@ -507,9 +507,28 @@ Update build state (progress tracking).
   "message": "Installing base packages",
   "metadata": {
     "progress_percent": 30
+  },
+  "artifact_storage_type": "s3",
+  "artifact_storage_path": "s3://my-builds/project-123/build-456/state-15/base-image.qcow2",
+  "artifact_size_bytes": 2147483648,
+  "artifact_checksum": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "artifact_metadata": {
+    "compression": "gzip",
+    "format": "qcow2"
   }
 }
 ```
+
+**Request Fields:**
+- `state_code` (int, required) - State code number
+- `status` (string, required) - Status: pending, in_progress, completed, failed
+- `message` (string, optional) - Human-readable status message
+- `metadata` (object, optional) - Additional state metadata
+- `artifact_storage_type` (string, optional) - Storage type: s3, nfs, ebs, ceph, local, etc.
+- `artifact_storage_path` (string, optional) - Full path/URI to stored artifact
+- `artifact_size_bytes` (int, optional) - Size of artifact in bytes
+- `artifact_checksum` (string, optional) - SHA256 or MD5 checksum for verification
+- `artifact_metadata` (object, optional) - Additional artifact metadata
 
 **Response:**
 ```json
@@ -518,9 +537,19 @@ Update build state (progress tracking).
   "state_code": 15,
   "status": "in_progress",
   "message": "Installing base packages",
+  "artifact_storage_type": "s3",
+  "artifact_storage_path": "s3://my-builds/project-123/build-456/state-15/base-image.qcow2",
+  "artifact_size_bytes": 2147483648,
+  "artifact_checksum": "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "artifact_metadata": {
+    "compression": "gzip",
+    "format": "qcow2"
+  },
   "timestamp": "2026-02-14T17:30:00Z"
 }
 ```
+
+> 📖 For detailed information on artifact storage tracking, see [Artifact Storage Tracking](../../docs/ARTIFACT-STORAGE.md).
 
 #### POST /builds/{build_id}/failure
 Record build failure.
@@ -879,4 +908,4 @@ curl -s "$API_URL/dashboard/summary" \
 - [Authentication Guide](AUTHENTICATION.md)
 - [Deployment Guide](README.md#deployment)
 - [Architecture Overview](ARCHITECTURE.md)
-- [CLI Documentation](../../buildstate_cli/README.md)
+- [CLI Documentation](../../bldst_cli/README.md)

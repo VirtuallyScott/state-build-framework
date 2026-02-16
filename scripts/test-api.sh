@@ -1,8 +1,8 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+#
 # Test script for the Build State API
 # This script tests all endpoints with sample data
-
+#
 set -e
 
 API_URL="http://localhost:8000"

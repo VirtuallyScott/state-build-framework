@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
+#
 # Test script for BuildState CLI with API authentication and CRUD operations
-
+#
 set -e
 
 API_URL="http://localhost:8080"

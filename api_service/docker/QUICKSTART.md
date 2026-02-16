@@ -197,7 +197,7 @@ Or use the CLI tool:
 
 ```bash
 # Install CLI
-pip install ../buildstate_cli/
+pip install ../bldst_cli/
 
 # Configure API URL
 bldst_cli config set-url http://localhost:8080

@@ -5,7 +5,7 @@ The BuildState CLI provides a complete interface to manage your build infrastruc
 ## Installation
 
 ```bash
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 ```
 

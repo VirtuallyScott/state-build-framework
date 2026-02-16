@@ -75,7 +75,7 @@ We provide the `bldst` CLI tool which eliminates the need for complex curl comma
 
 #### Install the CLI
 ```bash
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 ```
 
@@ -99,7 +99,7 @@ bldst health check
 
 ### Core Endpoints
 
-**Note:** All examples below use the `bldst` CLI. For direct API access, see the [API Reference](API_REFERENCE.md).
+**Note:** All examples below use the `bldst` CLI. For direct API access, see the [API Reference](API-REFERENCE.md).
 
 #### Create Build
 ```bash
@@ -216,8 +216,8 @@ FROM python:3.11-slim
 RUN pip install buildstate-cli
 
 # Or install from source
-# COPY buildstate_cli /tmp/buildstate_cli
-# RUN cd /tmp/buildstate_cli && pip install -e .
+# COPY bldst_cli /tmp/bldst_cli
+# RUN cd /tmp/bldst_cli && pip install -e .
 
 WORKDIR /workspace
 ```
@@ -503,7 +503,7 @@ newman run --config newman-synthetic-config.json
 
 ```bash
 # Run manual API tests
-./test-api.sh
+../../scripts/test-api.sh
 
 # Or run with pytest (if tests are added)
 python -m pytest tests/
@@ -608,7 +608,7 @@ The interactive documentation provides:
 - See examples throughout this document
 
 **For Direct API Integration:** Use the REST API
-- See [API_REFERENCE.md](API_REFERENCE.md) for complete endpoint documentation
+- See [API-REFERENCE.md](API-REFERENCE.md) for complete endpoint documentation
 - Interactive docs at `/docs` endpoint
 - OpenAPI spec at `/openapi.json`
 

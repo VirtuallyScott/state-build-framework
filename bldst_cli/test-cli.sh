@@ -1,8 +1,8 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+#
 # Test script for BuildState CLI
 # Validates the CLI installation and basic functionality
-
+#
 set -e
 
 echo "🧪 Testing BuildState CLI"
@@ -11,7 +11,7 @@ echo "========================="
 # Check if CLI is installed
 if ! command -v buildctl &> /dev/null; then
     echo "❌ buildctl command not found. Installing in development mode..."
-    cd /Users/scottsmith/tmp/state-builds/buildstate_cli
+    cd /Users/scottsmith/tmp/state-builds/bldst_cli
     pip install -e .
 fi
 

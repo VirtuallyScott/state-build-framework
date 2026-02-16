@@ -7,7 +7,7 @@ Complete guide to authentication and authorization in the Build State API.
 > bldst config set-url http://localhost:8080
 > bldst auth set-key your-api-key    # Or: bldst auth login
 > ```
-> See the [CLI README](../../buildstate_cli/README.md) for details.
+> See the [CLI README](../../bldst_cli/README.md) for details.
 
 ## Overview
 
@@ -645,6 +645,6 @@ A: Contact your administrator or check the API key listing.
 
 ## Additional Resources
 
-- [API Reference](API_REFERENCE.md) - Complete endpoint documentation
-- [CLI Documentation](../../buildstate_cli/README.md) - CLI usage and configuration
+- [API Reference](API-REFERENCE.md) - Complete endpoint documentation
+- [CLI Documentation](../../bldst_cli/README.md) - CLI usage and configuration
 - [Deployment Guide](README.md) - Production deployment setup

@@ -47,7 +47,7 @@ jobs:
       
       - name: Test CLI
         run: |
-          cd buildstate_cli
+          cd bldst_cli
           pip install -e .
           buildstate --version
 

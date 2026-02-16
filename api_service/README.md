@@ -428,7 +428,7 @@ newman run --config newman-synthetic-config.json
 
 ```bash
 # Run manual API tests
-./test-api.sh
+../scripts/test-api.sh
 
 # Or run with pytest (if tests are added)
 python -m pytest tests/

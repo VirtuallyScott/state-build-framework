@@ -1,8 +1,8 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+#
 # Build State API Newman Tests
 # This script runs comprehensive API tests using Newman
-
+#
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

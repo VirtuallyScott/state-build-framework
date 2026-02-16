@@ -35,12 +35,12 @@ docker compose up -d
 ```
 
 **Documentation:**
-- [API Reference](api_service/docs/API_REFERENCE.md) - Complete endpoint documentation
+- [API Reference](api_service/docs/API-REFERENCE.md) - Complete endpoint documentation
 - [Authentication Guide](api_service/docs/AUTHENTICATION.md) - Auth & authorization
 - [Architecture](api_service/docs/ARCHITECTURE.md) - System design
 - [Deployment Guide](api_service/docs/README.md) - Production setup
 
-### 2. CLI Tool (`buildstate_cli/`)
+### 2. CLI Tool (`bldst_cli/`)
 
 Modern command-line interface for managing build infrastructure.
 
@@ -54,7 +54,7 @@ Modern command-line interface for managing build infrastructure.
 
 **Quick Start:**
 ```bash
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 
 # Configure
@@ -68,22 +68,21 @@ bldst build list
 ```
 
 **Documentation:**
-- [CLI Documentation](buildstate_cli/README.md) - Complete reference
-- [Quick Start Guide](buildstate_cli/CLI_QUICKSTART.md) - 5-minute guide
-- [Usage Examples](buildstate_cli/README.md#usage-examples) - Common workflows
+- [CLI Documentation](bldst_cli/README.md) - Complete reference
+- [Quick Start Guide](bldst_cli/CLI_QUICKSTART.md) - 5-minute guide
+- [Usage Examples](bldst_cli/README.md#usage-examples) - Common workflows
 
-### 3. Framework Documentation (`problem_statement/`)
+### 3. Framework Documentation (`docs/`)
 
-Complete framework design, state definitions, and implementation guides.
+Complete framework design, problem statement, and implementation guides.
 
 **Documentation:**
-- `index.md` - Framework overview
-- `README.md` - Complete documentation
-- `states.md` - State code definitions (0-100)
-- `storage-implementation.md` - Storage architecture
-- `sample-implementation.md` - AWS RHEL 8 example
-- `failure-handling.md` - Failure recovery
-- `QUICKSTART.md` - Step-by-step implementation guide
+- [PROBLEM-STATEMENT.md](docs/PROBLEM-STATEMENT.md) - Why this framework exists and how it helps
+- [ARTIFACT-STORAGE.md](docs/ARTIFACT-STORAGE.md) - Distributed artifact tracking
+- [DATABASE-ARCHITECTURE.md](docs/DATABASE-ARCHITECTURE.md) - Database schema and design
+- [CI-CD-PIPELINE.md](docs/CI-CD-PIPELINE.md) - Automated builds and versioning
+- [RESUMABLE-BUILDS-DESIGN.md](docs/RESUMABLE-BUILDS-DESIGN.md) - Advanced resumability
+- [INDEX.md](docs/INDEX.md) - Complete documentation index
 
 ## 🚀 Quick Start
 
@@ -105,7 +104,7 @@ curl http://localhost:8080/health
 
 ```bash
 # Install CLI
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 
 # Configure
@@ -136,28 +135,25 @@ curl -H "X-API-Key: dev-key-12345" http://localhost:8080/dashboard/summary
 ## 📚 Complete Documentation
 
 ### API Documentation
-- **[API Reference](api_service/docs/API_REFERENCE.md)** - All endpoints, request/response schemas, examples
+- **[API Reference](api_service/docs/API-REFERENCE.md)** - All endpoints, request/response schemas, examples
 - **[Authentication Guide](api_service/docs/AUTHENTICATION.md)** - JWT tokens, API keys, scopes, best practices
 - **[Architecture Overview](api_service/docs/ARCHITECTURE.md)** - System design, scaling, database
 - **[Deployment Guide](api_service/docs/README.md)** - Production deployment, Docker, configuration
 
 ### CLI Documentation
-- **[CLI Documentation](buildstate_cli/README.md)** - Complete command reference
-- **[Quick Start Guide](buildstate_cli/CLI_QUICKSTART.md)** - Get started fast
-- **[API Integration](buildstate_cli/README.md#cicd-integration)** - CI/CD examples
+- **[CLI Documentation](bldst_cli/README.md)** - Complete command reference
+- **[Quick Start Guide](bldst_cli/CLI_QUICKSTART.md)** - Get started fast
+- **[API Integration](bldst_cli/README.md#cicd-integration)** - CI/CD examples
 
 ### Framework Documentation
-- **[Framework Overview](problem_statement/README.md)** - Complete framework design
-- **[Quick Start](problem_statement/QUICKSTART.md)** - Implementation guide
-- **[State Definitions](problem_statement/states.md)** - State codes 0-100
-- **[Storage Implementation](problem_statement/storage-implementation.md)** - Database design
-- **[Sample Implementation](problem_statement/sample-implementation.md)** - Worked example
-- **[Failure Handling](problem_statement/failure-handling.md)** - Recovery strategies
+- **[Problem Statement](docs/PROBLEM-STATEMENT.md)** - Why this framework exists and how it solves the problems
+- **[Artifact Storage](docs/ARTIFACT-STORAGE.md)** - Distributed build artifact tracking
+- **[Database Architecture](docs/DATABASE-ARCHITECTURE.md)** - Data model and schema design
 
 ### CI/CD & DevOps
-- **[CI/CD Pipeline](docs/CI_CD_PIPELINE.md)** - Automated builds, semantic versioning, container registry
-- **[Resumable Builds Design](docs/RESUMABLE_BUILDS_DESIGN.md)** - Advanced resumability architecture
-- **[Resumable Builds Quick Start](docs/RESUMABLE_BUILDS_QUICKSTART.md)** - Usage guide
+- **[CI/CD Pipeline](docs/CI-CD-PIPELINE.md)** - Automated builds, semantic versioning, container registry
+- **[Resumable Builds Design](docs/RESUMABLE-BUILDS-DESIGN.md)** - Advanced resumability architecture
+- **[Resumable Builds Quick Start](docs/RESUMABLE-BUILDS-QUICKSTART.md)** - Usage guide
 - **[Documentation Index](docs/INDEX.md)** - Complete documentation hub
 
 ## 🎓 Key Concepts
@@ -288,7 +284,7 @@ jobs:
               - -c
               - |
                 # Install CLI
-                pip install -e buildstate_cli
+                pip install -e bldst_cli
                 
                 # Configure
                 bldst config set-url $API_URL
@@ -348,7 +344,7 @@ pytest --cov=app tests/
 ### CLI Tests
 
 ```bash
-cd buildstate_cli
+cd bldst_cli
 pytest tests/
 ```
 
@@ -361,7 +357,7 @@ docker compose up -d
 
 # Run tests
 cd ../tests
-./test-api.sh
+../../scripts/test-api.sh
 ```
 
 ## 📊 State Code Reference
@@ -387,7 +383,7 @@ Quick reference for common state codes:
 | 95 | Finalize | Creating artifacts |
 | 100 | Complete | Build successful |
 
-See [states.md](problem_statement/states.md) for complete definitions.
+See [PROBLEM-STATEMENT.md](docs/PROBLEM-STATEMENT.md) for complete framework documentation.
 
 ## 🚀 Deployment
 
@@ -411,24 +407,37 @@ See [Deployment Guide](api_service/docs/README.md) for:
 
 ## 🤝 Contributing
 
+We welcome contributions! Please see our [Contributing Guide](CONTRIBUTING.md) for:
+
+- Development workflow and Git Flow branching strategy
+- Code standards and style guidelines
+- Naming conventions (hyphens for files, underscores for directories)
+- Database migration requirements
+- Testing requirements
+- Pull request process
+
+**Quick Start:**
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes with tests
 4. Run tests and linting
-5. Commit changes (`git commit -m 'Add amazing feature'`)
+5. Commit changes (`git commit -m 'feat: Add amazing feature'`)
 6. Push to branch (`git push origin feature/amazing-feature`)
 7. Open a Pull Request
 
+See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
+
 ## 📝 License
 
-MIT License - see LICENSE file for details.
+MIT License - see [LICENSE](LICENSE) file for details.
 
 ## 🆘 Support
 
 - **Documentation**: See links above for complete documentation
-- **API Issues**: Check [API Reference](api_service/docs/API_REFERENCE.md) and [Authentication Guide](api_service/docs/AUTHENTICATION.md)
-- **CLI Issues**: Check [CLI Documentation](buildstate_cli/README.md)
-- **Framework Questions**: See [problem_statement/README.md](problem_statement/README.md)
+- **API Issues**: Check [API Reference](api_service/docs/API-REFERENCE.md) and [Authentication Guide](api_service/docs/AUTHENTICATION.md)
+- **CLI Issues**: Check [CLI Documentation](bldst_cli/README.md)
+- **Framework Questions**: See [Problem Statement](docs/PROBLEM-STATEMENT.md) and [Documentation Index](docs/INDEX.md)
 
 ## 🗺️ Roadmap
 
@@ -448,7 +457,7 @@ MIT License - see LICENSE file for details.
 
 ```bash
 # Install CLI
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 
 # Configure
@@ -479,22 +488,19 @@ curl -H "X-API-Key: dev-key-12345" http://localhost:8080/dashboard/summary
 ## 📚 Complete Documentation
 
 ### API Documentation
-- **[API Reference](api_service/docs/API_REFERENCE.md)** - All endpoints, request/response schemas, examples
+- **[API Reference](api_service/docs/API-REFERENCE.md)** - All endpoints, request/response schemas, examples
 - **[Authentication Guide](api_service/docs/AUTHENTICATION.md)** - JWT tokens, API keys, scopes, best practices
 - **[Architecture Overview](api_service/docs/ARCHITECTURE.md)** - System design, scaling, database
 - **[Deployment Guide](api_service/docs/README.md)** - Production deployment, Docker, configuration
 
 ### CLI Documentation
-- **[CLI Documentation](buildstate_cli/README.md)** - Complete command reference
-- **[Quick Start Guide](buildstate_cli/CLI_QUICKSTART.md)** - Get started fast
-- **[API Integration](buildstate_cli/README.md#cicd-integration)** - CI/CD examples
+- **[CLI Documentation](bldst_cli/README.md)** - Complete command reference
+- **[Quick Start Guide](bldst_cli/CLI_QUICKSTART.md)** - Get started fast
+- **[API Integration](bldst_cli/README.md#cicd-integration)** - CI/CD examples
 
 ### Framework Documentation
-- **[Framework Overview](problem_statement/README.md)** - Complete framework design
-- **[Quick Start](problem_statement/QUICKSTART.md)** - Implementation guide
-- **[State Definitions](problem_statement/states.md)** - State codes 0-100
-- **[Storage Implementation](problem_statement/storage-implementation.md)** - Database design
-- **[Sample Implementation](problem_statement/sample-implementation.md)** - Worked example
-- **[Failure Handling](problem_statement/failure-handling.md)** - Recovery strategies
+- **[Problem Statement](docs/PROBLEM-STATEMENT.md)** - Why this framework exists and how it solves the problems
+- **[Artifact Storage](docs/ARTIFACT-STORAGE.md)** - Distributed build artifact tracking
+- **[Database Architecture](docs/DATABASE-ARCHITECTURE.md)** - Data model and schema design
 
 ## 🎓 Key Concepts

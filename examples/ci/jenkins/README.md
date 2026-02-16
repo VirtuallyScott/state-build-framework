@@ -219,8 +219,8 @@ If states aren't being recorded:
 ## Support
 
 For issues or questions:
-- API Documentation: [API Reference](../../api_service/docs/API_REFERENCE.md)
-- CLI Documentation: [CLI Reference](../../buildstate_cli/README.md)
+- API Documentation: [API Reference](../../api_service/docs/API-REFERENCE.md)
+- CLI Documentation: [CLI Reference](../../bldst_cli/README.md)
 - Architecture: [System Architecture](../../api_service/docs/ARCHITECTURE.md)
 
 ## Contributing

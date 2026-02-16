@@ -10,7 +10,7 @@
 
 # Build artifacts
 build/
-buildstate_cli.egg-info/
+bldst_cli.egg-info/
 dist/
 
 # Certificates and keys

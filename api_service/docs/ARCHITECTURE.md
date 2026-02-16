@@ -1,6 +1,6 @@
 # Build State API Service - Architecture Overview
 
-> **💡 Recommended:** For pipeline integration, use the [`bldst` CLI tool](../../buildstate_cli/README.md) instead of direct API calls. See [README.md](README.md) for CLI examples.
+> **💡 Recommended:** For pipeline integration, use the [`bldst` CLI tool](../../bldst_cli/README.md) instead of direct API calls. See [README.md](README.md) for CLI examples.
 
 ## Overview
 
@@ -82,7 +82,11 @@ api_service/
 ├── docker-compose.yml       # Service orchestration
 ├── requirements.txt         # Python dependencies
 ├── .env.example            # Environment template
-├── test-api.sh             # Comprehensive test suite
+├── scripts/
+│   ├── test-api.sh         # Comprehensive test suite
+│   ├── test-cli-api.sh     # CLI integration tests
+│   ├── version.sh          # Version management
+│   └── gh-actions-status.sh # GitHub Actions monitor
 ├── init-db.sql             # PostgreSQL schema (optional)
 ├── Makefile                # Development commands
 ├── README.md               # Complete documentation
