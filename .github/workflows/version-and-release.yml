@@ -62,14 +62,14 @@ jobs:
       
       - name: Update CLI version
         run: |
-          cd buildstate_cli
+          cd bldst_cli
           NEW_VERSION="${{ steps.bump.outputs.new_version }}"
           sed -i "s/^version = .*/version = \"${NEW_VERSION}\"/" pyproject.toml
-          echo "Updated buildstate_cli/pyproject.toml to version ${NEW_VERSION}"
+          echo "Updated bldst_cli/pyproject.toml to version ${NEW_VERSION}"
       
       - name: Commit version bump
         run: |
-          git add VERSION buildstate_cli/pyproject.toml
+          git add VERSION bldst_cli/pyproject.toml
           git commit -m "chore: bump version to ${{ steps.bump.outputs.new_version }}"
           git push origin ${{ github.ref_name }}
       

@@ -305,8 +305,8 @@ provisioner "shell" {
 
 - **Packer Documentation**: https://www.packer.io/docs
 - **HCL2 Syntax**: https://www.packer.io/guides/hcl
-- **Build State API**: [API Reference](../../api_service/docs/API_REFERENCE.md)
-- **CLI Guide**: [bldst CLI](../../buildstate_cli/README.md)
+- **Build State API**: [API Reference](../../api_service/docs/API-REFERENCE.md)
+- **CLI Guide**: [bldst CLI](../../bldst_cli/README.md)
 
 ## Contributing
 

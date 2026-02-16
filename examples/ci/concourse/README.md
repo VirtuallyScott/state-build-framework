@@ -313,8 +313,8 @@ run:
 
 ## Resources
 
-- **API Documentation**: [API Reference](../../../api_service/docs/API_REFERENCE.md)
-- **CLI Documentation**: [CLI Guide](../../../buildstate_cli/README.md)
+- **API Documentation**: [API Reference](../../../api_service/docs/API-REFERENCE.md)
+- **CLI Documentation**: [CLI Guide](../../../bldst_cli/README.md)
 - **Architecture**: [System Architecture](../../../api_service/docs/ARCHITECTURE.md)
 - **Packer Examples**: [Packer Templates](../../packer/)
 

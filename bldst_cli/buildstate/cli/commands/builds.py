@@ -97,13 +97,26 @@ def add_state(
     build_id: uuid.UUID = typer.Argument(..., help="ID of the build to add a state to."),
     state: int = typer.Option(..., "--state", help="State code"),
     status: str = typer.Option(..., "--status", help="Status of the state"),
+    artifact_storage_type: Optional[str] = typer.Option(None, "--storage-type", help="Type of storage (s3, nfs, ebs, ceph, local, etc.)"),
+    artifact_storage_path: Optional[str] = typer.Option(None, "--storage-path", help="Full path/URI to the stored artifact"),
+    artifact_size_bytes: Optional[int] = typer.Option(None, "--artifact-size", help="Size of artifact in bytes"),
+    artifact_checksum: Optional[str] = typer.Option(None, "--checksum", help="SHA256 or MD5 checksum"),
 ):
-    """Add a state to a build."""
+    """Add a state to a build with optional artifact storage information."""
     async def _add_state():
         async with await get_client() as client:
             try:
                 from datetime import datetime
-                data = BuildStateCreate(build_id=build_id, state=state, status=status, start_time=datetime.now())
+                data = BuildStateCreate(
+                    build_id=build_id, 
+                    state=state, 
+                    status=status, 
+                    start_time=datetime.now(),
+                    artifact_storage_type=artifact_storage_type,
+                    artifact_storage_path=artifact_storage_path,
+                    artifact_size_bytes=artifact_size_bytes,
+                    artifact_checksum=artifact_checksum,
+                )
                 response = await client.add_build_state(build_id, data)
                 console.print(f"[green]✅ Build state added successfully![/green]")
                 format_response(response)

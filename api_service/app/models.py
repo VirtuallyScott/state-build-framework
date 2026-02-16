@@ -112,6 +112,11 @@ class BuildState(Base):
     duration_seconds = Column(Integer)
     error_message = Column(Text)
     retry_count = Column(Integer, default=0)
+    artifact_storage_type = Column(String(50))  # e.g., 's3', 'nfs', 'ebs', 'ceph', 'local'
+    artifact_storage_path = Column(Text)  # Full path/URI to the artifact
+    artifact_size_bytes = Column(Integer)  # Size of artifact in bytes
+    artifact_checksum = Column(String(128))  # SHA256 or MD5 checksum
+    artifact_metadata = Column(JSON)  # Additional metadata about the artifact
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 
     build = relationship("Build", back_populates="states")
@@ -271,6 +276,11 @@ class BuildStateBase(BaseModel):
     start_time: datetime
     error_message: Optional[str] = None
     retry_count: Optional[int] = 0
+    artifact_storage_type: Optional[str] = Field(None, max_length=50, description="Type of storage (s3, nfs, ebs, ceph, local, etc.)")
+    artifact_storage_path: Optional[str] = Field(None, description="Full path/URI to the stored artifact")
+    artifact_size_bytes: Optional[int] = Field(None, ge=0, description="Size of artifact in bytes")
+    artifact_checksum: Optional[str] = Field(None, max_length=128, description="SHA256 or MD5 checksum")
+    artifact_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional artifact metadata")
 
 class BuildStateCreate(BuildStateBase):
     build_id: uuid.UUID
@@ -460,6 +470,11 @@ class StateTransition(BaseModel):
     state_name: str
     message: Optional[str] = None
     metadata: Optional[Dict[str, Any]] = None
+    artifact_storage_type: Optional[str] = Field(None, max_length=50, description="Type of storage (s3, nfs, ebs, ceph, local, etc.)")
+    artifact_storage_path: Optional[str] = Field(None, description="Full path/URI to the stored artifact")
+    artifact_size_bytes: Optional[int] = Field(None, ge=0, description="Size of artifact in bytes")
+    artifact_checksum: Optional[str] = Field(None, max_length=128, description="SHA256 or MD5 checksum")
+    artifact_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional artifact metadata")
 
 
 class FailureRecord(BaseModel):

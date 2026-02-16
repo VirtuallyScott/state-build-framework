@@ -114,7 +114,7 @@ The `scripts/version.sh` script provides version management:
 
 **What it does:**
 1. Bumps version in VERSION file
-2. Updates version in `buildstate_cli/pyproject.toml`
+2. Updates version in `bldst_cli/pyproject.toml`
 3. Commits changes
 4. Creates git tag (if requested)
 5. Creates GitHub release with changelog (if requested)
@@ -199,7 +199,7 @@ BREAKING CHANGE: All /api/v1 endpoints moved to /api/v2"
 ./scripts/version.sh bump patch
 
 # Commit and push
-git add VERSION buildstate_cli/pyproject.toml
+git add VERSION bldst_cli/pyproject.toml
 git commit -m "chore: bump version to $(cat VERSION)"
 git push
 

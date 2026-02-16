@@ -8,10 +8,10 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
 - **[Main README](../README.md)** - Project overview and quick start
 - **[Credentials & URLs](../CREDENTIALS.md)** - All access credentials and endpoints
 - **[API Quick Start](../api_service/docs/README.md)** - Start API in 5 minutes
-- **[CLI Quick Start](../buildstate_cli/CLI_QUICKSTART.md)** - CLI in 5 minutes
+- **[CLI Quick Start](../bldst_cli/CLI_QUICKSTART.md)** - CLI in 5 minutes
 
 ### API Documentation
-- **[API Reference](../api_service/docs/API_REFERENCE.md)** - Complete endpoint documentation
+- **[API Reference](../api_service/docs/API-REFERENCE.md)** - Complete endpoint documentation
   - All HTTP endpoints
   - Request/response schemas
   - Error codes
@@ -30,64 +30,57 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
   - Security model
 
 ### CLI Documentation
-- **[CLI Documentation](../buildstate_cli/README.md)** - Complete CLI reference
+- **[CLI Documentation](../bldst_cli/README.md)** - Complete CLI reference
   - Installation
   - Configuration
   - All commands
   - CI/CD integration
   
-- **[CLI Quick Start](../buildstate_cli/CLI_QUICKSTART.md)** - Get started fast
+- **[CLI Quick Start](../bldst_cli/CLI_QUICKSTART.md)** - Get started fast
   - 5-minute guide
   - Common workflows
   - Examples
 
 ### CI/CD & Deployment
-- **[CI/CD Pipeline](CI_CD_PIPELINE.md)** - Automated builds and versioning
+- **[CI/CD Pipeline](CI-CD-PIPELINE.md)** - Automated builds and versioning
   - GitHub Actions workflows
   - Semantic versioning
   - Container registry publishing
   - Release process
   
-- **[Resumable Builds Design](RESUMABLE_BUILDS_DESIGN.md)** - Advanced resumability
+- **[Resumable Builds Design](RESUMABLE-BUILDS-DESIGN.md)** - Advanced resumability
   - Architecture overview
   - Artifact and variable tracking
   - Resume operations
   - Build orchestration
   
-- **[Resumable Builds Quick Start](RESUMABLE_BUILDS_QUICKSTART.md)** - Usage guide
+- **[Resumable Builds Quick Start](RESUMABLE-BUILDS-QUICKSTART.md)** - Usage guide
   - Getting started
   - API examples
   - Integration patterns
 
-### Framework Documentation
-- **[Framework Overview](../problem_statement/README.md)** - Complete design
-  - State-based architecture
-  - Why state-based builds
-  - Design decisions
-  
-- **[Framework Quick Start](../problem_statement/QUICKSTART.md)** - Implementation guide
-  - Step-by-step setup
-  - Worked examples
-  
-- **[State Definitions](../problem_statement/states.md)** - State codes 0-100
-  - All state codes
-  - Categories
-  - When to use each
-  
-- **[Storage Implementation](../problem_statement/storage-implementation.md)** - Data layer
+### Problem Statement & Architecture
+- **[Problem Statement](PROBLEM-STATEMENT.md)** - Why this framework exists
+  - The problems we solve
+  - How state-based builds help
+  - Real-world use cases
+  - Migration strategy
+  - Technical architecture
+
+- **[Database Architecture](DATABASE-ARCHITECTURE.md)** - Data model details
+  - Schema design
+  - Relationships
+  - Indexing strategy
+
+### Artifact Storage
+- **[Artifact Storage Tracking](ARTIFACT-STORAGE.md)** - Distributed build artifacts
+  - Overview and use cases
   - Database schema
-  - API patterns
-  - Storage options
-  
-- **[Sample Implementation](../problem_statement/sample-implementation.md)** - Concrete example
-  - AWS RHEL 8 build
-  - Complete workflow
-  - Code samples
-  
-- **[Failure Handling](../problem_statement/failure-handling.md)** - Recovery
-  - Retry strategies
-  - Error handling
-  - Resumable builds
+  - Supported storage types (S3, NFS, EBS, Ceph)
+  - API and CLI usage
+  - Best practices
+  - Migration guide
+  - Complete workflow examples
 
 ## 📚 Documentation by Role
 
@@ -95,13 +88,13 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
 
 **Building the API:**
 1. [Architecture Overview](../api_service/docs/ARCHITECTURE.md) - Understand the system
-2. [API Reference](../api_service/docs/API_REFERENCE.md) - Learn the endpoints
-3. Database schema in [Storage Implementation](../problem_statement/storage-implementation.md)
+2. [API Reference](../api_service/docs/API-REFERENCE.md) - Learn the endpoints
+3. [Database Architecture](DATABASE-ARCHITECTURE.md) - Data model and schema
 
 **Building with the API:**
 1. [Authentication Guide](../api_service/docs/AUTHENTICATION.md) - Get authenticated
-2. [API Reference](../api_service/docs/API_REFERENCE.md) - Use the endpoints
-3. [CLI Documentation](../buildstate_cli/README.md) - Or use the CLI
+2. [API Reference](../api_service/docs/API-REFERENCE.md) - Use the endpoints
+3. [CLI Documentation](../bldst_cli/README.md) - Or use the CLI
 
 ### For DevOps / SRE
 
@@ -112,27 +105,27 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
 
 **Operating:**
 1. [Authentication Guide](../api_service/docs/AUTHENTICATION.md) - Manage access
-2. [API Reference](../api_service/docs/API_REFERENCE.md) - Health checks, monitoring
-3. [CLI Documentation](../buildstate_cli/README.md) - Admin tasks
+2. [API Reference](../api_service/docs/API-REFERENCE.md) - Health checks, monitoring
+3. [CLI Documentation](../bldst_cli/README.md) - Admin tasks
 
 ### For Pipeline Engineers
 
 **Integration:**
-1. [CLI Quick Start](../buildstate_cli/CLI_QUICKSTART.md) - Get CLI working
-2. [CLI Documentation](../buildstate_cli/README.md#cicd-integration) - CI/CD examples
-3. [API Reference](../api_service/docs/API_REFERENCE.md) - Direct API usage
+1. [CLI Quick Start](../bldst_cli/CLI_QUICKSTART.md) - Get CLI working
+2. [CLI Documentation](../bldst_cli/README.md#cicd-integration) - CI/CD examples
+3. [API Reference](../api_service/docs/API-REFERENCE.md) - Direct API usage
 
 **Implementation:**
-1. [Framework Quick Start](../problem_statement/QUICKSTART.md) - Build state pattern
-2. [State Definitions](../problem_statement/states.md) - Which states to use
-3. [Sample Implementation](../problem_statement/sample-implementation.md) - Working example
+1. [Problem Statement](PROBLEM-STATEMENT.md) - Understand the framework
+2. [Artifact Storage](ARTIFACT-STORAGE.md) - Distributed artifact tracking
+3. [API Reference](../api_service/docs/API-REFERENCE.md) - Build state endpoints
 
 ### For Security Teams
 
 **Security Review:**
 1. [Authentication Guide](../api_service/docs/AUTHENTICATION.md) - Auth/authz model
 2. [Architecture Overview](../api_service/docs/ARCHITECTURE.md) - Security design
-3. [API Reference](../api_service/docs/API_REFERENCE.md) - Endpoint permissions
+3. [API Reference](../api_service/docs/API-REFERENCE.md) - Endpoint permissions
 
 ## 📊 Documentation Coverage
 
@@ -171,10 +164,10 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
 → [Main README](../README.md) - Quick Start section
 
 **...integrate with my CI/CD pipeline**
-→ [CLI Documentation](../buildstate_cli/README.md#cicd-integration)
+→ [CLI Documentation](../bldst_cli/README.md#cicd-integration)
 
 **...understand the API**
-→ [API Reference](../api_service/docs/API_REFERENCE.md)
+→ [API Reference](../api_service/docs/API-REFERENCE.md)
 
 **...set up authentication**
 → [Authentication Guide](../api_service/docs/AUTHENTICATION.md)
@@ -182,26 +175,29 @@ Complete documentation for the State-Based Build Framework, API, and CLI.
 **...deploy to production**
 → [Deployment Guide](../api_service/docs/README.md)
 
+**...understand why we built this**
+→ [Problem Statement](PROBLEM-STATEMENT.md)
+
 **...implement state-based builds**
-→ [Framework Quick Start](../problem_statement/QUICKSTART.md)
+→ [Problem Statement](PROBLEM-STATEMENT.md) and [API Reference](../api_service/docs/API-REFERENCE.md)
 
-**...understand state codes**
-→ [State Definitions](../problem_statement/states.md)
+**...track artifacts in distributed builds**
+→ [Artifact Storage](ARTIFACT-STORAGE.md)
 
-**...handle build failures**
-→ [Failure Handling](../problem_statement/failure-handling.md)
+**...understand the database**
+→ [Database Architecture](DATABASE-ARCHITECTURE.md)
 
 **...use the CLI**
-→ [CLI Quick Start](../buildstate_cli/CLI_QUICKSTART.md)
+→ [CLI Quick Start](../bldst_cli/CLI_QUICKSTART.md)
 
 **...make direct API calls**
-→ [API Reference](../api_service/docs/API_REFERENCE.md)
+→ [API Reference](../api_service/docs/API-REFERENCE.md)
 
 **...scale the system**
 → [Architecture Overview](../api_service/docs/ARCHITECTURE.md)
 
 **...troubleshoot issues**
-→ [CLI Troubleshooting](../buildstate_cli/README.md#troubleshooting) or [API Errors](../api_service/docs/API_REFERENCE.md#error-responses)
+→ [CLI Troubleshooting](../bldst_cli/README.md#troubleshooting) or [API Errors](../api_service/docs/API-REFERENCE.md#error-responses)
 
 ## 🔗 External Resources
 
@@ -226,21 +222,24 @@ All documentation is in Markdown format for easy viewing:
 
 The following documents were recently created or updated:
 
-- ✨ **NEW**: [API Reference](../api_service/docs/API_REFERENCE.md) - Complete endpoint documentation
+- ✨ **NEW**: [Problem Statement](PROBLEM-STATEMENT.md) - Consolidated problem/solution overview (Feb 2026)
+- ✨ **NEW**: [Artifact Storage](ARTIFACT-STORAGE.md) - Distributed artifact tracking (Feb 2026)
+- ✨ **NEW**: [API Reference](../api_service/docs/API-REFERENCE.md) - Complete endpoint documentation
 - ✨ **NEW**: [Authentication Guide](../api_service/docs/AUTHENTICATION.md) - Security guide
 - 🔄 **UPDATED**: [Main README](../README.md) - Complete overview
-- 🔄 **UPDATED**: [CLI Documentation](../buildstate_cli/README.md) - Current commands
+- 🔄 **UPDATED**: [CLI Documentation](../bldst_cli/README.md) - Current commands
+- 🔄 **UPDATED**: File naming standardized (hyphens instead of underscores)
 
 ## 📧 Getting Help
 
 If you can't find what you need:
 1. Check the [Main README](../README.md) for overview
-2. Search relevant documentation sections above
-3. Check interactive API docs at http://localhost:8080/docs
-4. Review examples in [Sample Implementation](../problem_statement/sample-implementation.md)
+2. Read the [Problem Statement](PROBLEM-STATEMENT.md) to understand the framework
+3. Search relevant documentation sections above
+4. Check interactive API docs at http://localhost:8080/docs
 5. Open an issue on GitHub/GitLab
 
 ---
 
-**Last Updated**: February 14, 2026
-**Documentation Version**: 1.0
+**Last Updated**: February 16, 2026
+**Documentation Version**: 1.1

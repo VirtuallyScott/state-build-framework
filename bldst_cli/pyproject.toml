@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "buildstate_cli"
+name = "bldst_cli"
 version = "0.0.2"
 description = "CLI tool for Build State API - clean alternative to curl commands"
 authors = [
@@ -37,9 +37,9 @@ dev = [
 bldst = "buildstate.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/sap/buildstate_cli"
-Repository = "https://github.com/sap/buildstate_cli"
-Issues = "https://github.com/sap/buildstate_cli/issues"
+Homepage = "https://github.com/sap/bldst_cli"
+Repository = "https://github.com/sap/bldst_cli"
+Issues = "https://github.com/sap/bldst_cli/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]

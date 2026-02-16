@@ -334,9 +334,9 @@ curl -s "$API_URL/dashboard/summary" \
 
 ## 📚 Additional Resources
 
-- [API Reference](api_service/docs/API_REFERENCE.md) - Complete endpoint documentation
+- [API Reference](api_service/docs/API-REFERENCE.md) - Complete endpoint documentation
 - [Authentication Guide](api_service/docs/AUTHENTICATION.md) - Detailed security guide
-- [CLI Documentation](buildstate_cli/README.md) - CLI usage
+- [CLI Documentation](bldst_cli/README.md) - CLI usage
 - [Main README](README.md) - Project overview
 
 ---

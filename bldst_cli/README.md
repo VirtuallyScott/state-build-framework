@@ -6,7 +6,7 @@ A modern, type-safe command-line interface for the Build State API. Manage platf
 
 ```bash
 # Install
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 
 # Configure
@@ -23,14 +23,14 @@ bldst image-type list
 
 - **[Complete CLI Documentation](README_FULL.md)** - Comprehensive guide with all commands
 - **[Quick Start Guide](CLI_QUICKSTART.md)** - Get started in 5 minutes
-- **[API Reference](../api_service/docs/API_REFERENCE.md)** - Full API documentation
+- **[API Reference](../api_service/docs/API-REFERENCE.md)** - Full API documentation
 - **[Authentication Guide](../api_service/docs/AUTHENTICATION.md)** - Auth & authorization
 
 ## 🚀 Installation
 
 ### From Source (Development)
 ```bash
-cd buildstate_cli
+cd bldst_cli
 pip install -e .
 ```
 
@@ -153,7 +153,7 @@ jobs:
       image_resource:
         type: registry-image
         source:
-          repository: your-registry/buildstate_cli
+          repository: your-registry/bldst_cli
           tag: latest
       run:
         path: sh
@@ -161,7 +161,7 @@ jobs:
         - -c
         - |
           # Install CLI if not in image
-          pip install buildstate_cli
+          pip install bldst_cli
 
           # Configure API access
           export BLDST_API_URL=http://build-api.example.com
@@ -350,7 +350,7 @@ bldst auth login
 ```bash
 # Clone and install in development mode
 git clone <repository-url>
-cd buildstate_cli
+cd bldst_cli
 pip install -e ".[dev]"
 
 # Run tests
@@ -370,7 +370,7 @@ mypy buildstate
 python -m build
 
 # Install locally for testing
-pip install dist/buildstate_cli-0.1.0.tar.gz
+pip install dist/bldst_cli-0.1.0.tar.gz
 
 # Test CLI
 bldst --help

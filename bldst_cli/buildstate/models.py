@@ -117,6 +117,11 @@ class BuildStateBase(BaseModel):
     start_time: datetime
     error_message: Optional[str] = None
     retry_count: Optional[int] = 0
+    artifact_storage_type: Optional[str] = Field(None, max_length=50, description="Type of storage (s3, nfs, ebs, ceph, local, etc.)")
+    artifact_storage_path: Optional[str] = Field(None, description="Full path/URI to the stored artifact")
+    artifact_size_bytes: Optional[int] = Field(None, ge=0, description="Size of artifact in bytes")
+    artifact_checksum: Optional[str] = Field(None, max_length=128, description="SHA256 or MD5 checksum")
+    artifact_metadata: Optional[Dict[str, Any]] = Field(None, description="Additional artifact metadata")
 
 class BuildStateCreate(BuildStateBase):
     build_id: uuid.UUID

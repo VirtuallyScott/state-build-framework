@@ -128,7 +128,7 @@ git push origin develop
 
 # Option 2: Manual via scripts
 ./scripts/version.sh bump minor
-git add VERSION buildstate_cli/pyproject.toml
+git add VERSION bldst_cli/pyproject.toml
 git commit -m "chore: bump version to $(cat VERSION)"
 git push origin develop
 
@@ -292,20 +292,20 @@ echo $GITHUB_TOKEN | docker login ghcr.io -u <username> --password-stdin
 # Check versions
 cat VERSION
 git describe --tags --abbrev=0
-cd buildstate_cli && grep "^version" pyproject.toml
+cd bldst_cli && grep "^version" pyproject.toml
 
 # Sync to git tag
 git describe --tags --abbrev=0 | sed 's/^v//' > VERSION
 
 # Sync CLI version
 ./scripts/version.sh current
-cd buildstate_cli
+cd bldst_cli
 sed -i "s/^version = .*/version = \"$(cat ../VERSION)\"/" pyproject.toml
 ```
 
 ## Resources
 
-- Full documentation: [CI_CD_PIPELINE.md](CI_CD_PIPELINE.md)
+- Full documentation: [CI-CD-PIPELINE.md](CI-CD-PIPELINE.md)
 - Version script: `scripts/version.sh`
 - Actions status script: `scripts/gh-actions-status.sh`
 - GitHub Actions: `.github/workflows/`

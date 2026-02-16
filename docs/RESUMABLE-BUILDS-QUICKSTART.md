@@ -1,6 +1,6 @@
 # Resumable Builds - Quick Start Guide
 
-> **💡 Note:** Examples below use curl for demonstration. For production pipelines, use the [`bldst` CLI tool](../buildstate_cli/README.md) for cleaner, more maintainable code.
+> **💡 Note:** Examples below use curl for demonstration. For production pipelines, use the [`bldst` CLI tool](../bldst_cli/README.md) for cleaner, more maintainable code.
 
 ## 🎉 What's Implemented
 
@@ -262,7 +262,7 @@ echo "Resuming from state: $RESUME_FROM"
 
 ## 📚 Documentation
 
-- **Design Document**: [docs/RESUMABLE_BUILDS_DESIGN.md](RESUMABLE_BUILDS_DESIGN.md)
+- **Design Document**: [docs/RESUMABLE-BUILDS-DESIGN.md](RESUMABLE-BUILDS-DESIGN.md)
 - **API Reference**: http://localhost:8080/docs
 - **Main Documentation**: [docs/INDEX.md](../docs/INDEX.md)
 - **Credentials**: [CREDENTIALS.md](../CREDENTIALS.md)
@@ -305,4 +305,4 @@ Start integrating the artifact registration and variable tracking into your buil
 
 ---
 
-**Questions?** Review the [full design document](RESUMABLE_BUILDS_DESIGN.md) or test the endpoints at http://localhost:8080/docs
+**Questions?** Review the [full design document](RESUMABLE-BUILDS-DESIGN.md) or test the endpoints at http://localhost:8080/docs

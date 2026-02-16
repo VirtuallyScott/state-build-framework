@@ -136,6 +136,11 @@ def update_build_state(
         status=new_status,
         message=state_update.message,
         metadata=state_update.metadata,
+        artifact_storage_type=state_update.artifact_storage_type,
+        artifact_storage_path=state_update.artifact_storage_path,
+        artifact_size_bytes=state_update.artifact_size_bytes,
+        artifact_checksum=state_update.artifact_checksum,
+        artifact_metadata=state_update.artifact_metadata,
         start_date=now
     )
     db.add(new_build_state)

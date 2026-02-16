@@ -1,8 +1,8 @@
-#!/bin/bash
-
+#!/usr/bin/env bash
+#
 # Test script for the Scalable Build State API
 # Tests authentication, load balancing, and core functionality
-
+#
 #set -e
 
 API_URL="http://localhost:8080"

@@ -96,10 +96,19 @@ CREATE TABLE IF NOT EXISTS build_states (
     build_id TEXT NOT NULL,
     state_code INTEGER NOT NULL,
     message TEXT,
+    artifact_storage_type VARCHAR(50),
+    artifact_storage_path TEXT,
+    artifact_size_bytes BIGINT,
+    artifact_checksum VARCHAR(128),
+    artifact_metadata JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
     deactivated_at TIMESTAMP WITH TIME ZONE,
     FOREIGN KEY (build_id) REFERENCES builds (id)
 );
+
+-- Indexes for build_states table
+CREATE INDEX IF NOT EXISTS idx_build_states_artifact_storage_type ON build_states(artifact_storage_type);
+CREATE INDEX IF NOT EXISTS idx_build_states_build_id_state ON build_states(build_id, state_code);
 
 CREATE TABLE IF NOT EXISTS build_failures (
     id SERIAL PRIMARY KEY,
