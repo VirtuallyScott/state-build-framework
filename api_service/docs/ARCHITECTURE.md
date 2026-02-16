@@ -1,5 +1,7 @@
 # Build State API Service - Architecture Overview
 
+> **💡 Recommended:** For pipeline integration, use the [`bldst` CLI tool](../../buildstate_cli/README.md) instead of direct API calls. See [README.md](README.md) for CLI examples.
+
 ## Overview
 
 This implementation provides a scalable, containerized FastAPI service for managing multi-cloud IaaS image build states with JWT and API key authentication, designed specifically for integration with Concourse CI pipelines.
@@ -89,7 +91,7 @@ api_service/
 
 ## Concourse Pipeline Integration
 
-### Example Pipeline Usage
+### Recommended: Using the bldst CLI
 
 ```yaml
 jobs:
@@ -97,102 +99,109 @@ jobs:
   plan:
   - task: init-build
     config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source: {repository: your-registry/buildstate-cli}
+      params:
+        BLDST_API_URL: ((build-api-url))
+        BLDST_API_KEY: ((build-api-key))
+      outputs:
+        - name: build-info
       run:
         path: sh
         args:
         - -c
         - |
-          BUILD_ID="rhel-8.8-base-$(date +%s)"
-          RESPONSE=$(curl -X POST ${API_URL}/builds \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "{\"platform\":\"aws\",\"os_version\":\"rhel-8.8\",\"image_type\":\"base\",\"build_id\":\"${BUILD_ID}\"}")
-          echo $RESPONSE | jq -r .id > build-uuid.txt
+          # Configure CLI
+          bldst config set-url ${BLDST_API_URL}
+          bldst auth set-key ${BLDST_API_KEY}
+          
+          # Get reference IDs (cache these if needed)
+          PLATFORM_ID=$(bldst platform list --output json | jq -r '.[] | select(.name=="aws-commercial") | .id')
+          OS_VERSION_ID=$(bldst os-version list --output json | jq -r '.[] | select(.version=="rhel-8.8") | .id')
+          IMAGE_TYPE_ID=$(bldst image-type list --output json | jq -r '.[] | select(.name=="base") | .id')
+          PROJECT_ID=$(bldst project list --output json | jq -r '.[] | select(.name=="platform") | .id')
+          
+          # Create build
+          BUILD_UUID=$(bldst build create \
+            --build-number "rhel-8.8-$(date +%s)" \
+            --project-id ${PROJECT_ID} \
+            --platform-id ${PLATFORM_ID} \
+            --os-version-id ${OS_VERSION_ID} \
+            --image-type-id ${IMAGE_TYPE_ID} \
+            --output json | jq -r '.id')
+          
+          echo ${BUILD_UUID} > build-info/uuid.txt
 
   - task: packer-build
     config:
-      # ... packer configuration ...
+      inputs:
+        - name: build-info
       run:
         path: sh
         args:
         - -c
         - |
-          BUILD_UUID=$(cat build-uuid.txt)
-
-          # Update state to preparation
-          curl -X POST ${API_URL}/builds/${BUILD_UUID}/state \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d '{"state_code": 10, "message": "Starting Packer build"}'
-
+          BUILD_UUID=$(cat build-info/uuid.txt)
+          
+          # Update state
+          bldst build add-state ${BUILD_UUID} --state 10 --status "Starting Packer build"
+          
           # Run packer
           packer build -var-file=vars.json template.json
-
-          # Update state on success
-          curl -X POST ${API_URL}/builds/${BUILD_UUID}/state \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d '{"state_code": 25, "message": "Packer build completed"}'
+          
+          # Update on success
+          bldst build add-state ${BUILD_UUID} --state 25 --status "Packer build completed"
 
   - task: ansible-configure
     config:
+      inputs:
+        - name: build-info
       run:
         path: sh
         args:
         - -c
         - |
-          BUILD_UUID=$(cat build-uuid.txt)
-
-          # Update state
-          curl -X POST ${API_URL}/builds/${BUILD_UUID}/state \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d '{"state_code": 50, "message": "Starting Ansible configuration"}'
-
-          # Run ansible
+          BUILD_UUID=$(cat build-info/uuid.txt)
+          
+          bldst build add-state ${BUILD_UUID} --state 50 --status "Starting Ansible configuration"
           ansible-playbook -i inventory playbook.yml
-
-          # Update state
-          curl -X POST ${API_URL}/builds/${BUILD_UUID}/state \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d '{"state_code": 75, "message": "Ansible configuration completed"}'
+          bldst build add-state ${BUILD_UUID} --state 75 --status "Ansible configuration completed"
 
   - task: finalize-build
     config:
+      inputs:
+        - name: build-info
       run:
         path: sh
         args:
         - -c
         - |
-          BUILD_UUID=$(cat build-uuid.txt)
-
-          # Mark as complete
-          curl -X POST ${API_URL}/builds/${BUILD_UUID}/state \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d '{"state_code": 100, "message": "Build completed successfully"}'
+          BUILD_UUID=$(cat build-info/uuid.txt)
+          bldst build add-state ${BUILD_UUID} --state 100 --status "Build completed successfully"
 
   on_failure:
     do:
     - task: record-failure
       config:
+        inputs:
+          - name: build-info
         run:
           path: sh
           args:
           - -c
           - |
-            BUILD_UUID=$(cat build-uuid.txt)
-            curl -X POST ${API_URL}/builds/${BUILD_UUID}/failure \
-              -H "X-API-Key: ${API_KEY}" \
-              -H "Content-Type: application/json" \
-              -d '{
-                "error_message": "Pipeline failed",
-                "error_code": "PIPELINE_FAILURE",
-                "component": "concourse",
-                "details": {"stage": "packer-build", "exit_code": 1}
-              }'
+            BUILD_UUID=$(cat build-info/uuid.txt)
+            bldst build add-failure ${BUILD_UUID} \
+              --state 25 \
+              --type "PIPELINE_FAILURE" \
+              --message "Pipeline failed at stage: ${FAILED_JOB}"
 ```
+
+### Alternative: Direct API with curl
+
+For environments where the CLI cannot be installed, see the full curl examples in the [README.md](README.md#concourse-pipeline-integration) (legacy approach).
 
 ## Deployment Options
 

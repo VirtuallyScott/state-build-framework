@@ -2,6 +2,10 @@
 
 Complete API Reference for the Build State Management System.
 
+> **💡 Recommended for Pipelines:** Use the [`bldst` CLI tool](../../buildstate_cli/README.md) for cleaner, more maintainable pipeline code. See [README.md](README.md) for CLI examples.
+>
+> This document is the **complete API reference** for direct HTTP access, testing, and understanding the underlying API structure.
+
 ## Base URL
 
 ```
@@ -14,12 +18,23 @@ In production, replace with your deployed API URL.
 
 All endpoints (except `/health`, `/ready`, and `/status`) require authentication. Two methods are supported:
 
-### API Key (Recommended for automation)
+### CLI Authentication (Recommended)
+```bash
+# One-time configuration
+bldst config set-url http://localhost:8080
+bldst auth set-key your-api-key
+
+# Use commands
+bldst platform list
+bldst build create --build-number "my-build" ...
+```
+
+### API Key (Direct HTTP access)
 ```bash
 curl -H "X-API-Key: your-api-key" http://localhost:8080/platforms/
 ```
 
-### JWT Bearer Token (Interactive use)
+### JWT Bearer Token (Direct HTTP access)
 ```bash
 # Get token first
 TOKEN=$(curl -X POST http://localhost:8080/token \

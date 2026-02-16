@@ -27,7 +27,7 @@ from .utils import format_response
 
 # Initialize Typer app
 app = typer.Typer(
-    name="buildctl",
+    name="bldst",
     help="BuildState CLI - A clean interface to the Build State API",
     add_completion=True,
     rich_markup_mode="rich",

@@ -2,6 +2,13 @@
 
 Complete guide to authentication and authorization in the Build State API.
 
+> **💡 CLI Users:** The `bldst` CLI handles authentication automatically. Simply configure once:
+> ```bash
+> bldst config set-url http://localhost:8080
+> bldst auth set-key your-api-key    # Or: bldst auth login
+> ```
+> See the [CLI README](../../buildstate_cli/README.md) for details.
+
 ## Overview
 
 The Build State API supports two authentication methods:
@@ -18,7 +25,17 @@ Both methods support **scope-based authorization** (read, write, admin).
 
 API keys are static tokens ideal for service-to-service communication and automation.
 
-**Usage:**
+**CLI Usage (Recommended):**
+```bash
+# Configure once
+bldst auth set-key your-api-key
+
+# Use commands - authentication is automatic
+bldst platform list
+bldst build create ...
+```
+
+**Direct HTTP Usage:**
 ```bash
 curl -H "X-API-Key: your-api-key" http://localhost:8080/platforms/
 ```

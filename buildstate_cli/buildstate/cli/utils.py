@@ -33,7 +33,7 @@ def handle_api_error(error: BuildStateAPIError):
     """Handle API errors with rich formatting."""
     if error.status_code == 401:
         console.print("[red]❌ Authentication failed. Please check your API key or login again.[/red]")
-        console.print("[dim]Run 'buildctl auth login' or 'buildctl auth set-key <key>'[/dim]")
+        console.print("[dim]Run 'bldst auth login' or 'bldst auth set-key <key>'[/dim]")
     elif error.status_code == 403:
         console.print("[red]❌ Access forbidden. Please check your permissions.[/red]")
     elif error.status_code == 404:
@@ -62,7 +62,7 @@ async def get_client() -> BuildStateClient:
         return await create_client_from_config()
     except ValueError as e:
         console.print(f"[red]❌ Configuration error: {e}[/red]")
-        console.print("[dim]Run 'buildctl config set-url <url>' to configure the API URL[/dim]")
+        console.print("[dim]Run 'bldst config set-url <url>' to configure the API URL[/dim]")
         raise typer.Exit(1)
 
 def format_response(response: Union[BaseModel, List[BaseModel]], output_format: str = "table"):

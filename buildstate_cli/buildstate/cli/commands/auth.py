@@ -20,7 +20,7 @@ def auth_login(
     async def _login():
         # API URL must be set to login
         if not config.api_url:
-            console.print("[red]❌ API URL not configured. Please run 'buildctl config set-url <url>' first.[/red]")
+            console.print("[red]❌ API URL not configured. Please run 'bldst config set-url <url>' first.[/red]")
             raise typer.Exit(1)
             
         async with BuildStateClient(config.api_url) as client:

@@ -71,199 +71,350 @@ open http://localhost:8080/docs
 
 ### Authentication
 
-#### JWT Token
-```bash
-# Get JWT token
-curl -X POST http://localhost:8080/token \
-  -H "Content-Type: application/json" \
-  -d '{"username": "your-user", "password": "your-password"}'
+We provide the `bldst` CLI tool which eliminates the need for complex curl commands. The CLI handles authentication, formatting, and error handling automatically.
 
-# Use token in requests
-curl -H "Authorization: Bearer YOUR_JWT_TOKEN" \
-  http://localhost:8080/dashboard/summary
+#### Install the CLI
+```bash
+cd buildstate_cli
+pip install -e .
 ```
 
-#### API Key
+#### Configure API Access
 ```bash
-# Use API key in requests
-curl -H "X-API-Key: your-api-key" \
-  http://localhost:8080/dashboard/summary
+# Set the API URL
+bldst config set-url http://localhost:8080
+
+# Set API Key (recommended for automation)
+bldst auth set-key your-api-key
+
+# Or login with username/password (for interactive use)
+bldst auth login
+```
+
+#### Verify Configuration
+```bash
+bldst config show
+bldst health check
 ```
 
 ### Core Endpoints
 
+**Note:** All examples below use the `bldst` CLI. For direct API access, see the [API Reference](API_REFERENCE.md).
+
 #### Create Build
 ```bash
-curl -X POST http://localhost:8080/builds \
-  -H "X-API-Key: your-api-key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "platform": "aws-commercial",
-    "os_version": "rhel-8.8",
-    "image_type": "base",
-    "build_id": "my-build-001",
-    "pipeline_url": "https://concourse.example.com/pipelines/my-pipeline",
-    "commit_hash": "abc123def456"
-  }'
+# Create a new build (returns UUID for tracking)
+bldst build create \
+  --build-number "my-build-001" \
+  --project-id <project-uuid> \
+  --platform-id <platform-uuid> \
+  --os-version-id <os-version-uuid> \
+  --image-type-id <image-type-uuid> \
+  --created-by "jenkins-pipeline" \
+  --concourse-url "https://concourse.example.com/pipelines/my-pipeline"
+
+# To get UUIDs for reference data:
+bldst platform list
+bldst os-version list
+bldst image-type list
+bldst project list
 ```
 
 #### Update Build State
 ```bash
-curl -X POST http://localhost:8080/builds/{build-uuid}/state \
-  -H "X-API-Key: your-api-key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "state_code": 25,
-    "message": "Packer build completed successfully"
-  }'
+# Add a new state to a build (state progression: 0 → 10 → 25 → 50 → 75 → 100)
+bldst build add-state <build-uuid> \
+  --state 25 \
+  --status "Packer build completed successfully"
+
+# Example state progression:
+bldst build add-state <build-uuid> --state 10 --status "Starting preparation"
+bldst build add-state <build-uuid> --state 25 --status "Packer validation complete"
+bldst build add-state <build-uuid> --state 50 --status "Ansible configuration running"
+bldst build add-state <build-uuid> --state 100 --status "Build completed successfully"
 ```
 
 #### Record Failure
 ```bash
-curl -X POST http://localhost:8080/builds/{build-uuid}/failure \
-  -H "X-API-Key: your-api-key" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "error_message": "Packer build failed: AMI creation timeout",
-    "error_code": "PACKER_TIMEOUT",
-    "component": "packer",
-    "details": {"timeout_seconds": 3600, "attempt": 1}
-  }'
+# Record a build failure with details
+bldst build add-failure <build-uuid> \
+  --state 25 \
+  --type "PACKER_TIMEOUT" \
+  --message "Packer build failed: AMI creation timeout after 3600 seconds"
 ```
 
 #### Get Build Details
 ```bash
-curl -H "X-API-Key: your-api-key" \
-  http://localhost:8080/builds/{build-uuid}
+# Get complete build information
+bldst build get <build-uuid>
+
+# List recent builds
+bldst build list --limit 20
 ```
 
-#### Get Current State
+#### Dashboard & Monitoring
 ```bash
-curl -H "X-API-Key: your-api-key" \
-  http://localhost:8080/builds/{build-uuid}/state
-```
+# View comprehensive dashboard summary
+bldst dashboard summary
 
-#### Dashboard Endpoints
-```bash
-# Summary
-curl -H "X-API-Key: your-api-key" \
-  http://localhost:8080/dashboard/summary
+# View recent builds
+bldst dashboard recent
 
-# Recent builds
-curl -H "X-API-Key: your-api-key" \
-  http://localhost:8080/dashboard/recent
-
-# Builds by platform
-curl -H "X-API-Key: your-api-key" \
-  http://localhost:8080/dashboard/platform/aws-commercial
+# Health check
+bldst health check
 ```
 
 ### Health and Status Endpoints
 
-#### Health Check
+#### Health Check (CLI)
 ```bash
+# Quick health check
+bldst health check
+
+# Check API readiness (verifies database and Redis connectivity)
+bldst health ready
+
+# Get comprehensive status of all components
+bldst health status
+```
+
+#### Health Check (Direct API)
+For monitoring systems that need direct HTTP access:
+```bash
+# Basic health
 curl http://localhost:8080/health
-# Returns: {"status": "healthy"}
-```
 
-#### Readiness Check
-Checks database and Redis connectivity for end-to-end functionality:
-```bash
+# Readiness check (database + Redis)
 curl http://localhost:8080/ready
-# Returns: {
-#   "database": true,
-#   "redis": true,
-#   "overall": true
-# }
-```
 
-#### Comprehensive Status
-Shows health of all components (API servers, database, Redis):
-```bash
+# Full status (all components)
 curl http://localhost:8080/status
-# Returns: {
-#   "overall_status": "healthy",
-#   "timestamp": "2024-01-15T10:30:00.000000",
-#   "components": [
-#     {"name": "api-local", "status": "healthy", "details": "OK"},
-#     {"name": "database", "status": "healthy", "details": "PostgreSQL connection"},
-#     {"name": "redis", "status": "healthy", "details": "Redis cache"},
-#     {"name": "api01", "status": "healthy", "details": "HTTP 200"},
-#     {"name": "api02", "status": "healthy", "details": "HTTP 200"},
-#     {"name": "api03", "status": "healthy", "details": "HTTP 200"}
-#   ]
-# }
-```
 
-#### Status Server
-Access comprehensive status via dedicated server (requires /etc/hosts entry):
-```bash
-# Add to /etc/hosts: 127.0.0.1 status.localbuild.api
+# Status server (requires /etc/hosts: 127.0.0.1 status.localbuild.api)
 curl http://status.localbuild.api/
-# Returns the same comprehensive status as /status endpoint
 ```
 
 ## Concourse Pipeline Integration
 
+The `bldst` CLI provides a much cleaner, more maintainable approach for CI/CD pipelines compared to curl commands.
+
+### Key Benefits
+- ✅ **No more brittle curl commands** - Clean, readable syntax
+- ✅ **Built-in error handling** - Automatic retry logic and clear error messages
+- ✅ **Automatic authentication** - Set once, use everywhere
+- ✅ **Type safety** - Validates input before sending to API
+- ✅ **Output parsing** - Structured JSON output for pipeline consumption
+
+### Prerequisites
+
+Create a Docker image with the CLI pre-installed:
+
+```dockerfile
+FROM python:3.11-slim
+
+# Install bldst CLI
+RUN pip install buildstate-cli
+
+# Or install from source
+# COPY buildstate_cli /tmp/buildstate_cli
+# RUN cd /tmp/buildstate_cli && pip install -e .
+
+WORKDIR /workspace
+```
+
 ### Example Pipeline Task
 
 ```yaml
-- task: create-build
-  config:
-    platform: linux
-    image_resource:
-      type: registry-image
-      source:
-        repository: curlimages/curl
-        tag: latest
-    run:
-      path: sh
-      args:
-        - -c
-        - |
-          BUILD_ID="my-build-$(date +%s)"
-          RESPONSE=$(curl -X POST http://build-api.example.com/builds \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d "{\"platform\":\"aws\",\"os_version\":\"rhel-8.8\",\"image_type\":\"base\",\"build_id\":\"${BUILD_ID}\"}")
-          echo "Build created: $RESPONSE"
+jobs:
+- name: build-rhel-image
+  plan:
+  - task: create-build-record
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: your-registry/buildstate-cli
+          tag: latest
+      params:
+        BLDST_API_URL: http://build-api.example.com
+        BLDST_API_KEY: ((buildstate-api-key))  # From Concourse secrets
+      outputs:
+        - name: build-info
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            set -e
+            
+            # Configure CLI (one time)
+            bldst config set-url ${BLDST_API_URL}
+            bldst auth set-key ${BLDST_API_KEY}
+            
+            # Get reference data UUIDs (cache these in your pipeline if needed)
+            PLATFORM_ID=$(bldst platform list --output json | jq -r '.[] | select(.name=="aws-commercial") | .id')
+            OS_VERSION_ID=$(bldst os-version list --output json | jq -r '.[] | select(.version=="rhel-8.8") | .id')
+            IMAGE_TYPE_ID=$(bldst image-type list --output json | jq -r '.[] | select(.name=="base") | .id')
+            PROJECT_ID=$(bldst project list --output json | jq -r '.[] | select(.name=="platform-images") | .id')
+            
+            # Create build record
+            BUILD_UUID=$(bldst build create \
+              --build-number "build-${BUILD_ID}" \
+              --project-id ${PROJECT_ID} \
+              --platform-id ${PLATFORM_ID} \
+              --os-version-id ${OS_VERSION_ID} \
+              --image-type-id ${IMAGE_TYPE_ID} \
+              --created-by "concourse-${BUILD_PIPELINE_NAME}" \
+              --concourse-url "${ATC_EXTERNAL_URL}/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}" \
+              --output json | jq -r '.id')
+            
+            echo ${BUILD_UUID} > build-info/uuid.txt
+            echo "✅ Build record created: ${BUILD_UUID}"
 
-- task: update-state
-  config:
-    platform: linux
-    image_resource:
-      type: registry-image
-      source:
-        repository: curlimages/curl
-        tag: latest
-    run:
-      path: sh
-      args:
-        - -c
-        - |
-          BUILD_UUID=$(cat build-uuid.txt)
-          curl -X POST http://build-api.example.com/builds/${BUILD_UUID}/state \
-            -H "X-API-Key: ${API_KEY}" \
-            -H "Content-Type: application/json" \
-            -d '{"state_code": 25, "message": "Packer validation complete"}'
+  - task: update-state-preparing
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: your-registry/buildstate-cli
+          tag: latest
+      params:
+        BLDST_API_URL: http://build-api.example.com
+        BLDST_API_KEY: ((buildstate-api-key))
+      inputs:
+        - name: build-info
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            set -e
+            bldst config set-url ${BLDST_API_URL}
+            bldst auth set-key ${BLDST_API_KEY}
+            
+            BUILD_UUID=$(cat build-info/uuid.txt)
+            bldst build add-state ${BUILD_UUID} --state 10 --status "Preparing build environment"
 
-- task: check-state
+  - task: packer-build
+    config:
+      platform: linux
+      inputs:
+        - name: build-info
+        - name: packer-templates
+      outputs:
+        - name: build-artifacts
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            set -e
+            
+            # Update state before starting
+            BUILD_UUID=$(cat build-info/uuid.txt)
+            bldst build add-state ${BUILD_UUID} --state 25 --status "Running Packer build"
+            
+            # Run packer
+            packer build -var-file=vars.json packer-templates/template.json
+            
+            # Update state on success
+            bldst build add-state ${BUILD_UUID} --state 50 --status "Packer build completed"
+    on_failure:
+      task: record-packer-failure
+      config:
+        platform: linux
+        inputs:
+          - name: build-info
+        run:
+          path: sh
+          args:
+            - -c
+            - |
+              BUILD_UUID=$(cat build-info/uuid.txt)
+              bldst build add-failure ${BUILD_UUID} \
+                --state 25 \
+                --type "PACKER_BUILD_FAILED" \
+                --message "Packer build failed - check logs for details"
+
+  - task: ansible-configure
+    config:
+      platform: linux
+      inputs:
+        - name: build-info
+        - name: ansible-playbooks
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            set -e
+            BUILD_UUID=$(cat build-info/uuid.txt)
+            
+            bldst build add-state ${BUILD_UUID} --state 75 --status "Running Ansible configuration"
+            
+            ansible-playbook -i inventory ansible-playbooks/configure.yml
+            
+            bldst build add-state ${BUILD_UUID} --state 100 --status "Build completed successfully"
+
+  - task: check-build-status
+    config:
+      platform: linux
+      inputs:
+        - name: build-info
+      run:
+        path: sh
+        args:
+          - -c
+          - |
+            BUILD_UUID=$(cat build-info/uuid.txt)
+            
+            # Get full build details
+            bldst build get ${BUILD_UUID}
+            
+            # Check dashboard
+            bldst dashboard recent --limit 5
+```
+
+### Simplified Pipeline with Error Handling
+
+```yaml
+- task: build-with-tracking
   config:
     platform: linux
-    image_resource:
-      type: registry-image
-      source:
-        repository: curlimages/curl
-        tag: latest
+    params:
+      BLDST_API_URL: http://build-api.example.com
+      BLDST_API_KEY: ((buildstate-api-key))
     run:
-      path: sh
+      path: bash
       args:
         - -c
         - |
-          BUILD_UUID=$(cat build-uuid.txt)
-          STATE=$(curl -H "X-API-Key: ${API_KEY}" \
-            http://build-api.example.com/builds/${BUILD_UUID}/state | jq -r '.current_state')
-          echo "Current state: $STATE"
+          set -e
+          
+          # Setup
+          bldst config set-url ${BLDST_API_URL}
+          bldst auth set-key ${BLDST_API_KEY}
+          
+          # Initialize build tracking
+          BUILD_UUID=$(initialize_build)  # Your function to create build
+          
+          # Trap to handle failures
+          trap 'handle_failure ${BUILD_UUID}' ERR
+          
+          handle_failure() {
+            local uuid=$1
+            bldst build add-failure ${uuid} \
+              --state $(get_current_state) \
+              --type "PIPELINE_ERROR" \
+              --message "Pipeline failed: ${BASH_COMMAND}"
+          }
+          
+          # Your build steps with state updates
+          bldst build add-state ${BUILD_UUID} --state 10 --status "Starting"
+          # ... run your build commands ...
+          bldst build add-state ${BUILD_UUID} --state 100 --status "Complete"
 ```
 
 ## Configuration
@@ -436,4 +587,32 @@ docker-compose up --build
 
 ## API Documentation
 
-Once running, visit `http://localhost:8080/docs` for interactive API documentation.
+### Interactive API Explorer
+
+Once running, visit `http://localhost:8080/docs` for interactive Swagger/OpenAPI documentation.
+
+![API Documentation Screenshot](screenshots/screencapture-build-state-docs-2026-02-15-10_02_23.png)
+
+The interactive documentation provides:
+- 🔍 Complete API reference with all endpoints
+- 🧪 Try-it-out functionality to test endpoints directly
+- 📝 Request/response schemas and examples
+- 🔐 Authentication testing
+
+### Recommended Usage
+
+**For CI/CD Pipelines & Automation:** Use the `bldst` CLI tool
+- Clean, maintainable commands
+- Built-in error handling and retries
+- Type-safe operations
+- See examples throughout this document
+
+**For Direct API Integration:** Use the REST API
+- See [API_REFERENCE.md](API_REFERENCE.md) for complete endpoint documentation
+- Interactive docs at `/docs` endpoint
+- OpenAPI spec at `/openapi.json`
+
+**For Exploration & Testing:** Use the interactive docs
+- Navigate to `http://localhost:8080/docs`
+- Authenticate using your API key or JWT token
+- Test endpoints directly in your browser
