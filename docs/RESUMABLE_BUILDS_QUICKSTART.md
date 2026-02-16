@@ -1,5 +1,7 @@
 # Resumable Builds - Quick Start Guide
 
+> **💡 Note:** Examples below use curl for demonstration. For production pipelines, use the [`bldst` CLI tool](../buildstate_cli/README.md) for cleaner, more maintainable code.
+
 ## 🎉 What's Implemented
 
 The resumable builds system is now live! Here's what you can do:
