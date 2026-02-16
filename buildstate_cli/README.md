@@ -85,14 +85,14 @@ bldst config show
 ### Create a Build
 ```bash
 # Basic build creation
-buildctl build create \
+bldst build create \
   --platform aws-commercial \
   --os rhel-8.8 \
   --type base \
   --id "my-build-$(date +%s)"
 
 # With pipeline context
-buildctl build create \
+bldst build create \
   --platform azure \
   --os ubuntu-22.04 \
   --type hana \
@@ -104,16 +104,16 @@ buildctl build create \
 ### Update Build State
 ```bash
 # State progression (0 → 10 → 25 → 50 → 75 → 100)
-buildctl state update <build-uuid> --state 10 --message "Starting preparation"
-buildctl state update <build-uuid> --state 25 --message "Packer validation complete"
-buildctl state update <build-uuid> --state 50 --message "Ansible configuration running"
-buildctl state update <build-uuid> --state 100 --message "Build completed successfully"
+bldst state update <build-uuid> --state 10 --message "Starting preparation"
+bldst state update <build-uuid> --state 25 --message "Packer validation complete"
+bldst state update <build-uuid> --state 50 --message "Ansible configuration running"
+bldst state update <build-uuid> --state 100 --message "Build completed successfully"
 ```
 
 ### Record Failures
 ```bash
 # Record build failure
-buildctl failure record <build-uuid> \
+bldst failure record <build-uuid> \
   --error "Packer build failed: AMI creation timeout" \
   --code "PACKER_TIMEOUT" \
   --component "packer"
@@ -122,22 +122,22 @@ buildctl failure record <build-uuid> \
 ### Query Builds
 ```bash
 # Get build details
-buildctl build get <build-uuid>
+bldst build get <build-uuid>
 
 # List builds by platform
-buildctl build list --platform aws-commercial --limit 20
+bldst build list --platform aws-commercial --limit 20
 
 # Get current state
-buildctl state get <build-uuid>
+bldst state get <build-uuid>
 ```
 
 ### Dashboard
 ```bash
 # View summary
-buildctl dashboard summary
+bldst dashboard summary
 
 # View recent builds
-buildctl dashboard recent --limit 15
+bldst dashboard recent --limit 15
 ```
 
 ## 🔧 Concourse Pipeline Integration
@@ -164,11 +164,11 @@ jobs:
           pip install buildstate_cli
 
           # Configure API access
-          export BUILDCTL_API_URL=http://build-api.example.com
-          export BUILDCTL_API_KEY=${API_KEY}
+          export BLDST_API_URL=http://build-api.example.com
+          export BLDST_API_KEY=${API_KEY}
 
           # Create build
-          BUILD_UUID=$(buildctl build create \
+          BUILD_UUID=$(bldst build create \
             --platform aws \
             --os rhel-8.8 \
             --type base \
@@ -187,7 +187,7 @@ jobs:
           BUILD_UUID=$(cat build-uuid.txt)
 
           # Update state
-          buildctl state update $BUILD_UUID \
+          bldst state update $BUILD_UUID \
             --state 10 \
             --message "Starting Packer build"
 
@@ -195,7 +195,7 @@ jobs:
           packer build -var-file=vars.json template.json
 
           # Update on success
-          buildctl state update $BUILD_UUID \
+          bldst state update $BUILD_UUID \
             --state 25 \
             --message "Packer build completed"
 
@@ -208,13 +208,13 @@ jobs:
         - |
           BUILD_UUID=$(cat build-uuid.txt)
 
-          buildctl state update $BUILD_UUID \
+          bldst state update $BUILD_UUID \
             --state 50 \
             --message "Starting Ansible configuration"
 
           ansible-playbook playbook.yml
 
-          buildctl state update $BUILD_UUID \
+          bldst state update $BUILD_UUID \
             --state 75 \
             --message "Ansible configuration completed"
 
@@ -227,7 +227,7 @@ jobs:
         - |
           BUILD_UUID=$(cat build-uuid.txt)
 
-          buildctl state update $BUILD_UUID \
+          bldst state update $BUILD_UUID \
             --state 100 \
             --message "Build completed successfully"
 
@@ -241,7 +241,7 @@ jobs:
         - -c
         - |
           BUILD_UUID=$(cat build-uuid.txt)
-          buildctl failure record $BUILD_UUID \
+          bldst failure record $BUILD_UUID \
             --error "Pipeline failed at stage: ${FAILED_JOB}" \
             --code "PIPELINE_FAILURE" \
             --component "concourse"
@@ -252,7 +252,7 @@ jobs:
 ### Type Safety & Validation
 ```bash
 # CLI validates input before API call
-buildctl state update <uuid> --state 23
+bldst state update <uuid> --state 23
 ❌ Error: State code must be a multiple of 5 (got 23)
 
 # Curl would send invalid data to API
@@ -268,17 +268,17 @@ curl -X POST /builds/<uuid>/state -d '{"state_code": 23}'
 
 ### Auto-completion & Help
 ```bash
-buildctl --help                    # Show all commands
-buildctl build create --help       # Command-specific help
-buildctl state update --help       # Parameter details
-buildctl <TAB><TAB>               # Auto-complete commands
+bldst --help                    # Show all commands
+bldst build create --help       # Command-specific help
+bldst state update --help       # Parameter details
+bldst <TAB><TAB>               # Auto-complete commands
 ```
 
 ### Configuration Management
 ```bash
 # One-time setup, works everywhere
-buildctl config set-url http://api.example.com
-buildctl auth set-key my-key
+bldst config set-url http://api.example.com
+bldst auth set-key my-key
 
 # No need to remember URLs/keys in every pipeline
 ```
@@ -286,7 +286,7 @@ buildctl auth set-key my-key
 ### Rich Output Formatting
 ```bash
 # Beautiful tables and status indicators
-buildctl dashboard summary
+bldst dashboard summary
 # 📊 Build State Dashboard
 # Total Builds: 42
 # ┌─────────────┬───────┐
@@ -325,7 +325,7 @@ buildctl dashboard summary
 ### API Key Storage
 ```bash
 # Secure storage using system keyring
-buildctl auth set-key your-api-key
+bldst auth set-key your-api-key
 
 # Keys stored securely, not in config files
 ```
@@ -333,14 +333,14 @@ buildctl auth set-key your-api-key
 ### Environment Variables
 ```bash
 # For CI/CD systems
-export BUILDCTL_API_URL=https://api.example.com
-export BUILDCTL_API_KEY=your-key
+export BLDST_API_URL=https://api.example.com
+export BLDST_API_KEY=your-key
 ```
 
 ### JWT Tokens
 ```bash
 # Interactive login with secure token storage
-buildctl auth login
+bldst auth login
 # Tokens automatically refreshed
 ```
 
@@ -373,20 +373,20 @@ python -m build
 pip install dist/buildstate_cli-0.1.0.tar.gz
 
 # Test CLI
-buildctl --help
+bldst --help
 ```
 
 ## 📚 API Reference
 
 ### Commands
 
-- `buildctl config` - Manage configuration
-- `buildctl auth` - Manage authentication
-- `buildctl build` - Build operations
-- `buildctl state` - State management
-- `buildctl failure` - Failure recording
-- `buildctl dashboard` - View summaries
-- `buildctl health` - Health checks
+- `bldst config` - Manage configuration
+- `bldst auth` - Manage authentication
+- `bldst build` - Build operations
+- `bldst state` - State management
+- `bldst failure` - Failure recording
+- `bldst dashboard` - View summaries
+- `bldst health` - Health checks
 
 ### Global Options
 - `--verbose, -v` - Enable verbose output

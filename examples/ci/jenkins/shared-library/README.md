@@ -356,7 +356,7 @@ buildState.start(
 
 **Solutions:**
 - Verify `BUILDSTATE_API_URL` is correct
-- Check API key is valid: test with curl
+- Check API key is valid: test with `bldst health check`
 - Ensure network connectivity from Jenkins agent
 - Enable debug mode: `BUILDSTATE_DEBUG=true`
 - Check API server logs

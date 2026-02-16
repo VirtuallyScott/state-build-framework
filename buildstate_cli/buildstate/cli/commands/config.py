@@ -25,7 +25,7 @@ def config_get_url():
         console.print(f"API URL: {url}")
     else:
         console.print("[red]❌ API URL not configured[/red]")
-        console.print("[dim]Run 'buildctl config set-url <url>' to configure[/dim]")
+        console.print("[dim]Run 'bldst config set-url <url>' to configure[/dim]")
 
 
 @app.command("show")

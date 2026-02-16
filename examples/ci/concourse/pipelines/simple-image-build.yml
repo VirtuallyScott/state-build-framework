@@ -1,0 +1,355 @@
+# Simple Image Build Pipeline with Build State Tracking
+#
+# This pipeline demonstrates basic image building with build state tracking
+# using the bldst CLI. It builds a single OS image and tracks progress through
+# the Build State API.
+#
+# Usage:
+#   fly -t <target> set-pipeline -p simple-build \
+#     -c simple-image-build.yml \
+#     -v buildstate-api-url=https://api.example.com \
+#     -v buildstate-api-key=((secret)) \
+#     -v project-id=<uuid>
+
+resources:
+  # Source code repository with Packer templates
+  - name: packer-templates
+    type: git
+    source:
+      uri: https://github.com/your-org/packer-templates.git
+      branch: main
+  
+  # Optional: Trigger on schedule (nightly builds)
+  - name: nightly-trigger
+    type: time
+    source:
+      interval: 24h
+      start: 2:00 AM
+      stop: 3:00 AM
+      location: America/New_York
+
+jobs:
+  - name: build-rhel-image
+    # Build a RHEL 8 base image with state tracking
+    serial: true  # Prevent parallel builds
+    
+    plan:
+      # 1. Get source code
+      - get: packer-templates
+        trigger: true
+      
+      # Optional: Auto-trigger nightly
+      - get: nightly-trigger
+        trigger: true
+      
+      # 2. Initialize build state tracking
+      - task: init-build-state
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: python
+              tag: "3.11-slim"
+          
+          outputs:
+            - name: build-info  # Pass build UUID to next tasks
+          
+          params:
+            # API Configuration (from pipeline variables or secrets)
+            BLDST_API_URL: ((buildstate-api-url))
+            BLDST_API_KEY: ((buildstate-api-key))
+            
+            # Build Configuration
+            PROJECT_ID: ((project-id))
+            BUILD_NAME: "rhel-8-base"
+            PLATFORM: "aws-commercial"
+            OS_VERSION: "rhel-8.10"
+            IMAGE_TYPE: "base"
+          
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                # Install bldst CLI
+                pip3 install --quiet buildstate-cli
+                
+                # Configure API access
+                bldst config set-url "$BLDST_API_URL"
+                bldst auth set-key "$BLDST_API_KEY"
+                
+                # Verify connection
+                echo "Verifying API connection..."
+                bldst health check
+                
+                # Get reference data UUIDs
+                echo "Looking up reference data..."
+                PLATFORM_UUID=$(bldst platform list --output json | \
+                  jq -r ".[] | select(.name==\"$PLATFORM\") | .id")
+                OS_UUID=$(bldst os-version list --output json | \
+                  jq -r ".[] | select(.version==\"$OS_VERSION\") | .id")
+                IMAGE_TYPE_UUID=$(bldst image-type list --output json | \
+                  jq -r ".[] | select(.name==\"$IMAGE_TYPE\") | .id")
+                PROJECT_UUID="$PROJECT_ID"
+                
+                # Create build record
+                echo "Creating build record..."
+                BUILD_UUID=$(bldst build create \
+                  --build-number "$BUILD_NAME-$BUILD_ID" \
+                  --project-id "$PROJECT_UUID" \
+                  --platform-id "$PLATFORM_UUID" \
+                  --os-version-id "$OS_UUID" \
+                  --image-type-id "$IMAGE_TYPE_UUID" \
+                  --created-by "concourse-$BUILD_PIPELINE_NAME" \
+                  --concourse-url "$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME" \
+                  --output json | jq -r '.id')
+                
+                # Save build UUID for subsequent tasks
+                echo "$BUILD_UUID" > build-info/uuid.txt
+                
+                echo "✓ Build state tracking initialized"
+                echo "  Build UUID: $BUILD_UUID"
+                echo "  Platform: $PLATFORM"
+                echo "  OS Version: $OS_VERSION"
+      
+      # 3. Update state: Preparation phase
+      - task: state-preparing
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: python
+              tag: "3.11-slim"
+          
+          inputs:
+            - name: build-info
+          
+          params:
+            BLDST_API_URL: ((buildstate-api-url))
+            BLDST_API_KEY: ((buildstate-api-key))
+          
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                pip3 install --quiet buildstate-cli
+                bldst config set-url "$BLDST_API_URL"
+                bldst auth set-key "$BLDST_API_KEY"
+                
+                BUILD_UUID=$(cat build-info/uuid.txt)
+                bldst build add-state "$BUILD_UUID" \
+                  --state 10 \
+                  --status "Preparing build environment"
+      
+      # 4. Run Packer build
+      - task: packer-build
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              # Use image with Packer, Ansible, and bldst CLI pre-installed
+              repository: your-registry/packer-builder
+              tag: latest
+          
+          inputs:
+            - name: packer-templates
+            - name: build-info
+          
+          outputs:
+            - name: build-artifacts  # AMI IDs, snapshots, etc.
+          
+          params:
+            BLDST_API_URL: ((buildstate-api-url))
+            BLDST_API_KEY: ((buildstate-api-key))
+            AWS_ACCESS_KEY_ID: ((aws.access_key))
+            AWS_SECRET_ACCESS_KEY: ((aws.secret_key))
+            AWS_REGION: us-east-1
+          
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                BUILD_UUID=$(cat build-info/uuid.txt)
+                
+                # Update state: Starting Packer
+                bldst config set-url "$BLDST_API_URL"
+                bldst auth set-key "$BLDST_API_KEY"
+                bldst build add-state "$BUILD_UUID" \
+                  --state 25 \
+                  --status "Starting Packer build"
+                
+                # Run Packer
+                cd packer-templates
+                packer init .
+                packer build \
+                  -var "build_uuid=$BUILD_UUID" \
+                  -var "bldst_api_url=$BLDST_API_URL" \
+                  -var "bldst_api_key=$BLDST_API_KEY" \
+                  rhel-8-base.pkr.hcl
+                
+                # Extract AMI ID from manifest
+                AMI_ID=$(jq -r '.builds[0].artifact_id' manifest.json | cut -d: -f2)
+                echo "$AMI_ID" > ../build-artifacts/ami-id.txt
+                
+                # Update state: Packer complete
+                bldst build add-state "$BUILD_UUID" \
+                  --state 50 \
+                  --status "Packer build completed successfully"
+      
+      # 5. Record build artifacts
+      - task: record-artifacts
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: python
+              tag: "3.11-slim"
+          
+          inputs:
+            - name: build-info
+            - name: build-artifacts
+          
+          params:
+            BLDST_API_URL: ((buildstate-api-url))
+            BLDST_API_KEY: ((buildstate-api-key))
+          
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                pip3 install --quiet buildstate-cli
+                bldst config set-url "$BLDST_API_URL"
+                bldst auth set-key "$BLDST_API_KEY"
+                
+                BUILD_UUID=$(cat build-info/uuid.txt)
+                AMI_ID=$(cat build-artifacts/ami-id.txt)
+                
+                # Record AMI as artifact
+                # Note: This requires artifact tracking endpoints
+                # See resumable builds example for full implementation
+                echo "AMI created: $AMI_ID"
+                
+                # Update state: Tests starting
+                bldst build add-state "$BUILD_UUID" \
+                  --state 75 \
+                  --status "Running validation tests"
+      
+      # 6. Run validation tests
+      - task: validate-image
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: your-registry/test-runner
+              tag: latest
+          
+          inputs:
+            - name: build-info
+            - name: build-artifacts
+          
+          params:
+            AWS_ACCESS_KEY_ID: ((aws.access_key))
+            AWS_SECRET_ACCESS_KEY: ((aws.secret_key))
+            AWS_REGION: us-east-1
+          
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                AMI_ID=$(cat build-artifacts/ami-id.txt)
+                
+                # Run your validation tests here
+                echo "Validating AMI: $AMI_ID"
+                # Example: Launch instance, run tests, terminate
+      
+      # 7. Complete build
+      - task: complete-build
+        config:
+          platform: linux
+          image_resource:
+            type: registry-image
+            source:
+              repository: python
+              tag: "3.11-slim"
+          
+          inputs:
+            - name: build-info
+            - name: build-artifacts
+          
+          params:
+            BLDST_API_URL: ((buildstate-api-url))
+            BLDST_API_KEY: ((buildstate-api-key))
+          
+          run:
+            path: sh
+            args:
+              - -exc
+              - |
+                pip3 install --quiet buildstate-cli
+                bldst config set-url "$BLDST_API_URL"
+                bldst auth set-key "$BLDST_API_KEY"
+                
+                BUILD_UUID=$(cat build-info/uuid.txt)
+                AMI_ID=$(cat build-artifacts/ami-id.txt)
+                
+                # Mark build as complete
+                bldst build add-state "$BUILD_UUID" \
+                  --state 100 \
+                  --status "Build completed successfully - AMI: $AMI_ID"
+                
+                # Display final status
+                echo "Build completed successfully!"
+                bldst build get "$BUILD_UUID"
+    
+    # Handle build failures
+    on_failure:
+      task: record-failure
+      config:
+        platform: linux
+        image_resource:
+          type: registry-image
+          source:
+            repository: python
+            tag: "3.11-slim"
+        
+        inputs:
+          - name: build-info
+        
+        params:
+          BLDST_API_URL: ((buildstate-api-url))
+          BLDST_API_KEY: ((buildstate-api-key))
+        
+        run:
+          path: sh
+          args:
+            - -exc
+            - |
+              pip3 install --quiet buildstate-cli
+              bldst config set-url "$BLDST_API_URL"
+              bldst auth set-key "$BLDST_API_KEY"
+              
+              BUILD_UUID=$(cat build-info/uuid.txt 2>/dev/null || echo "unknown")
+              
+              if [ "$BUILD_UUID" != "unknown" ]; then
+                # Get current state to determine failure point
+                CURRENT_STATE=$(bldst build get "$BUILD_UUID" --output json | jq -r '.current_state // 0')
+                
+                # Record failure
+                bldst build add-failure "$BUILD_UUID" \
+                  --state "$CURRENT_STATE" \
+                  --type "PIPELINE_FAILURE" \
+                  --message "Build pipeline failed at stage: $BUILD_JOB_NAME"
+                
+                echo "Build failure recorded"
+              else
+                echo "Could not record failure - build UUID not available"
+              fi

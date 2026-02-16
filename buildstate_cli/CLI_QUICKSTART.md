@@ -13,19 +13,19 @@ pip install -e .
 
 ### 1. Set API URL
 ```bash
-buildctl config set-url http://localhost:8080
+bldst config set-url http://localhost:8080
 ```
 
 ### 2. Configure Authentication
 
 **Option A: API Key (recommended for automation)**
 ```bash
-buildctl config set-key dev-key-12345
+bldst config set-key dev-key-12345
 ```
 
 **Option B: JWT Token (for interactive use)**
 ```bash
-buildctl auth login
+bldst auth login
 # Enter username and password when prompted
 ```
 
@@ -35,12 +35,12 @@ buildctl auth login
 
 **List all platforms:**
 ```bash
-buildctl platform list
+bldst platform list
 ```
 
 **Create a platform (requires write permission):**
 ```bash
-buildctl platform create \
+bldst platform create \
   --name "my-aws-platform" \
   --cloud-provider "aws" \
   --region "us-east-1"
@@ -48,80 +48,80 @@ buildctl platform create \
 
 **Get platform details:**
 ```bash
-buildctl platform get <platform-id>
+bldst platform get <platform-id>
 ```
 
 **Update a platform (requires write permission):**
 ```bash
-buildctl platform update <platform-id> \
+bldst platform update <platform-id> \
   --region "us-west-2"
 ```
 
 **Delete a platform (requires admin permission):**
 ```bash
-buildctl platform delete <platform-id>
+bldst platform delete <platform-id>
 ```
 
 ### OS Version Management
 
 **List all OS versions:**
 ```bash
-buildctl os-version list
+bldst os-version list
 ```
 
 **Create an OS version (requires write permission):**
 ```bash
-buildctl os-version create \
+bldst os-version create \
   --name "Red Hat Enterprise Linux" \
   --version "9.3"
 ```
 
 **Update an OS version (requires write permission):**
 ```bash
-buildctl os-version update <os-version-id> \
+bldst os-version update <os-version-id> \
   --version "9.4"
 ```
 
 **Delete an OS version (requires admin permission):**
 ```bash
-buildctl os-version delete <os-version-id>
+bldst os-version delete <os-version-id>
 ```
 
 ### Image Type Management
 
 **List all image types:**
 ```bash
-buildctl image-type list
+bldst image-type list
 ```
 
 **Create an image type (requires write permission):**
 ```bash
-buildctl image-type create \
+bldst image-type create \
   --name "kubernetes-node" \
   --description "Kubernetes worker node image"
 ```
 
 **Update an image type (requires write permission):**
 ```bash
-buildctl image-type update <image-type-id> \
+bldst image-type update <image-type-id> \
   --description "Updated description"
 ```
 
 **Delete an image type (requires admin permission):**
 ```bash
-buildctl image-type delete <image-type-id>
+bldst image-type delete <image-type-id>
 ```
 
 ### Project Management
 
 **List all projects:**
 ```bash
-buildctl project list
+bldst project list
 ```
 
 **Create a project (requires write permission):**
 ```bash
-buildctl project create \
+bldst project create \
   --name "my-project" \
   --description "My build project"
 ```
@@ -130,17 +130,17 @@ buildctl project create \
 
 **List all builds:**
 ```bash
-buildctl build list
+bldst build list
 ```
 
 **Get build details:**
 ```bash
-buildctl build get <build-id>
+bldst build get <build-id>
 ```
 
 **Get build states:**
 ```bash
-buildctl build states <build-id>
+bldst build states <build-id>
 ```
 
 ## Authorization Levels
@@ -171,7 +171,7 @@ Three test API keys are available:
 By default, output is formatted as a table. Use `--output json` for JSON output:
 
 ```bash
-buildctl platform list --output json
+bldst platform list --output json
 ```
 
 ## Health Check
@@ -179,20 +179,20 @@ buildctl platform list --output json
 Verify API connectivity:
 
 ```bash
-buildctl health check
+bldst health check
 ```
 
 ## Configuration Management
 
 **View current configuration:**
 ```bash
-buildctl config show
+bldst config show
 ```
 
 **Clear stored credentials:**
 ```bash
-buildctl auth logout        # Clear JWT token
-buildctl auth clear-key     # Clear API key
+bldst auth logout        # Clear JWT token
+bldst auth clear-key     # Clear API key
 ```
 
 ## Examples
@@ -201,37 +201,37 @@ buildctl auth clear-key     # Clear API key
 
 ```bash
 # 1. Configure CLI
-buildctl config set-url http://localhost:8080
-buildctl config set-key dev-key-12345
+bldst config set-url http://localhost:8080
+bldst config set-key dev-key-12345
 
 # 2. List existing resources
-buildctl platform list
-buildctl os-version list
-buildctl image-type list
+bldst platform list
+bldst os-version list
+bldst image-type list
 
 # 3. Create new resources
-PLATFORM_ID=$(buildctl platform create \
+PLATFORM_ID=$(bldst platform create \
   --name "production-aws" \
   --cloud-provider "aws" \
   --region "us-east-1" \
   --output json | jq -r '.id')
 
-OS_ID=$(buildctl os-version create \
+OS_ID=$(bldst os-version create \
   --name "Ubuntu" \
   --version "22.04" \
   --output json | jq -r '.id')
 
-IMAGE_ID=$(buildctl image-type create \
+IMAGE_ID=$(bldst image-type create \
   --name "web-server" \
   --description "Nginx web server" \
   --output json | jq -r '.id')
 
 # 4. Update resources
-buildctl platform update $PLATFORM_ID --region "us-west-2"
+bldst platform update $PLATFORM_ID --region "us-west-2"
 
 # 5. Soft delete (requires admin key)
-buildctl config set-key admin-key-99999
-buildctl platform delete $PLATFORM_ID
+bldst config set-key admin-key-99999
+bldst platform delete $PLATFORM_ID
 ```
 
 ### Automated Script Example
@@ -242,20 +242,20 @@ buildctl platform delete $PLATFORM_ID
 export BUILDSTATE_API_KEY="${BUILDSTATE_API_KEY}"
 
 # Configure CLI
-buildctl config set-url "${BUILDSTATE_API_URL}"
-buildctl config set-key "${BUILDSTATE_API_KEY}"
+bldst config set-url "${BUILDSTATE_API_URL}"
+bldst config set-key "${BUILDSTATE_API_KEY}"
 
 # List platforms and filter
-buildctl platform list --output json | \
+bldst platform list --output json | \
   jq -r '.[] | select(.cloud_provider == "aws") | .name'
 ```
 
 ## Troubleshooting
 
 **"Authentication failed" error:**
-- Verify API URL is correct: `buildctl config show`
-- Check API key is valid: `buildctl config set-key <your-key>`
-- Test API connectivity: `buildctl health check`
+- Verify API URL is correct: `bldst config show`
+- Check API key is valid: `bldst config set-key <your-key>`
+- Test API connectivity: `bldst health check`
 
 **"Permission denied" errors:**
 - Check your API token has appropriate scopes
@@ -274,15 +274,15 @@ For interactive use, you can use JWT tokens instead of API keys:
 
 ```bash
 # Login with username/password
-buildctl auth login
+bldst auth login
 # Username: admin
 # Password: admin123
 
 # Use the CLI (JWT token is automatically used)
-buildctl platform list
+bldst platform list
 
 # Logout when done
-buildctl auth logout
+bldst auth logout
 ```
 
 ### Scripting with the CLI
@@ -291,11 +291,11 @@ The CLI is designed for automation:
 
 ```bash
 # Get all platforms and process with jq
-buildctl platform list --output json | \
+bldst platform list --output json | \
   jq -r '.[] | "\(.name): \(.cloud_provider) (\(.region))"'
 
 # Check if specific platform exists
-if buildctl platform get "my-platform" > /dev/null 2>&1; then
+if bldst platform get "my-platform" > /dev/null 2>&1; then
   echo "Platform exists"
 else
   echo "Platform not found"
