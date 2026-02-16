@@ -15,7 +15,7 @@ class Config:
     """Configuration manager for BuildState CLI."""
 
     def __init__(self, config_file: Optional[Path] = None):
-        self.config_file = config_file or Path.home() / '.buildctl.yaml'
+        self.config_file = config_file or Path.home() / '.bldst.yaml'
         self._config = self._load_config()
 
     def _load_config(self) -> Dict[str, Any]:
@@ -39,7 +39,7 @@ class Config:
         """Get API URL."""
         return (
             self._config.get('api_url') or
-            os.getenv('BUILDCTL_API_URL')
+            os.getenv('BLDST_API_URL')
         )
 
     @api_url.setter
@@ -52,7 +52,7 @@ class Config:
     def api_key(self) -> Optional[str]:
         """Get API key from config or keyring."""
         # Try environment variable first
-        env_key = os.getenv('BUILDCTL_API_KEY')
+        env_key = os.getenv('BLDST_API_KEY')
         if env_key:
             return env_key
 
@@ -96,7 +96,7 @@ class Config:
         """Get JWT token."""
         return (
             self._config.get('jwt_token') or
-            os.getenv('BUILDCTL_JWT_TOKEN')
+            os.getenv('BLDST_JWT_TOKEN')
         )
 
     @jwt_token.setter
