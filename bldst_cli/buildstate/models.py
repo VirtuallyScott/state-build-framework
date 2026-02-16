@@ -351,3 +351,118 @@ class StateCodeResponse(StateCodeBase):
 
     class Config:
         from_attributes = True
+
+
+# ============================================================================
+# RESUMABLE BUILDS MODELS
+# ============================================================================
+
+class BuildArtifactBase(BaseModel):
+    artifact_name: str
+    artifact_type: str
+    artifact_path: str
+    storage_backend: str
+    storage_region: Optional[str] = None
+    storage_bucket: Optional[str] = None
+    storage_key: Optional[str] = None
+    size_bytes: Optional[int] = None
+    checksum: Optional[str] = None
+    checksum_algorithm: str = 'sha256'
+    is_resumable: bool = True
+    is_final: bool = False
+    expires_at: Optional[datetime] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class BuildArtifactCreate(BuildArtifactBase):
+    state_code: int
+
+
+class BuildArtifactUpdate(BaseModel):
+    artifact_name: Optional[str] = None
+    artifact_type: Optional[str] = None
+    artifact_path: Optional[str] = None
+    is_resumable: Optional[bool] = None
+    is_final: Optional[bool] = None
+    expires_at: Optional[datetime] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class BuildArtifactResponse(BuildArtifactBase):
+    id: str
+    build_id: str
+    state_code: int
+    created_at: datetime
+    updated_at: datetime
+    deleted_at: Optional[datetime] = None
+
+    class Config:
+        from_attributes = True
+
+
+class BuildVariableBase(BaseModel):
+    variable_key: str
+    variable_value: str
+    variable_type: str = 'string'
+    set_at_state: Optional[int] = None
+    is_sensitive: bool = False
+    is_required_for_resume: bool = False
+
+
+class BuildVariableCreate(BuildVariableBase):
+    pass
+
+
+class BuildVariableUpdate(BaseModel):
+    variable_value: Optional[str] = None
+    variable_type: Optional[str] = None
+    is_sensitive: Optional[bool] = None
+    is_required_for_resume: Optional[bool] = None
+
+
+class BuildVariableResponse(BuildVariableBase):
+    id: str
+    build_id: str
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class ResumeRequestBase(BaseModel):
+    resume_from_state: int
+    resume_to_state: Optional[int] = None
+    resume_reason: Optional[str] = None
+    requested_by: Optional[str] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class ResumeRequestCreate(ResumeRequestBase):
+    request_source: str = 'cli'
+
+
+class ResumeRequestUpdate(BaseModel):
+    orchestration_job_id: Optional[str] = None
+    orchestration_job_url: Optional[str] = None
+    orchestration_status: Optional[str] = None
+    triggered_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+
+
+class ResumeRequestResponse(ResumeRequestBase):
+    id: str
+    build_id: str
+    request_source: str
+    orchestration_job_id: Optional[str] = None
+    orchestration_job_url: Optional[str] = None
+    orchestration_status: Optional[str] = None
+    triggered_at: Optional[datetime] = None
+    completed_at: Optional[datetime] = None
+    error_message: Optional[str] = None
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True

@@ -110,6 +110,68 @@ bldst state update <build-uuid> --state 50 --message "Ansible configuration runn
 bldst state update <build-uuid> --state 100 --message "Build completed successfully"
 ```
 
+### Manage Build Artifacts (Resumable Builds)
+
+```bash
+# Register an artifact after creating a VM snapshot
+bldst artifact create <build-id> \
+  --name "base-vm-snapshot" \
+  --type "vm_snapshot" \
+  --path "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2" \
+  --state 20 \
+  --backend "s3" \
+  --region "us-east-1" \
+  --bucket "my-builds" \
+  --key "project-123/build-456/state-20/snapshot.qcow2" \
+  --size 2147483648 \
+  --checksum "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789" \
+  --resumable
+
+# List all artifacts for a build
+bldst artifact list <build-id>
+
+# List only resumable artifacts (for recovery)
+bldst artifact list-resumable <build-id>
+
+# Get details of a specific artifact
+bldst artifact get <build-id> <artifact-id>
+
+# Update artifact metadata
+bldst artifact update <build-id> <artifact-id> \
+  --final \
+  --name "final-ami"
+
+# Delete an artifact record (soft delete)
+bldst artifact delete <build-id> <artifact-id> --yes
+```
+
+**Artifact Storage Benefits:**
+- **SHA256 Checksums**: All artifacts stored with checksums for integrity verification
+- **Resumable Builds**: Resume from last successful state using stored artifacts
+- **Multi-Backend Support**: S3, Azure Blob, GCP Storage, NFS, local storage, and more
+- **Metadata Tracking**: Store VM IDs, snapshot IDs, AMI IDs, and custom metadata
+- **Size Tracking**: Track artifact sizes for capacity planning and cleanup
+
+> 📖 **See Also:**
+> - [Resumable Builds Design](../docs/RESUMABLE-BUILDS-DESIGN.md)
+> - [Artifact Storage Documentation](../docs/ARTIFACT-STORAGE.md)
+> - [Resumable Builds Quickstart](../docs/RESUMABLE-BUILDS-QUICKSTART.md)
+
+### Add Build State with Artifact Information
+
+```bash
+# Add state with artifact storage details
+bldst build add-state <build-id> \
+  --state 20 \
+  --status "completed" \
+  --storage-type "s3" \
+  --storage-path "s3://my-builds/project-123/build-456/state-20/base.qcow2" \
+  --artifact-size 2147483648 \
+  --checksum "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+```
+
+This automatically tracks the artifact location in both the `build_states` table (for quick reference) and can be used with dedicated artifact management for full resumability support.
+
 ### Record Failures
 ```bash
 # Record build failure

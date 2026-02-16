@@ -4,13 +4,15 @@ This document outlines the database schema for the State-Based Build Framework.
 
 ## Overview
 
-The database consists of 16 tables organized into the following logical groups:
+The database consists of 17 tables organized into the following logical groups:
 - **Platform Configuration**: platforms, os_versions, image_types
 - **Project Management**: projects
 - **Build Tracking**: builds, build_states, build_failures
 - **Authentication & Authorization**: users, user_profiles, api_tokens
 - **State Configuration**: state_codes
 - **Resumable Builds**: build_artifacts, build_variables, resumable_states, resume_requests, build_jobs
+
+All artifacts are tracked with **SHA256 checksums** for integrity verification, supporting distributed build systems where multiple build servers access shared artifacts from cloud storage (S3, Azure Blob, GCP Storage, NFS, etc.).
 
 ## Tables
 
@@ -95,7 +97,7 @@ Main table for build records.
 
 ### `build_states`
 
-History of state transitions for each build.
+History of state transitions for each build. Includes artifact storage tracking for quick reference.
 
 | Column | Data Type | Constraints | Description |
 | :--- | :--- | :--- | :--- |
@@ -108,7 +110,17 @@ History of state transitions for each build.
 | `duration_seconds` | INTEGER | NULL | |
 | `error_message` | TEXT | NULL | |
 | `retry_count` | INTEGER | NULL | |
+| `artifact_storage_type` | VARCHAR(50) | NULL, INDEXED | Type: s3, nfs, ebs, ceph, local, etc. |
+| `artifact_storage_path` | TEXT | NULL | Full path/URI to stored artifact |
+| `artifact_size_bytes` | BIGINT | NULL | Size of artifact in bytes |
+| `artifact_checksum` | VARCHAR(128) | NULL | SHA256 or MD5 checksum |
+| `artifact_metadata` | JSONB | NULL | Additional artifact metadata |
 | `created_at` | TIMESTAMPTZ | NOT NULL | ISO UTC timestamp |
+
+**Relationships:**
+- Many-to-one with `builds`
+
+**Note:** The `artifact_storage_*` fields provide quick artifact reference. For full artifact lifecycle management, use the `build_artifacts` table.
 
 ### `build_failures`
 
@@ -361,12 +373,19 @@ Links builds to CI/CD job information for tracking and coordination.
 - `idx_builds_image_type_id`: on `builds(image_type_id)`
 - `idx_builds_status`: on `builds(status)`
 - `idx_build_states_build_id`: on `build_states(build_id)`
+- `idx_build_states_artifact_storage_type`: on `build_states(artifact_storage_type)`
+- `idx_build_states_build_id_state`: on `build_states(build_id, state)`
 - `idx_build_failures_build_id`: on `build_failures(build_id)`
 - `idx_projects_parent_project_id`: on `projects(parent_project_id)`
 
 ### Authentication Tables
 - `idx_users_username`: on `users(username)` - Unique index
 - `idx_users_email`: on `users(email)` - Unique index
+- `idx_users_active`: on `users(is_active)` WHERE `is_active = TRUE`
+- `idx_user_profiles_user_id`: on `user_profiles(user_id)`
+- `idx_user_profiles_employee_id`: on `user_profiles(employee_id)`
+- `idx_api_tokens_user_id`: on `api_tokens(user_id)`
+- `idx_api_tokens_active`: on `api_tokens(is_active)` WHERE `is_active = TRUE`
 
 ### Build Artifacts Tables
 - `idx_build_artifacts_build_id`: on `build_artifacts(build_id)`
@@ -381,7 +400,7 @@ Links builds to CI/CD job information for tracking and coordination.
 - `idx_build_variables_required`: on `build_variables(is_required_for_resume)` WHERE `is_required_for_resume = TRUE`
 
 ### Resumable States Tables
-- `idx_resumable_states_project`: on `resumable_states(project_id)`
+- `idx_resumable_states_project`: on `resumable_states(project_id)` (when project_id FK exists)
 - `idx_resumable_states_resumable`: on `resumable_states(is_resumable)` WHERE `is_resumable = TRUE`
 
 ### Resume Requests Tables
@@ -509,6 +528,11 @@ erDiagram
         TEXT status
         TIMESTAMPTZ start_time
         TIMESTAMPTZ end_time
+        VARCHAR artifact_storage_type
+        TEXT artifact_storage_path
+        BIGINT artifact_size_bytes
+        VARCHAR artifact_checksum
+        JSONB artifact_metadata
     }
 
     BUILD_FAILURES {
@@ -567,8 +591,18 @@ erDiagram
         TEXT artifact_type
         TEXT artifact_path
         TEXT storage_backend
+        TEXT storage_region
+        TEXT storage_bucket
+        TEXT storage_key
+        BIGINT size_bytes
+        TEXT checksum
+        TEXT checksum_algorithm
         BOOLEAN is_resumable
         BOOLEAN is_final
+        TIMESTAMPTZ expires_at
+        JSONB metadata
+        TIMESTAMPTZ created_at
+        TIMESTAMPTZ deleted_at
     }
 
     BUILD_VARIABLES {
@@ -653,21 +687,36 @@ This schema has evolved through the following major additions:
 - Most tables use UUID/TEXT for `id` fields to support distributed systems and avoid ID collisions
 - State codes use INTEGER for sequential ordering and human-friendly references
 
+### Artifact Integrity & Checksums
+- All artifacts tracked with SHA256 checksums (default algorithm)
+- `checksum` field stores the hash value for verification
+- `checksum_algorithm` field allows flexibility (sha256, md5, etc.)
+- Enables integrity verification when downloading artifacts from storage
+- Critical for distributed build systems where artifacts move between servers
+
 ### Soft Deletes
 - `build_artifacts` uses soft deletes (`deleted_at`) for audit trails
 - Users have `deactivated_at` instead of hard deletes
+- Preserves history while marking records as inactive
 
 ### Indexing Strategy
 - Partial indexes on boolean fields (e.g., `WHERE is_resumable = TRUE`) to optimize common queries
 - Composite indexes on frequently joined columns (e.g., `platform, job_id`)
 - Descending index on `created_at` for recent-first queries
+- Artifact storage type indexed for quick lookups by storage backend
 
 ### JSON/JSONB Usage
 - Flexible metadata storage in `metadata` columns
 - Configuration arrays in `required_artifacts` and `required_variables`
 - Token scopes stored as JSON for extensibility
+- Artifact metadata stores VM IDs, snapshot IDs, AMI IDs, and custom data
 
 ### Timestamp Strategy
 - All timestamps use `TIMESTAMPTZ` (timestamp with time zone) for global consistency
 - `server_default=func.now()` ensures database-level timestamp accuracy
 - Separate `created_at` and `updated_at` fields with trigger-based updates
+
+### Dual Artifact Tracking
+- **build_states table**: Quick artifact reference for state transitions
+- **build_artifacts table**: Full lifecycle management with resumability support
+- Provides both performance (quick lookups) and flexibility (comprehensive tracking)

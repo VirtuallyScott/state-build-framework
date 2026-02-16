@@ -2,25 +2,47 @@
 
 ## Overview
 
-The Build State API now tracks artifact storage locations for each build state. This enables distributed build systems where multiple build servers can access shared artifacts stored on various storage backends (S3, NFS, EBS, Ceph, etc.).
+The Build State API provides comprehensive artifact storage tracking to enable resumable builds and distributed build systems. Artifacts are tracked in two complementary ways:
 
-When a build state completes and produces an artifact, the system records where that artifact is stored so that subsequent build states can retrieve it from any server in the build server pool.
+1. **Build States Table** - Quick artifact reference for each build state transition
+2. **Build Artifacts Table** - Comprehensive artifact registry with full metadata and lifecycle management
 
-## Use Case
+This dual approach allows for:
+- Quick lookups during state transitions (via `build_states`)
+- Full artifact lifecycle management for resumable builds (via `build_artifacts`)
+- Distributed build systems where multiple servers share artifacts via cloud storage
+- Integrity verification using SHA256 checksums
+
+## Use Cases
+
+### 1. Distributed Build Systems
 
 In a distributed build environment:
 
 1. **Build Server A** completes state 10 and produces an artifact (e.g., a base VM image)
 2. **Build Server A** uploads the artifact to shared storage (e.g., S3)
-3. **Build Server A** records the artifact location in the build state
+3. **Build Server A** records the artifact location in the database
 4. **Build Server B** picks up state 20 for the same build
-5. **Build Server B** queries the build state history to find the artifact from state 10
+5. **Build Server B** queries the artifact registry to find the artifact from state 10
 6. **Build Server B** downloads the artifact from the shared storage location
-7. **Build Server B** uses the artifact as the base for state 20 work
+7. **Build Server B** verifies integrity using SHA256 checksum
+8. **Build Server B** uses the artifact as the base for state 20 work
+
+### 2. Resumable Builds
+
+When a build fails:
+
+1. Query `build_artifacts` for resumable artifacts (`is_resumable = TRUE`)
+2. Find the last successful state with a resumable artifact
+3. Restore VM/environment from the stored artifact
+4. Resume build from the next state
+5. Save hours of rebuild time
 
 ## Database Schema
 
-The `build_states` table includes the following artifact tracking fields:
+### Build States Table (Quick Reference)
+
+The `build_states` table includes artifact tracking fields for quick lookups:
 
 | Column | Type | Description |
 |--------|------|-------------|
@@ -29,6 +51,40 @@ The `build_states` table includes the following artifact tracking fields:
 | `artifact_size_bytes` | BIGINT | Size of the artifact in bytes |
 | `artifact_checksum` | VARCHAR(128) | SHA256 or MD5 checksum for verification |
 | `artifact_metadata` | JSONB | Additional metadata about the artifact |
+
+### Build Artifacts Table (Full Registry)
+
+The `build_artifacts` table provides comprehensive artifact management:
+
+| Column | Type | Description |
+|--------|------|-------------|
+| `id` | TEXT (UUID) | Unique artifact identifier |
+| `build_id` | TEXT (UUID) | Build this artifact belongs to |
+| `state_code` | INTEGER | State at which this artifact was created |
+| `artifact_name` | TEXT | Unique name within the build |
+| `artifact_type` | TEXT | Type: vm_snapshot, ami, disk_image, config_file, etc. |
+| `artifact_path` | TEXT | Full path/URL to the artifact |
+| `storage_backend` | TEXT | Backend: s3, azure_blob, gcp_storage, local, vsphere, nfs, etc. |
+| `storage_region` | TEXT | Storage region (if applicable) |
+| `storage_bucket` | TEXT | Bucket or container name |
+| `storage_key` | TEXT | Key/path within bucket |
+| `size_bytes` | BIGINT | Size of artifact in bytes |
+| `checksum` | TEXT | SHA256 checksum for integrity verification |
+| `checksum_algorithm` | TEXT | Algorithm used (default: sha256) |
+| `is_resumable` | BOOLEAN | Can this artifact be used to resume builds? |
+| `is_final` | BOOLEAN | Is this the final deliverable? |
+| `expires_at` | TIMESTAMP | When to clean up temporary artifacts |
+| `metadata` | JSONB | Additional metadata (VM IDs, snapshot IDs, etc.) |
+| `created_at` | TIMESTAMP | When the artifact was registered |
+| `updated_at` | TIMESTAMP | Last update time |
+| `deleted_at` | TIMESTAMP | Soft delete timestamp for audit |
+
+**Indexes:**
+- `idx_build_artifacts_build_id` - Fast lookups by build
+- `idx_build_artifacts_state_code` - Find artifacts by state
+- `idx_build_artifacts_type` - Filter by artifact type
+- `idx_build_artifacts_resumable` - Find resumable artifacts only
+- Unique constraint on `(build_id, artifact_name)`
 
 ## Supported Storage Types
 
@@ -130,6 +186,114 @@ curl -X POST "http://localhost:8080/builds/{build_id}/state" \
 }
 ```
 
+### Managing Build Artifacts (Full Registry)
+
+The Build Artifacts API provides comprehensive artifact lifecycle management for resumable builds.
+
+#### Creating a Build Artifact
+
+Register an artifact with full metadata and checksum:
+
+**Request:**
+```bash
+curl -X POST "http://localhost:8080/builds/{build_id}/artifacts" \
+  -H "X-API-Key: dev-key-12345" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "state_code": 20,
+    "artifact_name": "base-vm-snapshot",
+    "artifact_type": "vm_snapshot",
+    "artifact_path": "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2",
+    "storage_backend": "s3",
+    "storage_region": "us-east-1",
+    "storage_bucket": "my-builds",
+    "storage_key": "project-123/build-456/state-20/snapshot.qcow2",
+    "size_bytes": 2147483648,
+    "checksum": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+    "checksum_algorithm": "sha256",
+    "is_resumable": true,
+    "is_final": false,
+    "metadata": {
+      "vm_id": "vm-abc123",
+      "snapshot_id": "snap-xyz789",
+      "disk_format": "qcow2",
+      "compression": "none"
+    }
+  }'
+```
+
+**Response:**
+```json
+{
+  "id": "artifact-uuid-123",
+  "build_id": "build-uuid-456",
+  "state_code": 20,
+  "artifact_name": "base-vm-snapshot",
+  "artifact_type": "vm_snapshot",
+  "artifact_path": "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2",
+  "storage_backend": "s3",
+  "storage_region": "us-east-1",
+  "storage_bucket": "my-builds",
+  "storage_key": "project-123/build-456/state-20/snapshot.qcow2",
+  "size_bytes": 2147483648,
+  "checksum": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "checksum_algorithm": "sha256",
+  "is_resumable": true,
+  "is_final": false,
+  "metadata": {
+    "vm_id": "vm-abc123",
+    "snapshot_id": "snap-xyz789",
+    "disk_format": "qcow2",
+    "compression": "none"
+  },
+  "created_at": "2026-02-16T10:30:00Z",
+  "updated_at": "2026-02-16T10:30:00Z"
+}
+```
+
+#### Listing Resumable Artifacts
+
+Find all resumable artifacts for a build (for recovery):
+
+```bash
+curl "http://localhost:8080/builds/{build_id}/artifacts?is_resumable=true" \
+  -H "X-API-Key: dev-key-12345"
+```
+
+**Response:**
+```json
+[
+  {
+    "id": "artifact-uuid-123",
+    "build_id": "build-uuid-456",
+    "state_code": 20,
+    "artifact_name": "base-vm-snapshot",
+    "artifact_type": "vm_snapshot",
+    "artifact_path": "s3://my-builds/...qcow2",
+    "storage_backend": "s3",
+    "size_bytes": 2147483648,
+    "checksum": "abcdef0123...",
+    "is_resumable": true,
+    "is_final": false,
+    "created_at": "2026-02-16T10:30:00Z"
+  },
+  {
+    "id": "artifact-uuid-456",
+    "build_id": "build-uuid-456",
+    "state_code": 35,
+    "artifact_name": "configured-vm-snapshot",
+    "artifact_type": "vm_snapshot",
+    "artifact_path": "s3://my-builds/...qcow2",
+    "storage_backend": "s3",
+    "size_bytes": 3221225472,
+    "checksum": "fedcba9876...",
+    "is_resumable": true,
+    "is_final": false,
+    "created_at": "2026-02-16T11:15:00Z"
+  }
+]
+```
+
 ### Querying Build State History for Artifacts
 
 Get all build states to find artifacts:
@@ -158,7 +322,11 @@ LIMIT 1;
 
 ## CLI Usage
 
-### Add a Build State with Artifact Information
+The BuildState CLI (`bldst`) provides convenient commands for managing artifacts.
+
+### Quick Reference with Build States
+
+Add a build state with artifact information (for basic tracking):
 
 ```bash
 bldst build add-state {build-id} \
@@ -167,17 +335,108 @@ bldst build add-state {build-id} \
   --storage-type s3 \
   --storage-path "s3://my-builds/project-123/build-456/state-25/base-image.qcow2" \
   --artifact-size 2147483648 \
-  --checksum "sha256:abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+  --checksum "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
 ```
 
-### Parameters
+### Full Artifact Management (Recommended for Resumable Builds)
+
+#### Register a New Artifact
+
+```bash
+# After uploading an artifact to storage, register it in the system
+bldst artifact create {build-id} \
+  --name "base-vm-snapshot" \
+  --type "vm_snapshot" \
+  --path "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2" \
+  --state 20 \
+  --backend "s3" \
+  --region "us-east-1" \
+  --bucket "my-builds" \
+  --key "project-123/build-456/state-20/snapshot.qcow2" \
+  --size 2147483648 \
+  --checksum "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789" \
+  --resumable
+```
+
+#### List All Artifacts for a Build
+
+```bash
+bldst artifact list {build-id}
+```
+
+#### List Only Resumable Artifacts (for Recovery)
+
+```bash
+# Find artifacts that can be used to resume a failed build
+bldst artifact list-resumable {build-id}
+```
+
+**Example Output:**
+```
+┌──────────────┬───────────────────┬─────────────┬────────────┬──────────┐
+│ Artifact ID  │ Name              │ Type        │ State Code │ Size     │
+├──────────────┼───────────────────┼─────────────┼────────────┼──────────┤
+│ abc123...    │ base-vm-snapshot  │ vm_snapshot │ 20         │ 2.0 GB   │
+│ def456...    │ configured-vm     │ vm_snapshot │ 35         │ 3.0 GB   │
+└──────────────┴───────────────────┴─────────────┴────────────┴──────────┘
+```
+
+#### Get Artifact Details
+
+```bash
+bldst artifact get {build-id} {artifact-id}
+```
+
+**Example Output:**
+```json
+{
+  "id": "abc123...",
+  "build_id": "build-uuid-456",
+  "state_code": 20,
+  "artifact_name": "base-vm-snapshot",
+  "artifact_type": "vm_snapshot",
+  "artifact_path": "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2",
+  "storage_backend": "s3",
+  "storage_region": "us-east-1",
+  "size_bytes": 2147483648,
+  "checksum": "abcdef01234...",
+  "checksum_algorithm": "sha256",
+  "is_resumable": true,
+  "is_final": false,
+  "metadata": {
+    "vm_id": "vm-abc123",
+    "snapshot_id": "snap-xyz789"
+  },
+  "created_at": "2026-02-16T10:30:00Z"
+}
+```
+
+#### Update Artifact Metadata
+
+```bash
+# Mark an artifact as final when build completes
+bldst artifact update {build-id} {artifact-id} \
+  --final \
+  --name "rhel-9-base-final"
+```
+
+### CLI Parameters
 
 | Parameter | Description | Required |
 |-----------|-------------|----------|
-| `--storage-type` | Type of storage backend (s3, nfs, ebs, ceph, etc.) | No |
-| `--storage-path` | Full path/URI to the stored artifact | No |
-| `--artifact-size` | Size of the artifact in bytes | No |
-| `--checksum` | SHA256 or MD5 checksum for verification | No |
+| `--name` | Unique artifact name within the build | Yes |
+| `--type` | Artifact type (vm_snapshot, ami, disk_image, etc.) | Yes |
+| `--path` | Full path/URI to the stored artifact | Yes |
+| `--state` | State code at which artifact was created | Yes |
+| `--backend` | Storage backend (s3, azure_blob, gcp_storage, etc.) | Yes |
+| `--region` | Storage region | No |
+| `--bucket` | Storage bucket or container name | No |
+| `--key` | Storage key/path within bucket | No |
+| `--size` | Size in bytes | No |
+| `--checksum` | SHA256 checksum | No |
+| `--checksum-algorithm` | Checksum algorithm (default: sha256) | No |
+| `--resumable` | Mark as resumable (default: true) | No |
+| `--final` | Mark as final deliverable | No |
 
 ## Best Practices
 

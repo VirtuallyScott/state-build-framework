@@ -614,6 +614,158 @@ Get current state of a build.
 
 ---
 
+### Build Artifacts
+
+Manage build artifacts for resumable builds. Artifacts represent intermediate or final outputs from build steps (VM snapshots, disk images, AMIs, configuration files, etc.).
+
+> 📖 **Related Documentation:**
+> - [Resumable Builds Design](../../docs/RESUMABLE-BUILDS-DESIGN.md)
+> - [Resumable Builds Quickstart](../../docs/RESUMABLE-BUILDS-QUICKSTART.md)
+> - [Artifact Storage Tracking](../../docs/ARTIFACT-STORAGE.md)
+
+#### POST /builds/{build_id}/artifacts
+Create a new artifact for a build.
+
+**Authorization:** `write` scope required
+
+**Request:**
+```json
+{
+  "state_code": 20,
+  "artifact_name": "base-vm-snapshot",
+  "artifact_type": "vm_snapshot",
+  "artifact_path": "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2",
+  "storage_backend": "s3",
+  "storage_region": "us-east-1",
+  "storage_bucket": "my-builds",
+  "storage_key": "project-123/build-456/state-20/snapshot.qcow2",
+  "size_bytes": 2147483648,
+  "checksum": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "checksum_algorithm": "sha256",
+  "is_resumable": true,
+  "is_final": false,
+  "metadata": {
+    "vm_id": "vm-abc123",
+    "snapshot_id": "snap-xyz789",
+    "disk_format": "qcow2",
+    "compression": "none"
+  }
+}
+```
+
+**Request Fields:**
+- `state_code` (int, required) - State at which this artifact was created
+- `artifact_name` (string, required) - Unique name for this artifact within the build
+- `artifact_type` (string, required) - Type: vm_snapshot, ami, disk_image, config_file, etc.
+- `artifact_path` (string, required) - Full path/URL to the artifact
+- `storage_backend` (string, required) - Backend: s3, azure_blob, gcp_storage, local, vsphere, nfs, etc.
+- `storage_region` (string, optional) - Storage region
+- `storage_bucket` (string, optional) - Bucket or container name
+- `storage_key` (string, optional) - Key/path within bucket
+- `size_bytes` (int, optional) - Size in bytes
+- `checksum` (string, optional) - SHA256 checksum for verification
+- `checksum_algorithm` (string, optional, default: "sha256") - Checksum algorithm
+- `is_resumable` (bool, optional, default: true) - Can this artifact be used to resume?
+- `is_final` (bool, optional, default: false) - Is this the final deliverable?
+- `expires_at` (datetime, optional) - When to clean up temporary artifacts
+- `metadata` (object, optional) - Additional artifact metadata
+
+**Response (201):**
+```json
+{
+  "id": "artifact-uuid-123",
+  "build_id": "build-uuid-456",
+  "state_code": 20,
+  "artifact_name": "base-vm-snapshot",
+  "artifact_type": "vm_snapshot",
+  "artifact_path": "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2",
+  "storage_backend": "s3",
+  "storage_region": "us-east-1",
+  "storage_bucket": "my-builds",
+  "storage_key": "project-123/build-456/state-20/snapshot.qcow2",
+  "size_bytes": 2147483648,
+  "checksum": "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789",
+  "checksum_algorithm": "sha256",
+  "is_resumable": true,
+  "is_final": false,
+  "metadata": {
+    "vm_id": "vm-abc123",
+    "snapshot_id": "snap-xyz789",
+    "disk_format": "qcow2",
+    "compression": "none"
+  },
+  "created_at": "2026-02-16T10:30:00Z",
+  "updated_at": "2026-02-16T10:30:00Z"
+}
+```
+
+#### GET /builds/{build_id}/artifacts
+List artifacts for a build.
+
+**Authorization:** `read` scope required
+
+**Query Parameters:**
+- `state_code` (int, optional) - Filter by state code
+- `artifact_type` (string, optional) - Filter by artifact type
+- `is_resumable` (bool, optional) - Filter by resumable flag
+- `is_final` (bool, optional) - Filter by final flag
+
+**Response:**
+```json
+[
+  {
+    "id": "artifact-uuid-123",
+    "build_id": "build-uuid-456",
+    "state_code": 20,
+    "artifact_name": "base-vm-snapshot",
+    "artifact_type": "vm_snapshot",
+    "artifact_path": "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2",
+    "storage_backend": "s3",
+    "size_bytes": 2147483648,
+    "checksum": "abcdef0123...",
+    "is_resumable": true,
+    "is_final": false,
+    "created_at": "2026-02-16T10:30:00Z"
+  }
+]
+```
+
+#### GET /builds/{build_id}/artifacts/{artifact_id}
+Get details of a specific artifact.
+
+**Authorization:** `read` scope required
+
+**Response:** Same as single artifact in list response
+
+#### PATCH /builds/{build_id}/artifacts/{artifact_id}
+Update artifact metadata.
+
+**Authorization:** `write` scope required
+
+**Request:**
+```json
+{
+  "is_final": true,
+  "metadata": {
+    "ami_id": "ami-12345678",
+    "verified": true
+  }
+}
+```
+
+**Response:** Updated artifact object
+
+#### DELETE /builds/{build_id}/artifacts/{artifact_id}
+Soft delete an artifact (preserves record with deleted_at timestamp).
+
+**Authorization:** `admin` scope required
+
+**Response:** 204 No Content
+
+> ⚠️ **Note:** This soft deletes the artifact record in the database for audit purposes. The actual artifact file in storage is NOT deleted.
+
+---
+
 ### Dashboard
 
 Aggregate views and statistics.

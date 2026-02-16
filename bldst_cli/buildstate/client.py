@@ -29,6 +29,9 @@ from .models import (
     StateCodeCreate, StateCodeUpdate, StateCodeResponse,
     TokenRequest, TokenResponse,
     UserCreate, UserUpdate, UserResponse,
+    BuildArtifactCreate, BuildArtifactUpdate, BuildArtifactResponse,
+    BuildVariableCreate, BuildVariableUpdate, BuildVariableResponse,
+    ResumeRequestCreate, ResumeRequestUpdate, ResumeRequestResponse,
 )
 
 
@@ -295,6 +298,130 @@ class BuildStateClient:
     async def update_user(self, user_id: int, data: UserUpdate) -> UserResponse:
         response = await self._make_request('PUT', f"/users/{user_id}", data.dict(exclude_unset=True))
         return UserResponse(**response)
+
+    # ========================================================================
+    # Build Artifact methods
+    # ========================================================================
+    
+    async def create_artifact(self, build_id: str, artifact: BuildArtifactCreate) -> BuildArtifactResponse:
+        """Create a new artifact for a build."""
+        response = await self._make_request('POST', f'/builds/{build_id}/artifacts', artifact.dict())
+        return BuildArtifactResponse(**response)
+    
+    async def list_artifacts(
+        self, 
+        build_id: str,
+        state_code: Optional[int] = None,
+        artifact_type: Optional[str] = None,
+        is_resumable: Optional[bool] = None,
+        is_final: Optional[bool] = None
+    ) -> List[BuildArtifactResponse]:
+        """List artifacts for a build with optional filters."""
+        params = {}
+        if state_code is not None:
+            params['state_code'] = state_code
+        if artifact_type:
+            params['artifact_type'] = artifact_type
+        if is_resumable is not None:
+            params['is_resumable'] = is_resumable
+        if is_final is not None:
+            params['is_final'] = is_final
+        
+        response = await self._make_request('GET', f'/builds/{build_id}/artifacts', params=params)
+        return [BuildArtifactResponse(**item) for item in response]
+    
+    async def get_artifact(self, build_id: str, artifact_id: str) -> BuildArtifactResponse:
+        """Get a specific artifact."""
+        response = await self._make_request('GET', f'/builds/{build_id}/artifacts/{artifact_id}')
+        return BuildArtifactResponse(**response)
+    
+    async def update_artifact(
+        self, 
+        build_id: str, 
+        artifact_id: str, 
+        artifact_update: BuildArtifactUpdate
+    ) -> BuildArtifactResponse:
+        """Update an artifact."""
+        response = await self._make_request(
+            'PATCH', 
+            f'/builds/{build_id}/artifacts/{artifact_id}', 
+            artifact_update.dict(exclude_unset=True)
+        )
+        return BuildArtifactResponse(**response)
+    
+    async def delete_artifact(self, build_id: str, artifact_id: str) -> None:
+        """Soft delete an artifact."""
+        await self._make_request('DELETE', f'/builds/{build_id}/artifacts/{artifact_id}')
+    
+    # ========================================================================
+    # Build Variable methods
+    # ========================================================================
+    
+    async def create_variable(self, build_id: str, variable: BuildVariableCreate) -> BuildVariableResponse:
+        """Create a new build variable."""
+        response = await self._make_request('POST', f'/builds/{build_id}/variables', variable.dict())
+        return BuildVariableResponse(**response)
+    
+    async def list_variables(self, build_id: str) -> List[BuildVariableResponse]:
+        """List all variables for a build."""
+        response = await self._make_request('GET', f'/builds/{build_id}/variables')
+        return [BuildVariableResponse(**item) for item in response]
+    
+    async def get_variable(self, build_id: str, variable_id: str) -> BuildVariableResponse:
+        """Get a specific variable."""
+        response = await self._make_request('GET', f'/builds/{build_id}/variables/{variable_id}')
+        return BuildVariableResponse(**response)
+    
+    async def update_variable(
+        self, 
+        build_id: str, 
+        variable_id: str, 
+        variable_update: BuildVariableUpdate
+    ) -> BuildVariableResponse:
+        """Update a build variable."""
+        response = await self._make_request(
+            'PATCH', 
+            f'/builds/{build_id}/variables/{variable_id}', 
+            variable_update.dict(exclude_unset=True)
+        )
+        return BuildVariableResponse(**response)
+    
+    async def delete_variable(self, build_id: str, variable_id: str) -> None:
+        """Delete a build variable."""
+        await self._make_request('DELETE', f'/builds/{build_id}/variables/{variable_id}')
+    
+    # ========================================================================
+    # Resume Request methods
+    # ========================================================================
+    
+    async def create_resume_request(self, build_id: str, resume_request: ResumeRequestCreate) -> ResumeRequestResponse:
+        """Create a resume request for a build."""
+        response = await self._make_request('POST', f'/builds/{build_id}/resume', resume_request.dict())
+        return ResumeRequestResponse(**response)
+    
+    async def list_resume_requests(self, build_id: str) -> List[ResumeRequestResponse]:
+        """List all resume requests for a build."""
+        response = await self._make_request('GET', f'/builds/{build_id}/resume')
+        return [ResumeRequestResponse(**item) for item in response]
+    
+    async def get_resume_request(self, build_id: str, request_id: str) -> ResumeRequestResponse:
+        """Get a specific resume request."""
+        response = await self._make_request('GET', f'/builds/{build_id}/resume/{request_id}')
+        return ResumeRequestResponse(**response)
+    
+    async def update_resume_request(
+        self, 
+        build_id: str, 
+        request_id: str, 
+        request_update: ResumeRequestUpdate
+    ) -> ResumeRequestResponse:
+        """Update a resume request."""
+        response = await self._make_request(
+            'PATCH', 
+            f'/builds/{build_id}/resume/{request_id}', 
+            request_update.dict(exclude_unset=True)
+        )
+        return ResumeRequestResponse(**response)
 
     # Health check
     async def health_check(self) -> Dict[str, Any]:

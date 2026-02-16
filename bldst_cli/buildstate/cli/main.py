@@ -9,6 +9,7 @@ from pathlib import Path
 import typer
 
 from .commands import (
+    artifacts,
     auth,
     builds,
     cloud_providers,
@@ -46,6 +47,7 @@ def main(
     ctx.obj = {"verbose": verbose, "config_file": config_file, "output": output, "format_response": format_response}
 
 # Add subcommands
+app.add_typer(artifacts.app, name="artifact")
 app.add_typer(auth.app, name="auth")
 app.add_typer(builds.app, name="build")
 app.add_typer(cloud_providers.app, name="cloud-provider")
