@@ -46,7 +46,8 @@ jobs:
             echo "Using input version: $VERSION"
           # Use git tag if this is a tag push
           elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
-            VERSION="${GITHUB_REF#refs/tags/v}"
+            REF="${{ github.ref }}"
+            VERSION="${REF#refs/tags/v}"
             echo "Using tag version: $VERSION"
           # Otherwise use VERSION file
           else
