@@ -100,8 +100,6 @@ jobs:
             type=ref,event=branch
             # Tag with PR number
             type=ref,event=pr
-            # Tag with git SHA
-            type=sha,prefix={{branch}}-
             # Tag latest for main branch
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             # Tag develop for develop branch
@@ -152,7 +150,6 @@ jobs:
             type=raw,value=${{ needs.version.outputs.version_full }}
             type=ref,event=branch
             type=ref,event=pr
-            type=sha,prefix={{branch}}-
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
             type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
       
