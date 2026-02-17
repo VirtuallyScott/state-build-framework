@@ -12,7 +12,7 @@
         <meta name="author" content="Scott Smith">
       
       
-        <link rel="canonical" href="https://VirtuallyScott.github.io/state-builds/api/api-reference/">
+        <link rel="canonical" href="https://VirtuallyScott.github.io/state-build-framework/api/api-reference/">
       
       
         <link rel="prev" href="../">
@@ -71,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="cyan">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -133,7 +133,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -143,7 +143,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -1909,7 +1909,7 @@
 <h1 id="build-state-api-reference">Build State API Reference<a class="headerlink" href="#build-state-api-reference" title="Anchor link to this section">&para;</a></h1>
 <p>Complete API Reference for the Build State Management System.</p>
 <blockquote>
-<p><strong>💡 Recommended for Pipelines:</strong> Use the <a href="../../bldst_cli/README.md"><code>bldst</code> CLI tool</a> for cleaner, more maintainable pipeline code. See <a href="../">README.md</a> for CLI examples.</p>
+<p><strong>💡 Recommended for Pipelines:</strong> Use the <a href="../../cli/"><code>bldst</code> CLI tool</a> for cleaner, more maintainable pipeline code. See <a href="../">README.md</a> for CLI examples.</p>
 <p>This document is the <strong>complete API reference</strong> for direct HTTP access, testing, and understanding the underlying API structure.</p>
 </blockquote>
 <h2 id="base-url">Base URL<a class="headerlink" href="#base-url" title="Anchor link to this section">&para;</a></h2>
@@ -2302,7 +2302,7 @@
 </span><span id="__span-27-15"><a id="__codelineno-27-15" name="__codelineno-27-15" href="#__codelineno-27-15"></a><span class="p">}</span>
 </span></code></pre></div></p>
 <blockquote>
-<p>📖 For detailed information on artifact storage tracking, see <a href="../../docs/ARTIFACT-STORAGE.md">Artifact Storage Tracking</a>.</p>
+<p>📖 For detailed information on artifact storage tracking, see <a href="../../artifact-storage/">Artifact Storage Tracking</a>.</p>
 </blockquote>
 <h4 id="post-buildsbuild_idfailure">POST /builds/{build_id}/failure<a class="headerlink" href="#post-buildsbuild_idfailure" title="Anchor link to this section">&para;</a></h4>
 <p>Record build failure.</p>
@@ -2357,9 +2357,9 @@
 <p>Manage build artifacts for resumable builds. Artifacts represent intermediate or final outputs from build steps (VM snapshots, disk images, AMIs, configuration files, etc.).</p>
 <blockquote>
 <p>📖 <strong>Related Documentation:</strong>
-- <a href="../../docs/RESUMABLE-BUILDS-DESIGN.md">Resumable Builds Design</a>
-- <a href="../../docs/RESUMABLE-BUILDS-QUICKSTART.md">Resumable Builds Quickstart</a>
-- <a href="../../docs/ARTIFACT-STORAGE.md">Artifact Storage Tracking</a></p>
+- <a href="../../resumable-builds-design/">Resumable Builds Design</a>
+- <a href="../../resumable-builds-quickstart/">Resumable Builds Quickstart</a>
+- <a href="../../artifact-storage/">Artifact Storage Tracking</a></p>
 </blockquote>
 <h4 id="post-buildsbuild_idartifacts">POST /builds/{build_id}/artifacts<a class="headerlink" href="#post-buildsbuild_idartifacts" title="Anchor link to this section">&para;</a></h4>
 <p>Create a new artifact for a build.</p>
@@ -2695,10 +2695,10 @@
 <hr />
 <h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Anchor link to this section">&para;</a></h2>
 <ul>
-<li><a href="AUTHENTICATION.md">Authentication Guide</a></li>
+<li><a href="../authentication/">Authentication Guide</a></li>
 <li><a href="../#deployment">Deployment Guide</a></li>
-<li><a href="ARCHITECTURE.md">Architecture Overview</a></li>
-<li><a href="../../bldst_cli/README.md">CLI Documentation</a></li>
+<li><a href="../architecture/">Architecture Overview</a></li>
+<li><a href="../../cli/">CLI Documentation</a></li>
 </ul>
 
 

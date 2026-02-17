@@ -1,59 +1,59 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/artifact-storage/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/artifact-storage/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/ci-cd-pipeline/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/ci-cd-pipeline/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/ci-cd-quickstart/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/ci-cd-quickstart/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/database-architecture/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/database-architecture/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/problem-statement/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/problem-statement/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/resumable-builds-design/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/resumable-builds-design/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/resumable-builds-quickstart/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/resumable-builds-quickstart/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/api/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/api/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/api/api-reference/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/api/api-reference/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/api/architecture/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/api/architecture/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/api/authentication/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/api/authentication/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/cli/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/cli/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
     <url>
-         <loc>https://VirtuallyScott.github.io/state-builds/cli/quickstart/</loc>
+         <loc>https://VirtuallyScott.github.io/state-build-framework/cli/quickstart/</loc>
          <lastmod>2026-02-17</lastmod>
     </url>
 </urlset>

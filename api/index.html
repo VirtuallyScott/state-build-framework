@@ -12,7 +12,7 @@
         <meta name="author" content="Scott Smith">
       
       
-        <link rel="canonical" href="https://VirtuallyScott.github.io/state-builds/api/">
+        <link rel="canonical" href="https://VirtuallyScott.github.io/state-build-framework/api/">
       
       
         <link rel="prev" href="../cli/quickstart/">
@@ -71,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="cyan">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -133,7 +133,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -143,7 +143,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="deep-purple" data-md-color-accent="cyan"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -1116,7 +1116,7 @@
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>bldst<span class="w"> </span>health<span class="w"> </span>check
 </span></code></pre></div>
 <h3 id="core-endpoints">Core Endpoints<a class="headerlink" href="#core-endpoints" title="Anchor link to this section">&para;</a></h3>
-<p><strong>Note:</strong> All examples below use the <code>bldst</code> CLI. For direct API access, see the <a href="API-REFERENCE.md">API Reference</a>.</p>
+<p><strong>Note:</strong> All examples below use the <code>bldst</code> CLI. For direct API access, see the <a href="api-reference/">API Reference</a>.</p>
 <h4 id="create-build">Create Build<a class="headerlink" href="#create-build" title="Anchor link to this section">&para;</a></h4>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Create a new build (returns UUID for tracking)</span>
 </span><span id="__span-6-2"><a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>bldst<span class="w"> </span>build<span class="w"> </span>create<span class="w"> </span><span class="se">\</span>
@@ -1590,7 +1590,7 @@
 - Type-safe operations
 - See examples throughout this document</p>
 <p><strong>For Direct API Integration:</strong> Use the REST API
-- See <a href="API-REFERENCE.md">API-REFERENCE.md</a> for complete endpoint documentation
+- See <a href="api-reference/">API Reference</a> for complete endpoint documentation
 - Interactive docs at <code>/docs</code> endpoint
 - OpenAPI spec at <code>/openapi.json</code></p>
 <p><strong>For Exploration &amp; Testing:</strong> Use the interactive docs

@@ -1,8 +1,8 @@
 /* Custom styling for State-Based Build Framework docs */
 
 :root {
-  --md-primary-fg-color: #d32f2f;
-  --md-accent-fg-color: #ff5722;
+  --md-primary-fg-color: #673AB7;
+  --md-accent-fg-color: #00BCD4;
 }
 
 /* Feature cards */
@@ -50,7 +50,7 @@
 
 .doc-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 8px 24px rgba(211, 47, 47, 0.2);
+  box-shadow: 0 8px 24px rgba(103, 58, 183, 0.2);
   border-color: var(--md-accent-fg-color);
 }
 
