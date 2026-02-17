@@ -1,0 +1,470 @@
+# BuildState CLI
+
+A modern, type-safe command-line interface for the Build State API. Manage platforms, OS versions, image types, projects, and builds from the command line with proper authentication and authorization.
+
+## 🚀 Quick Start
+
+```bash
+# Install
+cd bldst_cli
+pip install -e .
+
+# Configure
+bldst config set-url http://localhost:8080
+bldst auth set-key dev-key-12345
+
+# Use
+bldst platform list
+bldst os-version list
+bldst image-type list
+```
+
+## 📚 Documentation
+
+- **[Quick Start Guide](quickstart.md)** - Get started in 5 minutes
+- **[API Reference](../api/api-reference.md)** - Full API documentation
+- **[Authentication Guide](../api/authentication.md)** - Auth & authorization
+
+## 🚀 Installation
+
+### From Source (Development)
+```bash
+cd bldst_cli
+pip install -e .
+```
+
+### Verify Installation
+```bash
+bldst --help
+```
+
+### Virtual Environment (Recommended)
+```bash
+# Create and activate virtual environment
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install
+pip install -e .
+```
+
+## ⚙️ Configuration
+
+### Set API URL
+```bash
+bldst config set-url http://localhost:8080
+```
+
+For production:
+```bash
+bldst config set-url https://api.buildstate.example.com
+```
+
+### Authentication
+
+#### API Key (Recommended for automation)
+```bash
+# Securely stored in system keyring
+bldst auth set-key dev-key-12345
+```
+
+#### JWT Token (For interactive use)
+```bash
+# Login with username/password
+bldst auth login
+```
+
+### View Configuration
+```bash
+bldst config show
+```
+
+## 📋 Usage Examples
+
+### Create a Build
+```bash
+# Basic build creation
+bldst build create \
+  --platform aws-commercial \
+  --os rhel-8.8 \
+  --type base \
+  --id "my-build-$(date +%s)"
+
+# With pipeline context
+bldst build create \
+  --platform azure \
+  --os ubuntu-22.04 \
+  --type hana \
+  --id "hana-build-001" \
+  --pipeline-url "https://concourse.example.com/pipelines/hana" \
+  --commit "abc123def"
+```
+
+### Update Build State
+```bash
+# State progression (0 → 10 → 25 → 50 → 75 → 100)
+bldst state update <build-uuid> --state 10 --message "Starting preparation"
+bldst state update <build-uuid> --state 25 --message "Packer validation complete"
+bldst state update <build-uuid> --state 50 --message "Ansible configuration running"
+bldst state update <build-uuid> --state 100 --message "Build completed successfully"
+```
+
+### Manage Build Artifacts (Resumable Builds)
+
+```bash
+# Register an artifact after creating a VM snapshot
+bldst artifact create <build-id> \
+  --name "base-vm-snapshot" \
+  --type "vm_snapshot" \
+  --path "s3://my-builds/project-123/build-456/state-20/snapshot.qcow2" \
+  --state 20 \
+  --backend "s3" \
+  --region "us-east-1" \
+  --bucket "my-builds" \
+  --key "project-123/build-456/state-20/snapshot.qcow2" \
+  --size 2147483648 \
+  --checksum "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789" \
+  --resumable
+
+# List all artifacts for a build
+bldst artifact list <build-id>
+
+# List only resumable artifacts (for recovery)
+bldst artifact list-resumable <build-id>
+
+# Get details of a specific artifact
+bldst artifact get <build-id> <artifact-id>
+
+# Update artifact metadata
+bldst artifact update <build-id> <artifact-id> \
+  --final \
+  --name "final-ami"
+
+# Delete an artifact record (soft delete)
+bldst artifact delete <build-id> <artifact-id> --yes
+```
+
+**Artifact Storage Benefits:**
+- **SHA256 Checksums**: All artifacts stored with checksums for integrity verification
+- **Resumable Builds**: Resume from last successful state using stored artifacts
+- **Multi-Backend Support**: S3, Azure Blob, GCP Storage, NFS, local storage, and more
+- **Metadata Tracking**: Store VM IDs, snapshot IDs, AMI IDs, and custom metadata
+- **Size Tracking**: Track artifact sizes for capacity planning and cleanup
+
+> 📖 **See Also:**
+> - [Resumable Builds Design](../resumable-builds-design.md)
+> - [Artifact Storage Documentation](../artifact-storage.md)
+> - [Resumable Builds Quickstart](../resumable-builds-quickstart.md)
+
+### Add Build State with Artifact Information
+
+```bash
+# Add state with artifact storage details
+bldst build add-state <build-id> \
+  --state 20 \
+  --status "completed" \
+  --storage-type "s3" \
+  --storage-path "s3://my-builds/project-123/build-456/state-20/base.qcow2" \
+  --artifact-size 2147483648 \
+  --checksum "abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789"
+```
+
+This automatically tracks the artifact location in both the `build_states` table (for quick reference) and can be used with dedicated artifact management for full resumability support.
+
+### Record Failures
+```bash
+# Record build failure
+bldst failure record <build-uuid> \
+  --error "Packer build failed: AMI creation timeout" \
+  --code "PACKER_TIMEOUT" \
+  --component "packer"
+```
+
+### Query Builds
+```bash
+# Get build details
+bldst build get <build-uuid>
+
+# List builds by platform
+bldst build list --platform aws-commercial --limit 20
+
+# Get current state
+bldst state get <build-uuid>
+```
+
+### Dashboard
+```bash
+# View summary
+bldst dashboard summary
+
+# View recent builds
+bldst dashboard recent --limit 15
+```
+
+## 🔧 Concourse Pipeline Integration
+
+### Example Pipeline Task
+```yaml
+jobs:
+- name: build-image
+  plan:
+  - task: init-build
+    config:
+      platform: linux
+      image_resource:
+        type: registry-image
+        source:
+          repository: your-registry/bldst_cli
+          tag: latest
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          # Install CLI if not in image
+          pip install bldst_cli
+
+          # Configure API access
+          export BLDST_API_URL=http://build-api.example.com
+          export BLDST_API_KEY=${API_KEY}
+
+          # Create build
+          BUILD_UUID=$(bldst build create \
+            --platform aws \
+            --os rhel-8.8 \
+            --type base \
+            --id "build-${BUILD_ID}" \
+            --pipeline-url "${ATC_EXTERNAL_URL}/pipelines/${PIPELINE_NAME}")
+
+          echo $BUILD_UUID > build-uuid.txt
+
+  - task: packer-build
+    config:
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          BUILD_UUID=$(cat build-uuid.txt)
+
+          # Update state
+          bldst state update $BUILD_UUID \
+            --state 10 \
+            --message "Starting Packer build"
+
+          # Run packer
+          packer build -var-file=vars.json template.json
+
+          # Update on success
+          bldst state update $BUILD_UUID \
+            --state 25 \
+            --message "Packer build completed"
+
+  - task: ansible-configure
+    config:
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          BUILD_UUID=$(cat build-uuid.txt)
+
+          bldst state update $BUILD_UUID \
+            --state 50 \
+            --message "Starting Ansible configuration"
+
+          ansible-playbook playbook.yml
+
+          bldst state update $BUILD_UUID \
+            --state 75 \
+            --message "Ansible configuration completed"
+
+  - task: finalize
+    config:
+      run:
+        path: sh
+        args:
+        - -c
+        - |
+          BUILD_UUID=$(cat build-uuid.txt)
+
+          bldst state update $BUILD_UUID \
+            --state 100 \
+            --message "Build completed successfully"
+
+  on_failure:
+    do:
+    - task: record-failure
+      config:
+        run:
+          path: sh
+          args:
+        - -c
+        - |
+          BUILD_UUID=$(cat build-uuid.txt)
+          bldst failure record $BUILD_UUID \
+            --error "Pipeline failed at stage: ${FAILED_JOB}" \
+            --code "PIPELINE_FAILURE" \
+            --component "concourse"
+```
+
+## 🎯 Key Advantages over Curl
+
+### Type Safety & Validation
+```bash
+# CLI validates input before API call
+bldst state update <uuid> --state 23
+❌ Error: State code must be a multiple of 5 (got 23)
+
+# Curl would send invalid data to API
+curl -X POST /builds/<uuid>/state -d '{"state_code": 23}'
+```
+
+### Better Error Messages
+```bash
+# CLI provides clear, actionable errors
+❌ curl: (22) The requested URL returned error: 400
+✅ Error: Invalid state code '23'. State codes must be multiples of 5 (0, 5, 10, ..., 100)
+```
+
+### Auto-completion & Help
+```bash
+bldst --help                    # Show all commands
+bldst build create --help       # Command-specific help
+bldst state update --help       # Parameter details
+bldst <TAB><TAB>               # Auto-complete commands
+```
+
+### Configuration Management
+```bash
+# One-time setup, works everywhere
+bldst config set-url http://api.example.com
+bldst auth set-key my-key
+
+# No need to remember URLs/keys in every pipeline
+```
+
+### Rich Output Formatting
+```bash
+# Beautiful tables and status indicators
+bldst dashboard summary
+# 📊 Build State Dashboard
+# Total Builds: 42
+# ┌─────────────┬───────┐
+# │ Status      │ Count │
+# ├─────────────┼───────┤
+# │ Completed   │ 38    │
+# │ Failed      │ 2     │
+# │ In Progress │ 2     │
+# └─────────────┴───────┘
+```
+
+## 🏗️ Architecture
+
+### Shared Models
+- **Type-safe**: Pydantic models shared between CLI and API
+- **Validation**: Input validation before API calls
+- **Consistency**: Same models ensure compatibility
+
+### Async HTTP Client
+- **httpx**: Modern async HTTP client
+- **Error Handling**: Rich error messages and status codes
+- **Authentication**: Automatic JWT/API key handling
+
+### Configuration System
+- **Multiple Sources**: Environment variables, config files, keyring
+- **Security**: API keys stored securely via keyring
+- **Flexibility**: Per-project or global configuration
+
+### CLI Framework
+- **Typer**: Modern CLI framework with auto-completion
+- **Rich**: Beautiful terminal output and formatting
+- **Async Support**: Non-blocking API calls
+
+## 🔒 Security
+
+### API Key Storage
+```bash
+# Secure storage using system keyring
+bldst auth set-key your-api-key
+
+# Keys stored securely, not in config files
+```
+
+### Environment Variables
+```bash
+# For CI/CD systems
+export BLDST_API_URL=https://api.example.com
+export BLDST_API_KEY=your-key
+```
+
+### JWT Tokens
+```bash
+# Interactive login with secure token storage
+bldst auth login
+# Tokens automatically refreshed
+```
+
+## 🚀 Development
+
+### Setup Development Environment
+```bash
+# Clone and install in development mode
+git clone <repository-url>
+cd bldst_cli
+pip install -e ".[dev]"
+
+# Run tests
+pytest
+
+# Format code
+black .
+isort .
+
+# Type checking
+mypy buildstate
+```
+
+### Building Distribution
+```bash
+# Build wheel
+python -m build
+
+# Install locally for testing
+pip install dist/bldst_cli-0.1.0.tar.gz
+
+# Test CLI
+bldst --help
+```
+
+## 📚 API Reference
+
+### Commands
+
+- `bldst config` - Manage configuration
+- `bldst auth` - Manage authentication
+- `bldst build` - Build operations
+- `bldst state` - State management
+- `bldst failure` - Failure recording
+- `bldst dashboard` - View summaries
+- `bldst health` - Health checks
+
+### Global Options
+- `--verbose, -v` - Enable verbose output
+- `--config` - Specify config file path
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make changes with tests
+4. Run `black . && isort . && mypy buildstate`
+5. Submit a pull request
+
+## 📄 License
+
+MIT License - see LICENSE file for details.
+
+---
+
+**Clean pipelines, happy engineers! 🎉**
