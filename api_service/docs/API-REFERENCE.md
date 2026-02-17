@@ -299,7 +299,7 @@ Soft delete an OS version.
 
 ### Image Types
 
-Manage image types (Base, HANA, SAP App, etc.).
+Manage image types (Base, Database Server, Application Server, etc.).
 
 #### POST /image_types/
 Create a new image type.

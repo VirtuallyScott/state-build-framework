@@ -6,5 +6,5 @@ offering a much cleaner alternative to curl commands for pipeline integration.
 """
 
 __version__ = "0.1.0"
-__author__ = "SAP Platform Engineering"
-__email__ = "platform-eng@sap.com"
+__author__ = "Scott Smith"
+__email__ = "scott@virtuallyscott.com"

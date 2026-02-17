@@ -370,8 +370,8 @@ ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO image_types (id, name, description) VALUES
 ('base', 'Base Image', 'Basic OS installation'),
-('hana', 'SAP HANA', 'SAP HANA optimized image'),
-('sapapp', 'SAP Application', 'SAP application server image'),
+('hana', 'Database Server', 'Database server optimized image'),
+('appserver', 'Application Server', 'Application server image'),
 ('openvpn', 'OpenVPN', 'VPN server image')
 ON CONFLICT (id) DO NOTHING;
 

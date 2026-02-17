@@ -72,7 +72,7 @@ The application automatically loads comprehensive dummy data when running in dev
 - **API Tokens**: Authentication tokens with different permission scopes
 - **Platforms**: AWS, Azure, GCP, and other cloud providers
 - **OS Versions**: Various Linux distributions and versions
-- **Image Types**: Base images, SAP HANA, web servers, databases, etc.
+- **Image Types**: Base images, database servers, web servers, application servers, etc.
 - **Build Records**: Sample build jobs with different states
 - **Build States**: Success, failed, running, and cancelled builds
 - **Build Failures**: Detailed error information for failed builds
@@ -138,7 +138,7 @@ The dummy data is loaded from `dummy-data.sql` and includes realistic sample dat
 
 When `ENVIRONMENT=development`, the API automatically loads comprehensive dummy data including:
 - 10 sample builds across AWS, Azure, and Google Cloud platforms
-- Multiple image types (Base Image, SAP HANA, Web Server, etc.)
+- Multiple image types (Base Image, Database Server, Web Server, etc.)
 - User accounts and API tokens
 - Platform and OS version configurations
 - Build states and failure records

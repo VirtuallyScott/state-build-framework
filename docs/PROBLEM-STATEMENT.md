@@ -230,19 +230,19 @@ This approach ensures:
 - Other regions continue independently
 - Total time: ~40 minutes instead of 6+ hours
 
-### Use Case 2: Distributed SAP Image Build
-**Scenario:** Complex SAP HANA image requiring multiple build servers
+### Use Case 2: Distributed Database Image Build
+**Scenario:** Complex database image requiring multiple build servers
 
 **Without Framework:**
 - Server A builds base OS
 - Manually transfer artifact to Server B
-- Server B builds SAP layer
+- Server B builds database layer
 - If Server B fails, manual coordination to retry
 - No visibility into overall progress
 
 **With Framework:**
 - Server A: States 0-30 (base OS), stores artifact to NFS
-- API records: state 30 complete, artifact at /mnt/nfs/builds/sap-123/state-30.qcow2
+- API records: state 30 complete, artifact at /mnt/nfs/builds/db-123/state-30.qcow2
 - Server B: Queries API, downloads state 30 artifact, runs states 35-100
 - If Server B fails at state 50, Server C can pick up automatically
 - Dashboard shows progress across all servers in real-time

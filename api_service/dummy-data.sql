@@ -56,7 +56,7 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO builds (id, platform_id, os_version_id, image_type_id, build_id, pipeline_url, commit_hash) VALUES
 ('build-001', 'aws-commercial', 'rhel-8.8', 'base', 'BUILD-2024-001', 'https://pipeline.company.com/builds/12345', 'a1b2c3d4e5f6'),
 ('build-002', 'aws-commercial', 'ubuntu-20.04', 'hana', 'BUILD-2024-002', 'https://pipeline.company.com/builds/12346', 'f6e5d4c3b2a1'),
-('build-003', 'azure', 'rhel-9.2', 'sapapp', 'BUILD-2024-003', 'https://pipeline.company.com/builds/12347', '1a2b3c4d5e6f'),
+('build-003', 'azure', 'rhel-9.2', 'appserver', 'BUILD-2024-003', 'https://pipeline.company.com/builds/12347', '1a2b3c4d5e6f'),
 ('build-004', 'gcp', 'ubuntu-22.04', 'base', 'BUILD-2024-004', 'https://pipeline.company.com/builds/12348', '6f5e4d3c2b1a'),
 ('build-005', 'aws-govcloud', 'rhel-8.8', 'openvpn', 'BUILD-2024-005', 'https://pipeline.company.com/builds/12349', 'abcdef123456'),
 ('build-006', 'aws-commercial', 'ubuntu-20.04', 'webserver', 'BUILD-2024-006', 'https://pipeline.company.com/builds/12350', '654321fedcba'),
@@ -69,8 +69,8 @@ ON CONFLICT DO NOTHING;
 -- Build states (state codes: 0=pending, 1=running, 2=success, 3=failed, 4=cancelled)
 INSERT INTO build_states (build_id, state_code, message) VALUES
 ('build-001', 2, 'Build completed successfully'),
-('build-002', 2, 'SAP HANA installation completed'),
-('build-003', 3, 'Failed during SAP application deployment'),
+('build-002', 2, 'Database installation completed'),
+('build-003', 3, 'Failed during application deployment'),
 ('build-004', 2, 'Base image creation successful'),
 ('build-005', 1, 'OpenVPN configuration in progress'),
 ('build-006', 2, 'Web server setup completed'),
@@ -82,7 +82,7 @@ ON CONFLICT DO NOTHING;
 
 -- Build failures (for failed builds)
 INSERT INTO build_failures (build_id, error_message, error_code, component, details) VALUES
-('build-003', 'SAP application deployment failed due to missing dependencies', 'SAP_DEPLOY_001', 'sap-deployment', '{"phase": "application-install", "error_type": "dependency_missing", "packages": ["sapjco3", "saprouter"]}'),
+('build-003', 'Application deployment failed due to missing dependencies', 'APP_DEPLOY_001', 'app-deployment', '{"phase": "application-install", "error_type": "dependency_missing", "packages": ["libssl", "libcrypto"]}'),
 ('build-007', 'Database server installation failed - out of memory', 'DB_INSTALL_001', 'database-setup', '{"phase": "memory_allocation", "required_memory": "16GB", "available_memory": "8GB"}')
 ON CONFLICT DO NOTHING;
 
