@@ -15,7 +15,7 @@
         <link rel="canonical" href="https://VirtuallyScott.github.io/state-builds/resumable-builds-design/">
       
       
-        <link rel="prev" href="../resumable-builds-quickstart/">
+        <link rel="prev" href="../api/architecture/">
       
       
         <link rel="next" href="../artifact-storage/">
@@ -52,6 +52,8 @@
       
     
     
+      <link rel="stylesheet" href="../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -69,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -87,17 +89,21 @@
       
     </div>
     
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
     
       
 
   
 
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href=".." title="State-Based Build Framework" class="md-header__button md-logo" aria-label="State-Based Build Framework" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.03 18c.05.7.21 1.38.47 2h-7c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11h.1c-.74.07-1.45.23-2.1.5V11c0-1.38-.5-2.56-1.46-3.54C14.56 6.5 13.38 6 12 6s-2.56.5-3.54 1.46C7.5 8.44 7 9.62 7 11h-.5c-.97 0-1.79.34-2.47 1.03-.69.68-1.03 1.5-1.03 2.47s.34 1.79 1.03 2.5c.68.66 1.5 1 2.47 1zM19 13.5V12l-2.25 2.25L19 16.5V15a2.5 2.5 0 0 1 2.5 2.5c0 .4-.09.78-.26 1.12l1.09 1.09c.42-.63.67-1.39.67-2.21 0-2.21-1.79-4-4-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5c0-.4.09-.78.26-1.12l-1.09-1.09c-.42.63-.67 1.39-.67 2.21 0 2.21 1.79 4 4 4V23l2.25-2.25L19 18.5z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -127,7 +133,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -137,7 +143,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -168,6 +174,11 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
@@ -206,13 +217,130 @@
     
   </nav>
   
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../problem-statement/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../cli/" class="md-tabs__link">
+          
+  
+    
+  
+  CLI Tool
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../api/" class="md-tabs__link">
+          
+  
+    
+  
+  API Service
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+    
+  
+  Advanced
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
-        
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -226,13 +354,17 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href=".." title="State-Based Build Framework" class="md-nav__button md-logo" aria-label="State-Based Build Framework" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.03 18c.05.7.21 1.38.47 2h-7c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11h.1c-.74.07-1.45.23-2.1.5V11c0-1.38-.5-2.56-1.46-3.54C14.56 6.5 13.38 6 12 6s-2.56.5-3.54 1.46C7.5 8.44 7 9.62 7 11h-.5c-.97 0-1.79.34-2.47 1.03-.69.68-1.03 1.5-1.03 2.47s.34 1.79 1.03 2.5c.68.66 1.5 1 2.47 1zM19 13.5V12l-2.25 2.25L19 16.5V15a2.5 2.5 0 0 1 2.5 2.5c0 .4-.09.78-.26 1.12l1.09 1.09c.42-.63.67-1.39.67-2.21 0-2.21-1.79-4-4-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5c0-.4.09-.78.26-1.12l-1.09-1.09c-.42.63-.67 1.39-.67 2.21 0 2.21 1.79 4 4 4V23l2.25-2.25L19 18.5z"/></svg>
 
     </a>
     State-Based Build Framework
@@ -281,14 +413,20 @@
   
     
     
-    
       
         
+      
         
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -297,7 +435,56 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -309,8 +496,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
             <span class="md-nav__icon md-icon"></span>
             Overview
           </label>
@@ -349,7 +536,7 @@
         
   
   <span class="md-ellipsis">
-    Architecture Overview
+    Architecture
     
   </span>
   
@@ -366,36 +553,45 @@
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
-    
     
     
       
         
+      
+        
+      
         
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Getting Started
+    Quick Start
     
   </span>
   
@@ -403,10 +599,10 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
             <span class="md-nav__icon md-icon"></span>
-            Getting Started
+            Quick Start
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -443,7 +639,7 @@
         
   
   <span class="md-ellipsis">
-    CI/CD Pipeline Setup
+    CI/CD Pipeline
     
   </span>
   
@@ -465,7 +661,243 @@
         
   
   <span class="md-ellipsis">
-    Resumable Builds Quickstart
+    Resumable Builds
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../cli/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    CLI Tool
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            CLI Tool
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../cli/quickstart/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Quick Start
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../api/" class="md-nav__link ">
+              
+  
+  <span class="md-ellipsis">
+    API Service
+    
+  </span>
+  
+
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            API Service
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/api-reference/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API Reference
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/authentication/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Authentication
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/architecture/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Architecture
     
   </span>
   
@@ -493,9 +925,18 @@
   
     
     
+      
+        
+      
+        
+      
+    
     
       
         
+        
+      
+      
         
       
     
@@ -504,14 +945,14 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
             
   
   <span class="md-ellipsis">
-    Design & Architecture
+    Advanced
     
   </span>
   
@@ -519,10 +960,10 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_4">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
             <span class="md-nav__icon md-icon"></span>
-            Design & Architecture
+            Advanced
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -1428,1080 +1869,12 @@
   
 
     
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
-            
-  
-  <span class="md-ellipsis">
-    CLI Tool
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
-            <span class="md-nav__icon md-icon"></span>
-            CLI Tool
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../cli/quickstart/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Quick Start
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
-          
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
-        
-          
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
-            
-  
-  <span class="md-ellipsis">
-    API Service
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_6">
-            <span class="md-nav__icon md-icon"></span>
-            API Service
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/api-reference/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    API Reference
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/authentication/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Authentication
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../api/architecture/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Architecture
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
   </ul>
 </nav>
                   </div>
                 </div>
               </div>
             
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#executive-summary" class="md-nav__link">
-    <span class="md-ellipsis">
-      📋 Executive Summary
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#problem-statement" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎯 Problem Statement
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎯 Problem Statement">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#current-challenges" class="md-nav__link">
-    <span class="md-ellipsis">
-      Current Challenges
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#use-case-example" class="md-nav__link">
-    <span class="md-ellipsis">
-      Use Case Example
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#architecture-overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      🏗️ Architecture Overview
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🏗️ Architecture Overview">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#high-level-components" class="md-nav__link">
-    <span class="md-ellipsis">
-      High-Level Components
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#database-schema-design" class="md-nav__link">
-    <span class="md-ellipsis">
-      📊 Database Schema Design
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📊 Database Schema Design">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#new-tables" class="md-nav__link">
-    <span class="md-ellipsis">
-      New Tables
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="New Tables">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-build_artifacts-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. build_artifacts Table
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-build_variables-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. build_variables Table
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-resumable_states-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. resumable_states Table
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-resume_requests-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      4. resume_requests Table
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-build_jobs-table" class="md-nav__link">
-    <span class="md-ellipsis">
-      5. build_jobs Table
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#schema-relationships" class="md-nav__link">
-    <span class="md-ellipsis">
-      Schema Relationships
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build-workflow-with-resumability" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔄 Build Workflow with Resumability
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔄 Build Workflow with Resumability">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#normal-build-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      Normal Build Flow
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#build-failure-and-resume-flow" class="md-nav__link">
-    <span class="md-ellipsis">
-      Build Failure and Resume Flow
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#artifact-lifecycle" class="md-nav__link">
-    <span class="md-ellipsis">
-      Artifact Lifecycle
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-endpoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔌 API Endpoints
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔌 API Endpoints">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#artifact-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      Artifact Management
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Artifact Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post-buildsbuild_idartifacts" class="md-nav__link">
-    <span class="md-ellipsis">
-      POST /builds/{build_id}/artifacts
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-buildsbuild_idartifacts" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /builds/{build_id}/artifacts
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-buildsbuild_idartifactsartifact_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /builds/{build_id}/artifacts/{artifact_id}
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delete-buildsbuild_idartifactsartifact_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      DELETE /builds/{build_id}/artifacts/{artifact_id}
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#variable-management" class="md-nav__link">
-    <span class="md-ellipsis">
-      Variable Management
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Variable Management">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post-buildsbuild_idvariables" class="md-nav__link">
-    <span class="md-ellipsis">
-      POST /builds/{build_id}/variables
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-buildsbuild_idvariables" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /builds/{build_id}/variables
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#patch-buildsbuild_idvariableskey" class="md-nav__link">
-    <span class="md-ellipsis">
-      PATCH /builds/{build_id}/variables/{key}
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#delete-buildsbuild_idvariableskey" class="md-nav__link">
-    <span class="md-ellipsis">
-      DELETE /builds/{build_id}/variables/{key}
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resume-operations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resume Operations
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resume Operations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post-buildsbuild_idresume" class="md-nav__link">
-    <span class="md-ellipsis">
-      POST /builds/{build_id}/resume
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-buildsbuild_idresume-context" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /builds/{build_id}/resume-context
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-buildsbuild_idresume-requests" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /builds/{build_id}/resume-requests
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-resume-requestsrequest_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /resume-requests/{request_id}
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#patch-resume-requestsrequest_id" class="md-nav__link">
-    <span class="md-ellipsis">
-      PATCH /resume-requests/{request_id}
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resumable-state-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resumable State Configuration
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Resumable State Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#post-projectsproject_idresumable-states" class="md-nav__link">
-    <span class="md-ellipsis">
-      POST /projects/{project_id}/resumable-states
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-projectsproject_idresumable-states" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /projects/{project_id}/resumable-states
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#get-projectsproject_idresumable-statesstate_code" class="md-nav__link">
-    <span class="md-ellipsis">
-      GET /projects/{project_id}/resumable-states/{state_code}
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#put-projectsproject_idresumable-statesstate_code" class="md-nav__link">
-    <span class="md-ellipsis">
-      PUT /projects/{project_id}/resumable-states/{state_code}
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#cli-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎮 CLI Commands
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎮 CLI Commands">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#artifact-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      Artifact Commands
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#variable-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      Variable Commands
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resume-commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resume Commands
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resumable-state-configuration_1" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resumable State Configuration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#orchestrator-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      🤖 Orchestrator Service
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🤖 Orchestrator Service">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#architecture" class="md-nav__link">
-    <span class="md-ellipsis">
-      Architecture
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#orchestrator-components" class="md-nav__link">
-    <span class="md-ellipsis">
-      Orchestrator Components
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Orchestrator Components">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-webhook-handler" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. Webhook Handler
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-resume-queue" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. Resume Queue
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-job-trigger" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. Job Trigger
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-status-monitor" class="md-nav__link">
-    <span class="md-ellipsis">
-      4. Status Monitor
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#orchestrator-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Orchestrator Configuration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#build-script-integration" class="md-nav__link">
-    <span class="md-ellipsis">
-      📝 Build Script Integration
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📝 Build Script Integration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#initial-build-with-artifact-tracking" class="md-nav__link">
-    <span class="md-ellipsis">
-      Initial Build (with artifact tracking)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#resume-build-script" class="md-nav__link">
-    <span class="md-ellipsis">
-      Resume Build Script
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#implementation-phases" class="md-nav__link">
-    <span class="md-ellipsis">
-      🎯 Implementation Phases
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🎯 Implementation Phases">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#phase-1-database-core-api-week-1-2" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 1: Database &amp; Core API (Week 1-2)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-2-cli-integration-week-2-3" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 2: CLI Integration (Week 2-3)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-3-resume-api-week-3-4" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 3: Resume API (Week 3-4)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-4-orchestrator-service-week-4-6" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 4: Orchestrator Service (Week 4-6)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-5-example-scripts-documentation-week-6-7" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 5: Example Scripts &amp; Documentation (Week 6-7)
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#phase-6-production-hardening-week-7-8" class="md-nav__link">
-    <span class="md-ellipsis">
-      Phase 6: Production Hardening (Week 7-8)
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#example-scenarios" class="md-nav__link">
-    <span class="md-ellipsis">
-      🔍 Example Scenarios
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🔍 Example Scenarios">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#scenario-1-network-timeout-during-package-installation" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scenario 1: Network Timeout During Package Installation
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scenario-2-configuration-error-at-state-60" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scenario 2: Configuration Error at State 60
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#scenario-3-quota-limit-during-ami-registration" class="md-nav__link">
-    <span class="md-ellipsis">
-      Scenario 3: Quota Limit During AMI Registration
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#success-metrics" class="md-nav__link">
-    <span class="md-ellipsis">
-      📈 Success Metrics
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="📈 Success Metrics">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#metrics-to-track" class="md-nav__link">
-    <span class="md-ellipsis">
-      Metrics to Track
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#api-metrics-endpoints" class="md-nav__link">
-    <span class="md-ellipsis">
-      API Metrics Endpoints
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#design-decisions-trade-offs" class="md-nav__link">
-    <span class="md-ellipsis">
-      🤔 Design Decisions &amp; Trade-offs
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="🤔 Design Decisions & Trade-offs">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-artifact-storage-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. Artifact Storage Strategy
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-state-granularity" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. State Granularity
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-orchestrator-as-separate-service" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. Orchestrator as Separate Service
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#4-checksum-verification" class="md-nav__link">
-    <span class="md-ellipsis">
-      4. Checksum Verification
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#5-variable-storage" class="md-nav__link">
-    <span class="md-ellipsis">
-      5. Variable Storage
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#next-steps" class="md-nav__link">
-    <span class="md-ellipsis">
-      🚀 Next Steps
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#references" class="md-nav__link">
-    <span class="md-ellipsis">
-      📚 References
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
             
           
           
@@ -2515,11 +1888,11 @@
   
 
 
-<h1 id="resumable-build-system-design-document">Resumable Build System - Design Document<a class="headerlink" href="#resumable-build-system-design-document" title="Permanent link">&para;</a></h1>
-<h2 id="executive-summary">📋 Executive Summary<a class="headerlink" href="#executive-summary" title="Permanent link">&para;</a></h2>
+<h1 id="resumable-build-system-design-document">Resumable Build System - Design Document<a class="headerlink" href="#resumable-build-system-design-document" title="Anchor link to this section">&para;</a></h1>
+<h2 id="executive-summary">📋 Executive Summary<a class="headerlink" href="#executive-summary" title="Anchor link to this section">&para;</a></h2>
 <p>This document outlines the design for a resumable build system that enables long-running IaaS VM image builds to recover from failures without restarting from scratch. The system tracks build artifacts, state progression, and provides orchestration capabilities to resume builds from the last successful state.</p>
-<h2 id="problem-statement">🎯 Problem Statement<a class="headerlink" href="#problem-statement" title="Permanent link">&para;</a></h2>
-<h3 id="current-challenges">Current Challenges<a class="headerlink" href="#current-challenges" title="Permanent link">&para;</a></h3>
+<h2 id="problem-statement">🎯 Problem Statement<a class="headerlink" href="#problem-statement" title="Anchor link to this section">&para;</a></h2>
+<h3 id="current-challenges">Current Challenges<a class="headerlink" href="#current-challenges" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Long-Running Monolithic Builds:</strong>
 - VM image builds can take 1+ hours to complete
 - A single failure means restarting the entire process
@@ -2530,7 +1903,7 @@
 - Build scripts don't know what artifacts exist from previous runs
 - Manual intervention required to resume builds
 - Risk of artifact corruption or confusion</p>
-<h3 id="use-case-example">Use Case Example<a class="headerlink" href="#use-case-example" title="Permanent link">&para;</a></h3>
+<h3 id="use-case-example">Use Case Example<a class="headerlink" href="#use-case-example" title="Anchor link to this section">&para;</a></h3>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-0-1"><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>Build Pipeline: RHEL 9 Base Image for AWS
 </span><span id="__span-0-2"><a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>Total Time: ~75 minutes
 </span><span id="__span-0-3"><a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
@@ -2549,8 +1922,8 @@
 </span><span id="__span-0-16"><a id="__codelineno-0-16" name="__codelineno-0-16" href="#__codelineno-0-16"></a>Without resumability: Start over, waste 30 minutes
 </span><span id="__span-0-17"><a id="__codelineno-0-17" name="__codelineno-0-17" href="#__codelineno-0-17"></a>With resumability: Resume from State 20, waste 0 minutes
 </span></code></pre></div>
-<h2 id="architecture-overview">🏗️ Architecture Overview<a class="headerlink" href="#architecture-overview" title="Permanent link">&para;</a></h2>
-<h3 id="high-level-components">High-Level Components<a class="headerlink" href="#high-level-components" title="Permanent link">&para;</a></h3>
+<h2 id="architecture-overview">🏗️ Architecture Overview<a class="headerlink" href="#architecture-overview" title="Anchor link to this section">&para;</a></h2>
+<h3 id="high-level-components">High-Level Components<a class="headerlink" href="#high-level-components" title="Anchor link to this section">&para;</a></h3>
 <pre class="mermaid"><code>graph TB
     subgraph "CI/CD Platform"
         A[Concourse/Jenkins Job]
@@ -2595,9 +1968,9 @@
     style G fill:#f9f,stroke:#333
     style F fill:#bbf,stroke:#333
     style E fill:#bfb,stroke:#333</code></pre>
-<h2 id="database-schema-design">📊 Database Schema Design<a class="headerlink" href="#database-schema-design" title="Permanent link">&para;</a></h2>
-<h3 id="new-tables">New Tables<a class="headerlink" href="#new-tables" title="Permanent link">&para;</a></h3>
-<h4 id="1-build_artifacts-table">1. <code>build_artifacts</code> Table<a class="headerlink" href="#1-build_artifacts-table" title="Permanent link">&para;</a></h4>
+<h2 id="database-schema-design">📊 Database Schema Design<a class="headerlink" href="#database-schema-design" title="Anchor link to this section">&para;</a></h2>
+<h3 id="new-tables">New Tables<a class="headerlink" href="#new-tables" title="Anchor link to this section">&para;</a></h3>
+<h4 id="1-build_artifacts-table">1. <code>build_artifacts</code> Table<a class="headerlink" href="#1-build_artifacts-table" title="Anchor link to this section">&para;</a></h4>
 <p>Tracks all artifacts created during a build, with their storage locations and checksums.</p>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">build_artifacts</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-1-2"><a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">UUID</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
@@ -2641,7 +2014,7 @@
 </span><span id="__span-1-40"><a id="__codelineno-1-40" name="__codelineno-1-40" href="#__codelineno-1-40"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_build_artifacts_resumable</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">build_artifacts</span><span class="p">(</span><span class="n">is_resumable</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">is_resumable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">;</span>
 </span><span id="__span-1-41"><a id="__codelineno-1-41" name="__codelineno-1-41" href="#__codelineno-1-41"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_build_artifacts_expires</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">build_artifacts</span><span class="p">(</span><span class="n">expires_at</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">expires_at</span><span class="w"> </span><span class="k">IS</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">;</span>
 </span></code></pre></div>
-<h4 id="2-build_variables-table">2. <code>build_variables</code> Table<a class="headerlink" href="#2-build_variables-table" title="Permanent link">&para;</a></h4>
+<h4 id="2-build_variables-table">2. <code>build_variables</code> Table<a class="headerlink" href="#2-build_variables-table" title="Anchor link to this section">&para;</a></h4>
 <p>Stores build-specific variables needed for resumption (VM IDs, network config, etc.).</p>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-2-1"><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">build_variables</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-2-2"><a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">UUID</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
@@ -2668,7 +2041,7 @@
 </span><span id="__span-2-23"><a id="__codelineno-2-23" name="__codelineno-2-23" href="#__codelineno-2-23"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_build_variables_build_id</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">build_variables</span><span class="p">(</span><span class="n">build_id</span><span class="p">);</span>
 </span><span id="__span-2-24"><a id="__codelineno-2-24" name="__codelineno-2-24" href="#__codelineno-2-24"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_build_variables_required</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">build_variables</span><span class="p">(</span><span class="n">is_required_for_resume</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">is_required_for_resume</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">;</span>
 </span></code></pre></div>
-<h4 id="3-resumable_states-table">3. <code>resumable_states</code> Table<a class="headerlink" href="#3-resumable_states-table" title="Permanent link">&para;</a></h4>
+<h4 id="3-resumable_states-table">3. <code>resumable_states</code> Table<a class="headerlink" href="#3-resumable_states-table" title="Anchor link to this section">&para;</a></h4>
 <p>Defines which state codes are resumable and their requirements.</p>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">resumable_states</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-3-2"><a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">UUID</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
@@ -2700,7 +2073,7 @@
 </span><span id="__span-3-28"><a id="__codelineno-3-28" name="__codelineno-3-28" href="#__codelineno-3-28"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_resumable_states_project</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">resumable_states</span><span class="p">(</span><span class="n">project_id</span><span class="p">);</span>
 </span><span id="__span-3-29"><a id="__codelineno-3-29" name="__codelineno-3-29" href="#__codelineno-3-29"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_resumable_states_resumable</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">resumable_states</span><span class="p">(</span><span class="n">is_resumable</span><span class="p">)</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">is_resumable</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">TRUE</span><span class="p">;</span>
 </span></code></pre></div>
-<h4 id="4-resume_requests-table">4. <code>resume_requests</code> Table<a class="headerlink" href="#4-resume_requests-table" title="Permanent link">&para;</a></h4>
+<h4 id="4-resume_requests-table">4. <code>resume_requests</code> Table<a class="headerlink" href="#4-resume_requests-table" title="Anchor link to this section">&para;</a></h4>
 <p>Tracks requests to resume builds and their status.</p>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-4-1"><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">resume_requests</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-4-2"><a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">UUID</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
@@ -2736,7 +2109,7 @@
 </span><span id="__span-4-32"><a id="__codelineno-4-32" name="__codelineno-4-32" href="#__codelineno-4-32"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_resume_requests_status</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">resume_requests</span><span class="p">(</span><span class="n">orchestration_status</span><span class="p">);</span>
 </span><span id="__span-4-33"><a id="__codelineno-4-33" name="__codelineno-4-33" href="#__codelineno-4-33"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_resume_requests_created</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">resume_requests</span><span class="p">(</span><span class="n">created_at</span><span class="w"> </span><span class="k">DESC</span><span class="p">);</span>
 </span></code></pre></div>
-<h4 id="5-build_jobs-table">5. <code>build_jobs</code> Table<a class="headerlink" href="#5-build_jobs-table" title="Permanent link">&para;</a></h4>
+<h4 id="5-build_jobs-table">5. <code>build_jobs</code> Table<a class="headerlink" href="#5-build_jobs-table" title="Anchor link to this section">&para;</a></h4>
 <p>Links builds to CI/CD job information.</p>
 <div class="language-sql highlight"><pre><span></span><code><span id="__span-5-1"><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">build_jobs</span><span class="w"> </span><span class="p">(</span>
 </span><span id="__span-5-2"><a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">    </span><span class="n">id</span><span class="w"> </span><span class="n">UUID</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">gen_random_uuid</span><span class="p">(),</span>
@@ -2774,7 +2147,7 @@
 </span><span id="__span-5-34"><a id="__codelineno-5-34" name="__codelineno-5-34" href="#__codelineno-5-34"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_build_jobs_platform_job</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">build_jobs</span><span class="p">(</span><span class="n">platform</span><span class="p">,</span><span class="w"> </span><span class="n">job_id</span><span class="p">);</span>
 </span><span id="__span-5-35"><a id="__codelineno-5-35" name="__codelineno-5-35" href="#__codelineno-5-35"></a><span class="k">CREATE</span><span class="w"> </span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx_build_jobs_status</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="n">build_jobs</span><span class="p">(</span><span class="n">status</span><span class="p">);</span>
 </span></code></pre></div>
-<h3 id="schema-relationships">Schema Relationships<a class="headerlink" href="#schema-relationships" title="Permanent link">&para;</a></h3>
+<h3 id="schema-relationships">Schema Relationships<a class="headerlink" href="#schema-relationships" title="Anchor link to this section">&para;</a></h3>
 <pre class="mermaid"><code>erDiagram
     builds ||--o{ build_artifacts : has
     builds ||--o{ build_variables : has
@@ -2843,8 +2216,8 @@
         int resumed_from_state
         uuid parent_job_id FK
     }</code></pre>
-<h2 id="build-workflow-with-resumability">🔄 Build Workflow with Resumability<a class="headerlink" href="#build-workflow-with-resumability" title="Permanent link">&para;</a></h2>
-<h3 id="normal-build-flow">Normal Build Flow<a class="headerlink" href="#normal-build-flow" title="Permanent link">&para;</a></h3>
+<h2 id="build-workflow-with-resumability">🔄 Build Workflow with Resumability<a class="headerlink" href="#build-workflow-with-resumability" title="Anchor link to this section">&para;</a></h2>
+<h3 id="normal-build-flow">Normal Build Flow<a class="headerlink" href="#normal-build-flow" title="Anchor link to this section">&para;</a></h3>
 <pre class="mermaid"><code>sequenceDiagram
     participant CI as CI/CD Job
     participant CLI as bldst CLI
@@ -2885,7 +2258,7 @@
     CI-&gt;&gt;CLI: bldst build update-state --state 100
     CLI-&gt;&gt;API: POST /builds/{id}/state
     API-&gt;&gt;DB: Mark build complete</code></pre>
-<h3 id="build-failure-and-resume-flow">Build Failure and Resume Flow<a class="headerlink" href="#build-failure-and-resume-flow" title="Permanent link">&para;</a></h3>
+<h3 id="build-failure-and-resume-flow">Build Failure and Resume Flow<a class="headerlink" href="#build-failure-and-resume-flow" title="Anchor link to this section">&para;</a></h3>
 <pre class="mermaid"><code>sequenceDiagram
     participant CI as CI/CD Job
     participant CLI as bldst CLI
@@ -2937,7 +2310,7 @@
     Note over CI: Skip to failed state
     CI-&gt;&gt;CLI: bldst build update-state --state 35
     Note over CI: Continue from here</code></pre>
-<h3 id="artifact-lifecycle">Artifact Lifecycle<a class="headerlink" href="#artifact-lifecycle" title="Permanent link">&para;</a></h3>
+<h3 id="artifact-lifecycle">Artifact Lifecycle<a class="headerlink" href="#artifact-lifecycle" title="Anchor link to this section">&para;</a></h3>
 <pre class="mermaid"><code>stateDiagram-v2
     [*] --&gt; Created: Artifact produced
     Created --&gt; Registered: bldst artifact register
@@ -2950,9 +2323,9 @@
     Final --&gt; Archived: Long-term storage
     Deleted --&gt; [*]
     Archived --&gt; [*]</code></pre>
-<h2 id="api-endpoints">🔌 API Endpoints<a class="headerlink" href="#api-endpoints" title="Permanent link">&para;</a></h2>
-<h3 id="artifact-management">Artifact Management<a class="headerlink" href="#artifact-management" title="Permanent link">&para;</a></h3>
-<h4 id="post-buildsbuild_idartifacts">POST <code>/builds/{build_id}/artifacts</code><a class="headerlink" href="#post-buildsbuild_idartifacts" title="Permanent link">&para;</a></h4>
+<h2 id="api-endpoints">🔌 API Endpoints<a class="headerlink" href="#api-endpoints" title="Anchor link to this section">&para;</a></h2>
+<h3 id="artifact-management">Artifact Management<a class="headerlink" href="#artifact-management" title="Anchor link to this section">&para;</a></h3>
+<h4 id="post-buildsbuild_idartifacts">POST <code>/builds/{build_id}/artifacts</code><a class="headerlink" href="#post-buildsbuild_idartifacts" title="Anchor link to this section">&para;</a></h4>
 <p>Register a new artifact for a build.</p>
 <p><strong>Request:</strong>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-6-1"><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="p">{</span>
@@ -2988,7 +2361,7 @@
 </span><span id="__span-7-10"><a id="__codelineno-7-10" name="__codelineno-7-10" href="#__codelineno-7-10"></a><span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-14T12:00:00Z&quot;</span>
 </span><span id="__span-7-11"><a id="__codelineno-7-11" name="__codelineno-7-11" href="#__codelineno-7-11"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h4 id="get-buildsbuild_idartifacts">GET <code>/builds/{build_id}/artifacts</code><a class="headerlink" href="#get-buildsbuild_idartifacts" title="Permanent link">&para;</a></h4>
+<h4 id="get-buildsbuild_idartifacts">GET <code>/builds/{build_id}/artifacts</code><a class="headerlink" href="#get-buildsbuild_idartifacts" title="Anchor link to this section">&para;</a></h4>
 <p>List all artifacts for a build.</p>
 <p><strong>Query Parameters:</strong>
 - <code>state_code</code> (int) - Filter by state code
@@ -3009,12 +2382,12 @@
 </span><span id="__span-8-11"><a id="__codelineno-8-11" name="__codelineno-8-11" href="#__codelineno-8-11"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-8-12"><a id="__codelineno-8-12" name="__codelineno-8-12" href="#__codelineno-8-12"></a><span class="p">]</span>
 </span></code></pre></div></p>
-<h4 id="get-buildsbuild_idartifactsartifact_id">GET <code>/builds/{build_id}/artifacts/{artifact_id}</code><a class="headerlink" href="#get-buildsbuild_idartifactsartifact_id" title="Permanent link">&para;</a></h4>
+<h4 id="get-buildsbuild_idartifactsartifact_id">GET <code>/builds/{build_id}/artifacts/{artifact_id}</code><a class="headerlink" href="#get-buildsbuild_idartifactsartifact_id" title="Anchor link to this section">&para;</a></h4>
 <p>Get specific artifact details.</p>
-<h4 id="delete-buildsbuild_idartifactsartifact_id">DELETE <code>/builds/{build_id}/artifacts/{artifact_id}</code><a class="headerlink" href="#delete-buildsbuild_idartifactsartifact_id" title="Permanent link">&para;</a></h4>
+<h4 id="delete-buildsbuild_idartifactsartifact_id">DELETE <code>/builds/{build_id}/artifacts/{artifact_id}</code><a class="headerlink" href="#delete-buildsbuild_idartifactsartifact_id" title="Anchor link to this section">&para;</a></h4>
 <p>Soft delete an artifact (requires admin scope).</p>
-<h3 id="variable-management">Variable Management<a class="headerlink" href="#variable-management" title="Permanent link">&para;</a></h3>
-<h4 id="post-buildsbuild_idvariables">POST <code>/builds/{build_id}/variables</code><a class="headerlink" href="#post-buildsbuild_idvariables" title="Permanent link">&para;</a></h4>
+<h3 id="variable-management">Variable Management<a class="headerlink" href="#variable-management" title="Anchor link to this section">&para;</a></h3>
+<h4 id="post-buildsbuild_idvariables">POST <code>/builds/{build_id}/variables</code><a class="headerlink" href="#post-buildsbuild_idvariables" title="Anchor link to this section">&para;</a></h4>
 <p>Set a build variable.</p>
 <p><strong>Request:</strong>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="p">{</span>
@@ -3026,16 +2399,16 @@
 </span><span id="__span-9-7"><a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="w">  </span><span class="nt">&quot;is_sensitive&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">false</span>
 </span><span id="__span-9-8"><a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h4 id="get-buildsbuild_idvariables">GET <code>/builds/{build_id}/variables</code><a class="headerlink" href="#get-buildsbuild_idvariables" title="Permanent link">&para;</a></h4>
+<h4 id="get-buildsbuild_idvariables">GET <code>/builds/{build_id}/variables</code><a class="headerlink" href="#get-buildsbuild_idvariables" title="Anchor link to this section">&para;</a></h4>
 <p>Get all variables for a build.</p>
 <p><strong>Query Parameters:</strong>
 - <code>required_for_resume</code> (bool) - Only required variables</p>
-<h4 id="patch-buildsbuild_idvariableskey">PATCH <code>/builds/{build_id}/variables/{key}</code><a class="headerlink" href="#patch-buildsbuild_idvariableskey" title="Permanent link">&para;</a></h4>
+<h4 id="patch-buildsbuild_idvariableskey">PATCH <code>/builds/{build_id}/variables/{key}</code><a class="headerlink" href="#patch-buildsbuild_idvariableskey" title="Anchor link to this section">&para;</a></h4>
 <p>Update a variable value.</p>
-<h4 id="delete-buildsbuild_idvariableskey">DELETE <code>/builds/{build_id}/variables/{key}</code><a class="headerlink" href="#delete-buildsbuild_idvariableskey" title="Permanent link">&para;</a></h4>
+<h4 id="delete-buildsbuild_idvariableskey">DELETE <code>/builds/{build_id}/variables/{key}</code><a class="headerlink" href="#delete-buildsbuild_idvariableskey" title="Anchor link to this section">&para;</a></h4>
 <p>Delete a variable.</p>
-<h3 id="resume-operations">Resume Operations<a class="headerlink" href="#resume-operations" title="Permanent link">&para;</a></h3>
-<h4 id="post-buildsbuild_idresume">POST <code>/builds/{build_id}/resume</code><a class="headerlink" href="#post-buildsbuild_idresume" title="Permanent link">&para;</a></h4>
+<h3 id="resume-operations">Resume Operations<a class="headerlink" href="#resume-operations" title="Anchor link to this section">&para;</a></h3>
+<h4 id="post-buildsbuild_idresume">POST <code>/builds/{build_id}/resume</code><a class="headerlink" href="#post-buildsbuild_idresume" title="Anchor link to this section">&para;</a></h4>
 <p>Request to resume a build.</p>
 <p><strong>Request:</strong>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="p">{</span>
@@ -3060,7 +2433,7 @@
 </span><span id="__span-11-6"><a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-14T13:00:00Z&quot;</span>
 </span><span id="__span-11-7"><a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h4 id="get-buildsbuild_idresume-context">GET <code>/builds/{build_id}/resume-context</code><a class="headerlink" href="#get-buildsbuild_idresume-context" title="Permanent link">&para;</a></h4>
+<h4 id="get-buildsbuild_idresume-context">GET <code>/builds/{build_id}/resume-context</code><a class="headerlink" href="#get-buildsbuild_idresume-context" title="Anchor link to this section">&para;</a></h4>
 <p>Get everything needed to resume a build.</p>
 <p><strong>Response:</strong>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="p">{</span>
@@ -3096,11 +2469,11 @@
 </span><span id="__span-12-31"><a id="__codelineno-12-31" name="__codelineno-12-31" href="#__codelineno-12-31"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-12-32"><a id="__codelineno-12-32" name="__codelineno-12-32" href="#__codelineno-12-32"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h4 id="get-buildsbuild_idresume-requests">GET <code>/builds/{build_id}/resume-requests</code><a class="headerlink" href="#get-buildsbuild_idresume-requests" title="Permanent link">&para;</a></h4>
+<h4 id="get-buildsbuild_idresume-requests">GET <code>/builds/{build_id}/resume-requests</code><a class="headerlink" href="#get-buildsbuild_idresume-requests" title="Anchor link to this section">&para;</a></h4>
 <p>List all resume requests for a build.</p>
-<h4 id="get-resume-requestsrequest_id">GET <code>/resume-requests/{request_id}</code><a class="headerlink" href="#get-resume-requestsrequest_id" title="Permanent link">&para;</a></h4>
+<h4 id="get-resume-requestsrequest_id">GET <code>/resume-requests/{request_id}</code><a class="headerlink" href="#get-resume-requestsrequest_id" title="Anchor link to this section">&para;</a></h4>
 <p>Get details of a specific resume request.</p>
-<h4 id="patch-resume-requestsrequest_id">PATCH <code>/resume-requests/{request_id}</code><a class="headerlink" href="#patch-resume-requestsrequest_id" title="Permanent link">&para;</a></h4>
+<h4 id="patch-resume-requestsrequest_id">PATCH <code>/resume-requests/{request_id}</code><a class="headerlink" href="#patch-resume-requestsrequest_id" title="Anchor link to this section">&para;</a></h4>
 <p>Update resume request status (for orchestrator).</p>
 <p><strong>Request:</strong>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-13-1"><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="p">{</span>
@@ -3110,8 +2483,8 @@
 </span><span id="__span-13-5"><a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a><span class="w">  </span><span class="nt">&quot;triggered_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-14T13:05:00Z&quot;</span>
 </span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h3 id="resumable-state-configuration">Resumable State Configuration<a class="headerlink" href="#resumable-state-configuration" title="Permanent link">&para;</a></h3>
-<h4 id="post-projectsproject_idresumable-states">POST <code>/projects/{project_id}/resumable-states</code><a class="headerlink" href="#post-projectsproject_idresumable-states" title="Permanent link">&para;</a></h4>
+<h3 id="resumable-state-configuration">Resumable State Configuration<a class="headerlink" href="#resumable-state-configuration" title="Anchor link to this section">&para;</a></h3>
+<h4 id="post-projectsproject_idresumable-states">POST <code>/projects/{project_id}/resumable-states</code><a class="headerlink" href="#post-projectsproject_idresumable-states" title="Anchor link to this section">&para;</a></h4>
 <p>Define which states are resumable.</p>
 <p><strong>Request:</strong>
 <div class="language-json highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="p">{</span>
@@ -3125,14 +2498,14 @@
 </span><span id="__span-14-9"><a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">  </span><span class="nt">&quot;description&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Resume package installation from snapshot&quot;</span>
 </span><span id="__span-14-10"><a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h4 id="get-projectsproject_idresumable-states">GET <code>/projects/{project_id}/resumable-states</code><a class="headerlink" href="#get-projectsproject_idresumable-states" title="Permanent link">&para;</a></h4>
+<h4 id="get-projectsproject_idresumable-states">GET <code>/projects/{project_id}/resumable-states</code><a class="headerlink" href="#get-projectsproject_idresumable-states" title="Anchor link to this section">&para;</a></h4>
 <p>List resumable state configurations.</p>
-<h4 id="get-projectsproject_idresumable-statesstate_code">GET <code>/projects/{project_id}/resumable-states/{state_code}</code><a class="headerlink" href="#get-projectsproject_idresumable-statesstate_code" title="Permanent link">&para;</a></h4>
+<h4 id="get-projectsproject_idresumable-statesstate_code">GET <code>/projects/{project_id}/resumable-states/{state_code}</code><a class="headerlink" href="#get-projectsproject_idresumable-statesstate_code" title="Anchor link to this section">&para;</a></h4>
 <p>Get specific resumable state config.</p>
-<h4 id="put-projectsproject_idresumable-statesstate_code">PUT <code>/projects/{project_id}/resumable-states/{state_code}</code><a class="headerlink" href="#put-projectsproject_idresumable-statesstate_code" title="Permanent link">&para;</a></h4>
+<h4 id="put-projectsproject_idresumable-statesstate_code">PUT <code>/projects/{project_id}/resumable-states/{state_code}</code><a class="headerlink" href="#put-projectsproject_idresumable-statesstate_code" title="Anchor link to this section">&para;</a></h4>
 <p>Update resumable state configuration.</p>
-<h2 id="cli-commands">🎮 CLI Commands<a class="headerlink" href="#cli-commands" title="Permanent link">&para;</a></h2>
-<h3 id="artifact-commands">Artifact Commands<a class="headerlink" href="#artifact-commands" title="Permanent link">&para;</a></h3>
+<h2 id="cli-commands">🎮 CLI Commands<a class="headerlink" href="#cli-commands" title="Anchor link to this section">&para;</a></h2>
+<h3 id="artifact-commands">Artifact Commands<a class="headerlink" href="#artifact-commands" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Register an artifact</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>bldst<span class="w"> </span>artifact<span class="w"> </span>register<span class="w"> </span>&lt;build-id&gt;<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-15-3"><a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="w">  </span>--state<span class="w"> </span><span class="m">30</span><span class="w"> </span><span class="se">\</span>
@@ -3155,7 +2528,7 @@
 </span><span id="__span-15-20"><a id="__codelineno-15-20" name="__codelineno-15-20" href="#__codelineno-15-20"></a><span class="c1"># Delete artifact</span>
 </span><span id="__span-15-21"><a id="__codelineno-15-21" name="__codelineno-15-21" href="#__codelineno-15-21"></a>bldst<span class="w"> </span>artifact<span class="w"> </span>delete<span class="w"> </span>&lt;build-id&gt;<span class="w"> </span>&lt;artifact-id&gt;
 </span></code></pre></div>
-<h3 id="variable-commands">Variable Commands<a class="headerlink" href="#variable-commands" title="Permanent link">&para;</a></h3>
+<h3 id="variable-commands">Variable Commands<a class="headerlink" href="#variable-commands" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Set a variable</span>
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>bldst<span class="w"> </span>variable<span class="w"> </span><span class="nb">set</span><span class="w"> </span>&lt;build-id&gt;<span class="w"> </span><span class="nv">vm_id</span><span class="o">=</span>i-abc123<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">  </span>--state<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="se">\</span>
@@ -3177,7 +2550,7 @@
 </span><span id="__span-16-19"><a id="__codelineno-16-19" name="__codelineno-16-19" href="#__codelineno-16-19"></a><span class="c1"># Delete variable</span>
 </span><span id="__span-16-20"><a id="__codelineno-16-20" name="__codelineno-16-20" href="#__codelineno-16-20"></a>bldst<span class="w"> </span>variable<span class="w"> </span>delete<span class="w"> </span>&lt;build-id&gt;<span class="w"> </span>vm_id
 </span></code></pre></div>
-<h3 id="resume-commands">Resume Commands<a class="headerlink" href="#resume-commands" title="Permanent link">&para;</a></h3>
+<h3 id="resume-commands">Resume Commands<a class="headerlink" href="#resume-commands" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Get resume context (what&#39;s needed to resume)</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>bldst<span class="w"> </span>build<span class="w"> </span>resume-context<span class="w"> </span>&lt;build-id&gt;
 </span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
@@ -3200,7 +2573,7 @@
 </span><span id="__span-17-20"><a id="__codelineno-17-20" name="__codelineno-17-20" href="#__codelineno-17-20"></a><span class="c1"># Check resume request status</span>
 </span><span id="__span-17-21"><a id="__codelineno-17-21" name="__codelineno-17-21" href="#__codelineno-17-21"></a>bldst<span class="w"> </span>resume-request<span class="w"> </span>get<span class="w"> </span>&lt;request-id&gt;
 </span></code></pre></div>
-<h3 id="resumable-state-configuration_1">Resumable State Configuration<a class="headerlink" href="#resumable-state-configuration_1" title="Permanent link">&para;</a></h3>
+<h3 id="resumable-state-configuration_1">Resumable State Configuration<a class="headerlink" href="#resumable-state-configuration_1" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="c1"># Define a resumable state for a project</span>
 </span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>bldst<span class="w"> </span>resumable-state<span class="w"> </span>create<span class="w"> </span>&lt;project-id&gt;<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="w">  </span>--state<span class="w"> </span><span class="m">35</span><span class="w"> </span><span class="se">\</span>
@@ -3220,8 +2593,8 @@
 </span><span id="__span-18-17"><a id="__codelineno-18-17" name="__codelineno-18-17" href="#__codelineno-18-17"></a>bldst<span class="w"> </span>resumable-state<span class="w"> </span>update<span class="w"> </span>&lt;project-id&gt;<span class="w"> </span><span class="m">35</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-18-18"><a id="__codelineno-18-18" name="__codelineno-18-18" href="#__codelineno-18-18"></a><span class="w">  </span>--timeout<span class="w"> </span><span class="m">7200</span>
 </span></code></pre></div>
-<h2 id="orchestrator-service">🤖 Orchestrator Service<a class="headerlink" href="#orchestrator-service" title="Permanent link">&para;</a></h2>
-<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Permanent link">&para;</a></h3>
+<h2 id="orchestrator-service">🤖 Orchestrator Service<a class="headerlink" href="#orchestrator-service" title="Anchor link to this section">&para;</a></h2>
+<h3 id="architecture">Architecture<a class="headerlink" href="#architecture" title="Anchor link to this section">&para;</a></h3>
 <pre class="mermaid"><code>graph TB
     subgraph "Orchestrator Service"
         A[Webhook Listener]
@@ -3253,8 +2626,8 @@
     style A fill:#f96,stroke:#333
     style C fill:#9cf,stroke:#333
     style B fill:#fc9,stroke:#333</code></pre>
-<h3 id="orchestrator-components">Orchestrator Components<a class="headerlink" href="#orchestrator-components" title="Permanent link">&para;</a></h3>
-<h4 id="1-webhook-handler">1. Webhook Handler<a class="headerlink" href="#1-webhook-handler" title="Permanent link">&para;</a></h4>
+<h3 id="orchestrator-components">Orchestrator Components<a class="headerlink" href="#orchestrator-components" title="Anchor link to this section">&para;</a></h3>
+<h4 id="1-webhook-handler">1. Webhook Handler<a class="headerlink" href="#1-webhook-handler" title="Anchor link to this section">&para;</a></h4>
 <p>Receives failure notifications and queues resume requests.</p>
 <p><strong>Endpoints:</strong>
 <div class="language-text highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a>POST /webhooks/build-failure
@@ -3277,14 +2650,14 @@
 </span><span id="__span-20-13"><a id="__codelineno-20-13" name="__codelineno-20-13" href="#__codelineno-20-13"></a><span class="w">  </span><span class="p">}</span>
 </span><span id="__span-20-14"><a id="__codelineno-20-14" name="__codelineno-20-14" href="#__codelineno-20-14"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h4 id="2-resume-queue">2. Resume Queue<a class="headerlink" href="#2-resume-queue" title="Permanent link">&para;</a></h4>
+<h4 id="2-resume-queue">2. Resume Queue<a class="headerlink" href="#2-resume-queue" title="Anchor link to this section">&para;</a></h4>
 <p>Manages pending resume requests with priority and retry logic.</p>
 <p><strong>Features:</strong>
 - Priority queue (critical builds first)
 - Retry with exponential backoff
 - Rate limiting per CI platform
 - Dead letter queue for failed resumes</p>
-<h4 id="3-job-trigger">3. Job Trigger<a class="headerlink" href="#3-job-trigger" title="Permanent link">&para;</a></h4>
+<h4 id="3-job-trigger">3. Job Trigger<a class="headerlink" href="#3-job-trigger" title="Anchor link to this section">&para;</a></h4>
 <p>Triggers CI/CD jobs with resume parameters.</p>
 <p><strong>Concourse Example:</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-21-1"><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="c1"># Trigger Concourse job with resume params</span>
@@ -3303,14 +2676,14 @@
 </span><span id="__span-22-6"><a id="__codelineno-22-6" name="__codelineno-22-6" href="#__codelineno-22-6"></a><span class="w">  </span>--data<span class="w"> </span><span class="s2">&quot;RESUME_MODE=true&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-22-7"><a id="__codelineno-22-7" name="__codelineno-22-7" href="#__codelineno-22-7"></a><span class="w">  </span>--data<span class="w"> </span><span class="s2">&quot;RESUME_FROM_STATE=35&quot;</span>
 </span></code></pre></div></p>
-<h4 id="4-status-monitor">4. Status Monitor<a class="headerlink" href="#4-status-monitor" title="Permanent link">&para;</a></h4>
+<h4 id="4-status-monitor">4. Status Monitor<a class="headerlink" href="#4-status-monitor" title="Anchor link to this section">&para;</a></h4>
 <p>Monitors triggered jobs and updates resume request status.</p>
 <p><strong>Polling Strategy:</strong>
 - Poll every 30 seconds for running jobs
 - Update API with job status
 - Detect stalled jobs (no progress for 10 minutes)
 - Send alerts on repeated failures</p>
-<h3 id="orchestrator-configuration">Orchestrator Configuration<a class="headerlink" href="#orchestrator-configuration" title="Permanent link">&para;</a></h3>
+<h3 id="orchestrator-configuration">Orchestrator Configuration<a class="headerlink" href="#orchestrator-configuration" title="Anchor link to this section">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-23-1"><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="nt">orchestrator</span><span class="p">:</span>
 </span><span id="__span-23-2"><a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a><span class="w">  </span><span class="nt">enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
 </span><span id="__span-23-3"><a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="w">  </span><span class="nt">workers</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
@@ -3351,8 +2724,8 @@
 </span><span id="__span-23-38"><a id="__codelineno-23-38" name="__codelineno-23-38" href="#__codelineno-23-38"></a><span class="w">    </span><span class="nt">slack_webhook</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;${SLACK_WEBHOOK}&quot;</span>
 </span><span id="__span-23-39"><a id="__codelineno-23-39" name="__codelineno-23-39" href="#__codelineno-23-39"></a><span class="w">    </span><span class="nt">email_enabled</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">false</span>
 </span></code></pre></div>
-<h2 id="build-script-integration">📝 Build Script Integration<a class="headerlink" href="#build-script-integration" title="Permanent link">&para;</a></h2>
-<h3 id="initial-build-with-artifact-tracking">Initial Build (with artifact tracking)<a class="headerlink" href="#initial-build-with-artifact-tracking" title="Permanent link">&para;</a></h3>
+<h2 id="build-script-integration">📝 Build Script Integration<a class="headerlink" href="#build-script-integration" title="Anchor link to this section">&para;</a></h2>
+<h3 id="initial-build-with-artifact-tracking">Initial Build (with artifact tracking)<a class="headerlink" href="#initial-build-with-artifact-tracking" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-24-1"><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="ch">#!/bin/bash</span>
 </span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
 </span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a>
@@ -3451,7 +2824,7 @@
 </span><span id="__span-24-96"><a id="__codelineno-24-96" name="__codelineno-24-96" href="#__codelineno-24-96"></a>
 </span><span id="__span-24-97"><a id="__codelineno-24-97" name="__codelineno-24-97" href="#__codelineno-24-97"></a><span class="c1"># Continue with remaining states...</span>
 </span></code></pre></div>
-<h3 id="resume-build-script">Resume Build Script<a class="headerlink" href="#resume-build-script" title="Permanent link">&para;</a></h3>
+<h3 id="resume-build-script">Resume Build Script<a class="headerlink" href="#resume-build-script" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="ch">#!/bin/bash</span>
 </span><span id="__span-25-2"><a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a><span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
 </span><span id="__span-25-3"><a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a>
@@ -3542,52 +2915,52 @@
 </span><span id="__span-25-88"><a id="__codelineno-25-88" name="__codelineno-25-88" href="#__codelineno-25-88"></a>
 </span><span id="__span-25-89"><a id="__codelineno-25-89" name="__codelineno-25-89" href="#__codelineno-25-89"></a><span class="nb">echo</span><span class="w"> </span><span class="s2">&quot;Build completed!&quot;</span>
 </span></code></pre></div>
-<h2 id="implementation-phases">🎯 Implementation Phases<a class="headerlink" href="#implementation-phases" title="Permanent link">&para;</a></h2>
-<h3 id="phase-1-database-core-api-week-1-2">Phase 1: Database &amp; Core API (Week 1-2)<a class="headerlink" href="#phase-1-database-core-api-week-1-2" title="Permanent link">&para;</a></h3>
-<ul>
-<li>[ ] Create database migration for new tables</li>
-<li>[ ] Implement artifact management endpoints</li>
-<li>[ ] Implement variable management endpoints</li>
-<li>[ ] Add unit tests for new models and endpoints</li>
+<h2 id="implementation-phases">🎯 Implementation Phases<a class="headerlink" href="#implementation-phases" title="Anchor link to this section">&para;</a></h2>
+<h3 id="phase-1-database-core-api-week-1-2">Phase 1: Database &amp; Core API (Week 1-2)<a class="headerlink" href="#phase-1-database-core-api-week-1-2" title="Anchor link to this section">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create database migration for new tables</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement artifact management endpoints</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement variable management endpoints</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add unit tests for new models and endpoints</li>
 </ul>
-<h3 id="phase-2-cli-integration-week-2-3">Phase 2: CLI Integration (Week 2-3)<a class="headerlink" href="#phase-2-cli-integration-week-2-3" title="Permanent link">&para;</a></h3>
-<ul>
-<li>[ ] Add artifact commands to CLI</li>
-<li>[ ] Add variable commands to CLI</li>
-<li>[ ] Add resume-context command to CLI</li>
-<li>[ ] Update CLI documentation</li>
+<h3 id="phase-2-cli-integration-week-2-3">Phase 2: CLI Integration (Week 2-3)<a class="headerlink" href="#phase-2-cli-integration-week-2-3" title="Anchor link to this section">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add artifact commands to CLI</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add variable commands to CLI</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add resume-context command to CLI</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Update CLI documentation</li>
 </ul>
-<h3 id="phase-3-resume-api-week-3-4">Phase 3: Resume API (Week 3-4)<a class="headerlink" href="#phase-3-resume-api-week-3-4" title="Permanent link">&para;</a></h3>
-<ul>
-<li>[ ] Implement resume request endpoints</li>
-<li>[ ] Implement resumable state configuration</li>
-<li>[ ] Add resume-context aggregation logic</li>
-<li>[ ] Add integration tests</li>
+<h3 id="phase-3-resume-api-week-3-4">Phase 3: Resume API (Week 3-4)<a class="headerlink" href="#phase-3-resume-api-week-3-4" title="Anchor link to this section">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement resume request endpoints</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement resumable state configuration</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add resume-context aggregation logic</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add integration tests</li>
 </ul>
-<h3 id="phase-4-orchestrator-service-week-4-6">Phase 4: Orchestrator Service (Week 4-6)<a class="headerlink" href="#phase-4-orchestrator-service-week-4-6" title="Permanent link">&para;</a></h3>
-<ul>
-<li>[ ] Build webhook handler</li>
-<li>[ ] Implement resume queue</li>
-<li>[ ] Build job triggers for Concourse/Jenkins</li>
-<li>[ ] Add status monitoring</li>
-<li>[ ] Deploy as separate service</li>
+<h3 id="phase-4-orchestrator-service-week-4-6">Phase 4: Orchestrator Service (Week 4-6)<a class="headerlink" href="#phase-4-orchestrator-service-week-4-6" title="Anchor link to this section">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Build webhook handler</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Implement resume queue</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Build job triggers for Concourse/Jenkins</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add status monitoring</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Deploy as separate service</li>
 </ul>
-<h3 id="phase-5-example-scripts-documentation-week-6-7">Phase 5: Example Scripts &amp; Documentation (Week 6-7)<a class="headerlink" href="#phase-5-example-scripts-documentation-week-6-7" title="Permanent link">&para;</a></h3>
-<ul>
-<li>[ ] Create example build scripts</li>
-<li>[ ] Create example resume scripts</li>
-<li>[ ] Write integration guide</li>
-<li>[ ] Create video walkthrough</li>
+<h3 id="phase-5-example-scripts-documentation-week-6-7">Phase 5: Example Scripts &amp; Documentation (Week 6-7)<a class="headerlink" href="#phase-5-example-scripts-documentation-week-6-7" title="Anchor link to this section">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create example build scripts</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create example resume scripts</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Write integration guide</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Create video walkthrough</li>
 </ul>
-<h3 id="phase-6-production-hardening-week-7-8">Phase 6: Production Hardening (Week 7-8)<a class="headerlink" href="#phase-6-production-hardening-week-7-8" title="Permanent link">&para;</a></h3>
-<ul>
-<li>[ ] Add monitoring and alerting</li>
-<li>[ ] Performance testing with large builds</li>
-<li>[ ] Security audit</li>
-<li>[ ] Production deployment guide</li>
+<h3 id="phase-6-production-hardening-week-7-8">Phase 6: Production Hardening (Week 7-8)<a class="headerlink" href="#phase-6-production-hardening-week-7-8" title="Anchor link to this section">&para;</a></h3>
+<ul class="task-list">
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Add monitoring and alerting</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Performance testing with large builds</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Security audit</li>
+<li class="task-list-item"><label class="task-list-control"><input type="checkbox" disabled/><span class="task-list-indicator"></span></label> Production deployment guide</li>
 </ul>
-<h2 id="example-scenarios">🔍 Example Scenarios<a class="headerlink" href="#example-scenarios" title="Permanent link">&para;</a></h2>
-<h3 id="scenario-1-network-timeout-during-package-installation">Scenario 1: Network Timeout During Package Installation<a class="headerlink" href="#scenario-1-network-timeout-during-package-installation" title="Permanent link">&para;</a></h3>
+<h2 id="example-scenarios">🔍 Example Scenarios<a class="headerlink" href="#example-scenarios" title="Anchor link to this section">&para;</a></h2>
+<h3 id="scenario-1-network-timeout-during-package-installation">Scenario 1: Network Timeout During Package Installation<a class="headerlink" href="#scenario-1-network-timeout-during-package-installation" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Initial Build:</strong>
 - State 0-15: Success (prep work)
 - State 20: FAIL (network timeout installing packages)</p>
@@ -3605,7 +2978,7 @@
    - Retries state 20
    - Continues to completion</p>
 <p><strong>Time Saved:</strong> 15 minutes (prep) + 5 minutes (VM creation) = 20 minutes</p>
-<h3 id="scenario-2-configuration-error-at-state-60">Scenario 2: Configuration Error at State 60<a class="headerlink" href="#scenario-2-configuration-error-at-state-60" title="Permanent link">&para;</a></h3>
+<h3 id="scenario-2-configuration-error-at-state-60">Scenario 2: Configuration Error at State 60<a class="headerlink" href="#scenario-2-configuration-error-at-state-60" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Initial Build:</strong>
 - States 0-55: Success (VM built, packages installed)
 - State 60: FAIL (Ansible configuration error)</p>
@@ -3621,7 +2994,7 @@
 5. Reruns state 60 with fixed playbook
 6. Continues to completion</p>
 <p><strong>Time Saved:</strong> ~40 minutes (all previous states)</p>
-<h3 id="scenario-3-quota-limit-during-ami-registration">Scenario 3: Quota Limit During AMI Registration<a class="headerlink" href="#scenario-3-quota-limit-during-ami-registration" title="Permanent link">&para;</a></h3>
+<h3 id="scenario-3-quota-limit-during-ami-registration">Scenario 3: Quota Limit During AMI Registration<a class="headerlink" href="#scenario-3-quota-limit-during-ami-registration" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Initial Build:</strong>
 - States 0-90: Success (VM fully built and tested)
 - State 95: FAIL (AWS AMI quota exceeded)</p>
@@ -3633,8 +3006,8 @@
 5. Successfully registers AMI
 6. Complete</p>
 <p><strong>Time Saved:</strong> ~60 minutes (entire build except final step)</p>
-<h2 id="success-metrics">📈 Success Metrics<a class="headerlink" href="#success-metrics" title="Permanent link">&para;</a></h2>
-<h3 id="metrics-to-track">Metrics to Track<a class="headerlink" href="#metrics-to-track" title="Permanent link">&para;</a></h3>
+<h2 id="success-metrics">📈 Success Metrics<a class="headerlink" href="#success-metrics" title="Anchor link to this section">&para;</a></h2>
+<h3 id="metrics-to-track">Metrics to Track<a class="headerlink" href="#metrics-to-track" title="Anchor link to this section">&para;</a></h3>
 <ol>
 <li><strong>Resume Success Rate</strong></li>
 <li>% of resumes that complete successfully</li>
@@ -3671,7 +3044,7 @@
 <li>Time from resume trigger to job start</li>
 <li>Target: &lt;5 minutes</li>
 </ol>
-<h3 id="api-metrics-endpoints">API Metrics Endpoints<a class="headerlink" href="#api-metrics-endpoints" title="Permanent link">&para;</a></h3>
+<h3 id="api-metrics-endpoints">API Metrics Endpoints<a class="headerlink" href="#api-metrics-endpoints" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-27-1"><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="c1"># Resume statistics</span>
 </span><span id="__span-27-2"><a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>GET<span class="w"> </span>/metrics/resumes/stats
 </span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a>
@@ -3684,8 +3057,8 @@
 </span><span id="__span-27-10"><a id="__codelineno-27-10" name="__codelineno-27-10" href="#__codelineno-27-10"></a><span class="c1"># Success rates</span>
 </span><span id="__span-27-11"><a id="__codelineno-27-11" name="__codelineno-27-11" href="#__codelineno-27-11"></a>GET<span class="w"> </span>/metrics/builds/resume-success-rate?period<span class="o">=</span>7d
 </span></code></pre></div>
-<h2 id="design-decisions-trade-offs">🤔 Design Decisions &amp; Trade-offs<a class="headerlink" href="#design-decisions-trade-offs" title="Permanent link">&para;</a></h2>
-<h3 id="1-artifact-storage-strategy">1. Artifact Storage Strategy<a class="headerlink" href="#1-artifact-storage-strategy" title="Permanent link">&para;</a></h3>
+<h2 id="design-decisions-trade-offs">🤔 Design Decisions &amp; Trade-offs<a class="headerlink" href="#design-decisions-trade-offs" title="Anchor link to this section">&para;</a></h2>
+<h3 id="1-artifact-storage-strategy">1. Artifact Storage Strategy<a class="headerlink" href="#1-artifact-storage-strategy" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Decision:</strong> Store artifact metadata in database, actual files in cloud storage</p>
 <p><strong>Rationale:</strong>
 - Database stores paths, checksums, and metadata
@@ -3696,7 +3069,7 @@
 - Additional storage costs
 - Need to manage lifecycle policies
 - Network transfer time on resume</p>
-<h3 id="2-state-granularity">2. State Granularity<a class="headerlink" href="#2-state-granularity" title="Permanent link">&para;</a></h3>
+<h3 id="2-state-granularity">2. State Granularity<a class="headerlink" href="#2-state-granularity" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Decision:</strong> Not all states need to be resumable</p>
 <p><strong>Rationale:</strong>
 - Quick states (&lt;5 min) can just re-run
@@ -3706,7 +3079,7 @@
 <p><strong>Trade-offs:</strong>
 - Some time wasted re-running quick states
 - Need clear documentation on which states are resumable</p>
-<h3 id="3-orchestrator-as-separate-service">3. Orchestrator as Separate Service<a class="headerlink" href="#3-orchestrator-as-separate-service" title="Permanent link">&para;</a></h3>
+<h3 id="3-orchestrator-as-separate-service">3. Orchestrator as Separate Service<a class="headerlink" href="#3-orchestrator-as-separate-service" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Decision:</strong> Build orchestrator as independent service</p>
 <p><strong>Rationale:</strong>
 - Can scale independently
@@ -3717,7 +3090,7 @@
 - Another service to maintain
 - Additional deployment complexity
 - Need message queue/webhooks for communication</p>
-<h3 id="4-checksum-verification">4. Checksum Verification<a class="headerlink" href="#4-checksum-verification" title="Permanent link">&para;</a></h3>
+<h3 id="4-checksum-verification">4. Checksum Verification<a class="headerlink" href="#4-checksum-verification" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Decision:</strong> Store SHA256 checksums for all artifacts</p>
 <p><strong>Rationale:</strong>
 - Detect corrupted artifacts before resume
@@ -3727,7 +3100,7 @@
 - CPU cost to calculate checksums
 - Storage for checksum values
 - Resume fails if checksum mismatch</p>
-<h3 id="5-variable-storage">5. Variable Storage<a class="headerlink" href="#5-variable-storage" title="Permanent link">&para;</a></h3>
+<h3 id="5-variable-storage">5. Variable Storage<a class="headerlink" href="#5-variable-storage" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Decision:</strong> Store all variables in database, not as artifact files</p>
 <p><strong>Rationale:</strong>
 - Fast access (no file download)
@@ -3738,7 +3111,7 @@
 - Limited to simple key-value pairs
 - Large values (&gt;1MB) need special handling
 - Can't easily restore from file backup</p>
-<h2 id="next-steps">🚀 Next Steps<a class="headerlink" href="#next-steps" title="Permanent link">&para;</a></h2>
+<h2 id="next-steps">🚀 Next Steps<a class="headerlink" href="#next-steps" title="Anchor link to this section">&para;</a></h2>
 <ol>
 <li><strong>Review this design document</strong> with team</li>
 <li><strong>Prioritize use cases</strong> (which types of builds benefit most?)</li>
@@ -3746,7 +3119,7 @@
 <li><strong>Define resumable states</strong> for pilot project</li>
 <li><strong>Start Phase 1 implementation</strong> (database schema)</li>
 </ol>
-<h2 id="references">📚 References<a class="headerlink" href="#references" title="Permanent link">&para;</a></h2>
+<h2 id="references">📚 References<a class="headerlink" href="#references" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li><a href="https://fastapi.tiangolo.com/">FastAPI Documentation</a></li>
 <li><a href="https://www.packer.io/docs/builders">Packer Build Artifacts</a></li>
@@ -3804,11 +3177,16 @@
     
     
     
-      
-      
-    
-    <a href="https://github.com/VirtuallyScott/state-builds" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+    <a href="https://github.com/VirtuallyScott/state-builds" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://virtuallyscott.github.io/state-build-framework/" target="_blank" rel="noopener" title="Documentation Site" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M156.6 384.9 125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2 3-8.9 7-20.5 11.8-33.8H24c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7.2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3H200c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8 13.4 72.9 9.3 194.8-111.4 276.7-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1.2S224 496.7 224 488V380.8c-14.1 4.9-26.4 8.9-35.7 11.9-11.2 3.6-23.4.5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80"/></svg>
     </a>
   
 </div>
@@ -3822,8 +3200,10 @@
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
     
-    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "toc.follow", "toc.integrate", "search.suggest", "search.highlight", "search.share", "content.tabs.link", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
     
     
       <script src="../assets/javascripts/bundle.f13b1293.min.js"></script>

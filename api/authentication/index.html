@@ -52,6 +52,8 @@
       
     
     
+      <link rel="stylesheet" href="../../stylesheets/extra.css">
+    
     <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
     
       
@@ -69,7 +71,7 @@
     
     
     
-    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue">
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange">
   
     
     <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
@@ -87,17 +89,21 @@
       
     </div>
     
+      <div data-md-color-scheme="default" data-md-component="outdated" hidden>
+        
+      </div>
+    
     
       
 
   
 
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
     <a href="../.." title="State-Based Build Framework" class="md-header__button md-logo" aria-label="State-Based Build Framework" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.03 18c.05.7.21 1.38.47 2h-7c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11h.1c-.74.07-1.45.23-2.1.5V11c0-1.38-.5-2.56-1.46-3.54C14.56 6.5 13.38 6 12 6s-2.56.5-3.54 1.46C7.5 8.44 7 9.62 7 11h-.5c-.97 0-1.79.34-2.47 1.03-.69.68-1.03 1.5-1.03 2.47s.34 1.79 1.03 2.5c.68.66 1.5 1 2.47 1zM19 13.5V12l-2.25 2.25L19 16.5V15a2.5 2.5 0 0 1 2.5 2.5c0 .4-.09.78-.26 1.12l1.09 1.09c.42-.63.67-1.39.67-2.21 0-2.21-1.79-4-4-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5c0-.4.09-.78.26-1.12l-1.09-1.09c-.42.63-.67 1.39-.67 2.21 0 2.21 1.79 4 4 4V23l2.25-2.25L19 18.5z"/></svg>
 
     </a>
     <label class="md-header__button md-icon" for="__drawer">
@@ -127,7 +133,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
     
       <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -137,7 +143,7 @@
     
     
     
-    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="red" data-md-color-accent="orange"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
     
       <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
@@ -168,6 +174,11 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
       </label>
       <nav class="md-search__options" aria-label="Search">
+        
+          <a href="javascript:void(0)" class="md-search__icon md-icon" title="Share" aria-label="Share" data-clipboard data-clipboard-text="" data-md-component="search-share" tabindex="-1">
+            
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9a3 3 0 0 0-3 3 3 3 0 0 0 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.15c-.05.21-.08.43-.08.66 0 1.61 1.31 2.91 2.92 2.91s2.92-1.3 2.92-2.91A2.92 2.92 0 0 0 18 16.08"/></svg>
+          </a>
         
         <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
           
@@ -206,13 +217,130 @@
     
   </nav>
   
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../problem-statement/" class="md-tabs__link">
+          
+  
+    
+  
+  Getting Started
+
+        </a>
+      </li>
+    
+  
+
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../cli/" class="md-tabs__link">
+          
+  
+    
+  
+  CLI Tool
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../" class="md-tabs__link">
+          
+  
+    
+  
+  API Service
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../resumable-builds-design/" class="md-tabs__link">
+          
+  
+    
+  
+  Advanced
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
+  
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
-        
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -226,13 +354,17 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+  
+
+<nav class="md-nav md-nav--primary md-nav--lifted md-nav--integrated" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
     <a href="../.." title="State-Based Build Framework" class="md-nav__button md-logo" aria-label="State-Based Build Framework" data-md-component="logo">
       
   
-  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13.03 18c.05.7.21 1.38.47 2h-7c-1.5 0-2.81-.5-3.89-1.57C1.54 17.38 1 16.09 1 14.58q0-1.95 1.17-3.48C3.34 9.57 4 9.43 5.25 9.15c.42-1.53 1.25-2.77 2.5-3.72S10.42 4 12 4c1.95 0 3.6.68 4.96 2.04S19 9.05 19 11h.1c-.74.07-1.45.23-2.1.5V11c0-1.38-.5-2.56-1.46-3.54C14.56 6.5 13.38 6 12 6s-2.56.5-3.54 1.46C7.5 8.44 7 9.62 7 11h-.5c-.97 0-1.79.34-2.47 1.03-.69.68-1.03 1.5-1.03 2.47s.34 1.79 1.03 2.5c.68.66 1.5 1 2.47 1zM19 13.5V12l-2.25 2.25L19 16.5V15a2.5 2.5 0 0 1 2.5 2.5c0 .4-.09.78-.26 1.12l1.09 1.09c.42-.63.67-1.39.67-2.21 0-2.21-1.79-4-4-4m0 6.5a2.5 2.5 0 0 1-2.5-2.5c0-.4.09-.78.26-1.12l-1.09-1.09c-.42.63-.67 1.39-.67 2.21 0 2.21 1.79 4 4 4V23l2.25-2.25L19 18.5z"/></svg>
 
     </a>
     State-Based Build Framework
@@ -281,14 +413,20 @@
   
     
     
-    
       
         
+      
         
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
@@ -297,7 +435,56 @@
         <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
         
           
-          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Getting Started
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Getting Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_1" >
+        
+          
+          <label class="md-nav__link" for="__nav_2_1" id="__nav_2_1_label" tabindex="0">
             
   
   <span class="md-ellipsis">
@@ -309,8 +496,8 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_2">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_1_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_1">
             <span class="md-nav__icon md-icon"></span>
             Overview
           </label>
@@ -349,7 +536,7 @@
         
   
   <span class="md-ellipsis">
-    Architecture Overview
+    Architecture
     
   </span>
   
@@ -366,36 +553,45 @@
     </li>
   
 
-    
-      
-      
+              
+            
+              
+                
   
   
   
   
-    
     
     
       
         
+      
+        
+      
         
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2_2" >
         
           
-          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+          <label class="md-nav__link" for="__nav_2_2" id="__nav_2_2_label" tabindex="0">
             
   
   <span class="md-ellipsis">
-    Getting Started
+    Quick Start
     
   </span>
   
@@ -403,10 +599,10 @@
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_3">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_2_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2_2">
             <span class="md-nav__icon md-icon"></span>
-            Getting Started
+            Quick Start
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
@@ -443,7 +639,7 @@
         
   
   <span class="md-ellipsis">
-    CI/CD Pipeline Setup
+    CI/CD Pipeline
     
   </span>
   
@@ -465,12 +661,20 @@
         
   
   <span class="md-ellipsis">
-    Resumable Builds Quickstart
+    Resumable Builds
     
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -491,118 +695,34 @@
   
     
     
-    
       
         
+          
+        
+      
         
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
       
         
         
           
         
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
-            
-  
-  <span class="md-ellipsis">
-    Design & Architecture
-    
-  </span>
-  
-
-            <span class="md-nav__icon md-icon"></span>
-          </label>
-        
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4">
-            <span class="md-nav__icon md-icon"></span>
-            Design & Architecture
-          </label>
-          <ul class="md-nav__list" data-md-scrollfix>
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../resumable-builds-design/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Resumable Builds Design
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../artifact-storage/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Artifact Storage
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-          </ul>
-        </nav>
-      
-    </li>
-  
-
-    
-      
-      
-  
-  
-  
-  
-    
-    
-    
-      
-        
-        
-      
-    
-    
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
-      
-        
-        
           
-        
-        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
-        
-          
-          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
-            
+          <div class="md-nav__link md-nav__container">
+            <a href="../../cli/" class="md-nav__link ">
+              
   
   <span class="md-ellipsis">
     CLI Tool
@@ -610,36 +730,22 @@
   </span>
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_3" id="__nav_3_label" tabindex="0">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_5">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
             <span class="md-nav__icon md-icon"></span>
             CLI Tool
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../cli/" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -681,9 +787,24 @@
   
     
     
+      
+        
+          
+        
+      
+        
+      
+        
+      
+        
+      
+    
     
       
         
+        
+      
+      
         
       
     
@@ -692,11 +813,13 @@
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_6" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
-            
+          
+          <div class="md-nav__link md-nav__container">
+            <a href="../" class="md-nav__link ">
+              
   
   <span class="md-ellipsis">
     API Service
@@ -704,36 +827,22 @@
   </span>
   
 
-            <span class="md-nav__icon md-icon"></span>
-          </label>
+            </a>
+            
+              
+              <label class="md-nav__link " for="__nav_4" id="__nav_4_label" tabindex="">
+                <span class="md-nav__icon md-icon"></span>
+              </label>
+            
+          </div>
         
-        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="true">
-          <label class="md-nav__title" for="__nav_6">
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
             <span class="md-nav__icon md-icon"></span>
             API Service
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
-        
-  
-  <span class="md-ellipsis">
-    Overview
-    
-  </span>
-  
-
-      </a>
-    </li>
-  
-
               
             
               
@@ -1312,500 +1421,112 @@
   
 
     
+      
+      
+  
+  
+  
+  
+    
+    
+      
+        
+      
+        
+      
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Advanced
+    
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            Advanced
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../resumable-builds-design/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Resumable Builds Design
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../artifact-storage/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Artifact Storage
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
   </ul>
 </nav>
                   </div>
                 </div>
               </div>
             
-            
-              
-              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
-                <div class="md-sidebar__scrollwrap">
-                  <div class="md-sidebar__inner">
-                    
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
-    <span class="md-ellipsis">
-      Overview
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authentication-methods" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authentication Methods
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Authentication Methods">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#api-key-authentication" class="md-nav__link">
-    <span class="md-ellipsis">
-      API Key Authentication
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jwt-token-authentication" class="md-nav__link">
-    <span class="md-ellipsis">
-      JWT Token Authentication
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#authorization-scopes" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authorization Scopes
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Authorization Scopes">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#1-read-scope" class="md-nav__link">
-    <span class="md-ellipsis">
-      1. Read Scope
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#2-write-scope" class="md-nav__link">
-    <span class="md-ellipsis">
-      2. Write Scope
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#3-admin-scope" class="md-nav__link">
-    <span class="md-ellipsis">
-      3. Admin Scope
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#test-api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Test API Keys
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Test API Keys">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#read-only-key" class="md-nav__link">
-    <span class="md-ellipsis">
-      Read-Only Key
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#development-key" class="md-nav__link">
-    <span class="md-ellipsis">
-      Development Key
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#admin-key" class="md-nav__link">
-    <span class="md-ellipsis">
-      Admin Key
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#default-users" class="md-nav__link">
-    <span class="md-ellipsis">
-      Default Users
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Default Users">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#admin-user" class="md-nav__link">
-    <span class="md-ellipsis">
-      Admin User
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#regular-user" class="md-nav__link">
-    <span class="md-ellipsis">
-      Regular User
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#read-only-user" class="md-nav__link">
-    <span class="md-ellipsis">
-      Read-Only User
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#managing-api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Managing API Keys
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Managing API Keys">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#creating-api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Creating API Keys
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#listing-api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Listing API Keys
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#revoking-api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      Revoking API Keys
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#integration-examples" class="md-nav__link">
-    <span class="md-ellipsis">
-      Integration Examples
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Integration Examples">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#concourse-ci-pipeline" class="md-nav__link">
-    <span class="md-ellipsis">
-      Concourse CI Pipeline
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#python-script" class="md-nav__link">
-    <span class="md-ellipsis">
-      Python Script
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#shell-script" class="md-nav__link">
-    <span class="md-ellipsis">
-      Shell Script
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#error-handling" class="md-nav__link">
-    <span class="md-ellipsis">
-      Error Handling
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Error Handling">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authentication-errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authentication Errors
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#authorization-errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      Authorization Errors
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#best-practices" class="md-nav__link">
-    <span class="md-ellipsis">
-      Best Practices
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Best Practices">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#for-development" class="md-nav__link">
-    <span class="md-ellipsis">
-      For Development
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-production" class="md-nav__link">
-    <span class="md-ellipsis">
-      For Production
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#for-cicd-pipelines" class="md-nav__link">
-    <span class="md-ellipsis">
-      For CI/CD Pipelines
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#security-considerations" class="md-nav__link">
-    <span class="md-ellipsis">
-      Security Considerations
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Security Considerations">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#api-key-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      API Key Security
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#jwt-token-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      JWT Token Security
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#general-security" class="md-nav__link">
-    <span class="md-ellipsis">
-      General Security
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#troubleshooting" class="md-nav__link">
-    <span class="md-ellipsis">
-      Troubleshooting
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#authentication-required-error" class="md-nav__link">
-    <span class="md-ellipsis">
-      "Authentication required" error
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#invalid-api-key-error" class="md-nav__link">
-    <span class="md-ellipsis">
-      "Invalid API key" error
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#token-has-expired-error" class="md-nav__link">
-    <span class="md-ellipsis">
-      "Token has expired" error
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#permission-denied-errors" class="md-nav__link">
-    <span class="md-ellipsis">
-      "Permission denied" errors
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#migration-guide" class="md-nav__link">
-    <span class="md-ellipsis">
-      Migration Guide
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Migration Guide">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#from-password-to-api-keys" class="md-nav__link">
-    <span class="md-ellipsis">
-      From Password to API Keys
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#faq" class="md-nav__link">
-    <span class="md-ellipsis">
-      FAQ
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#additional-resources" class="md-nav__link">
-    <span class="md-ellipsis">
-      Additional Resources
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-                  </div>
-                </div>
-              </div>
             
           
           
@@ -1819,7 +1540,7 @@
   
 
 
-<h1 id="authentication-authorization-guide">Authentication &amp; Authorization Guide<a class="headerlink" href="#authentication-authorization-guide" title="Permanent link">&para;</a></h1>
+<h1 id="authentication-authorization-guide">Authentication &amp; Authorization Guide<a class="headerlink" href="#authentication-authorization-guide" title="Anchor link to this section">&para;</a></h1>
 <p>Complete guide to authentication and authorization in the Build State API.</p>
 <blockquote>
 <p><strong>💡 CLI Users:</strong> The <code>bldst</code> CLI handles authentication automatically. Simply configure once:
@@ -1828,14 +1549,14 @@
 </span></code></pre></div>
 See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </blockquote>
-<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Anchor link to this section">&para;</a></h2>
 <p>The Build State API supports two authentication methods:
 1. <strong>API Keys</strong> - Recommended for automation, scripts, and CI/CD pipelines
 2. <strong>JWT Tokens</strong> - Recommended for interactive use and web applications</p>
 <p>Both methods support <strong>scope-based authorization</strong> (read, write, admin).</p>
 <hr />
-<h2 id="authentication-methods">Authentication Methods<a class="headerlink" href="#authentication-methods" title="Permanent link">&para;</a></h2>
-<h3 id="api-key-authentication">API Key Authentication<a class="headerlink" href="#api-key-authentication" title="Permanent link">&para;</a></h3>
+<h2 id="authentication-methods">Authentication Methods<a class="headerlink" href="#authentication-methods" title="Anchor link to this section">&para;</a></h2>
+<h3 id="api-key-authentication">API Key Authentication<a class="headerlink" href="#api-key-authentication" title="Anchor link to this section">&para;</a></h3>
 <p>API keys are static tokens ideal for service-to-service communication and automation.</p>
 <p><strong>CLI Usage (Recommended):</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-1-1"><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="c1"># Configure once</span>
@@ -1858,7 +1579,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 - Never commit API keys to version control
 - Rotate keys periodically
 - Use separate keys for different environments</p>
-<h3 id="jwt-token-authentication">JWT Token Authentication<a class="headerlink" href="#jwt-token-authentication" title="Permanent link">&para;</a></h3>
+<h3 id="jwt-token-authentication">JWT Token Authentication<a class="headerlink" href="#jwt-token-authentication" title="Anchor link to this section">&para;</a></h3>
 <p>JWT (JSON Web Tokens) provide time-limited authentication ideal for user sessions.</p>
 <p><strong>Obtaining a Token:</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-3-1"><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/token<span class="w"> </span><span class="se">\</span>
@@ -1886,9 +1607,9 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 - After expiration, request a new token
 - CLI automatically handles re-authentication</p>
 <hr />
-<h2 id="authorization-scopes">Authorization Scopes<a class="headerlink" href="#authorization-scopes" title="Permanent link">&para;</a></h2>
+<h2 id="authorization-scopes">Authorization Scopes<a class="headerlink" href="#authorization-scopes" title="Anchor link to this section">&para;</a></h2>
 <p>The API uses scope-based authorization with three permission levels:</p>
-<h3 id="1-read-scope">1. Read Scope<a class="headerlink" href="#1-read-scope" title="Permanent link">&para;</a></h3>
+<h3 id="1-read-scope">1. Read Scope<a class="headerlink" href="#1-read-scope" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Permissions:</strong>
 - View all resources (GET operations)
 - List platforms, OS versions, image types, projects, builds
@@ -1905,7 +1626,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-6-8"><a id="__codelineno-6-8" name="__codelineno-6-8" href="#__codelineno-6-8"></a>POST<span class="w"> </span>/platforms/<span class="w">     </span><span class="c1"># Needs write scope</span>
 </span><span id="__span-6-9"><a id="__codelineno-6-9" name="__codelineno-6-9" href="#__codelineno-6-9"></a>DELETE<span class="w"> </span>/builds/123<span class="w">   </span><span class="c1"># Needs admin scope</span>
 </span></code></pre></div></p>
-<h3 id="2-write-scope">2. Write Scope<a class="headerlink" href="#2-write-scope" title="Permanent link">&para;</a></h3>
+<h3 id="2-write-scope">2. Write Scope<a class="headerlink" href="#2-write-scope" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Permissions:</strong>
 - All read permissions
 - Create resources (POST)
@@ -1921,7 +1642,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-7-7"><a id="__codelineno-7-7" name="__codelineno-7-7" href="#__codelineno-7-7"></a><span class="c1"># ✗ Denied</span>
 </span><span id="__span-7-8"><a id="__codelineno-7-8" name="__codelineno-7-8" href="#__codelineno-7-8"></a>DELETE<span class="w"> </span>/platforms/aws-commercial<span class="w">   </span><span class="c1"># Needs admin scope</span>
 </span></code></pre></div></p>
-<h3 id="3-admin-scope">3. Admin Scope<a class="headerlink" href="#3-admin-scope" title="Permanent link">&para;</a></h3>
+<h3 id="3-admin-scope">3. Admin Scope<a class="headerlink" href="#3-admin-scope" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Permissions:</strong>
 - All write permissions
 - All read permissions
@@ -1938,39 +1659,39 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-8-7"><a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a>DELETE<span class="w"> </span>/users/<span class="o">{</span>id<span class="o">}</span>
 </span></code></pre></div></p>
 <hr />
-<h2 id="test-api-keys">Test API Keys<a class="headerlink" href="#test-api-keys" title="Permanent link">&para;</a></h2>
+<h2 id="test-api-keys">Test API Keys<a class="headerlink" href="#test-api-keys" title="Anchor link to this section">&para;</a></h2>
 <p>Three test keys are pre-configured for development:</p>
-<h3 id="read-only-key">Read-Only Key<a class="headerlink" href="#read-only-key" title="Permanent link">&para;</a></h3>
+<h3 id="read-only-key">Read-Only Key<a class="headerlink" href="#read-only-key" title="Anchor link to this section">&para;</a></h3>
 <p><div class="language-text highlight"><pre><span></span><code><span id="__span-9-1"><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>readonly-key-888
 </span></code></pre></div>
 <strong>Scopes:</strong> <code>read</code>
 <strong>Use for:</strong> Monitoring, dashboards, read-only scripts</p>
-<h3 id="development-key">Development Key<a class="headerlink" href="#development-key" title="Permanent link">&para;</a></h3>
+<h3 id="development-key">Development Key<a class="headerlink" href="#development-key" title="Anchor link to this section">&para;</a></h3>
 <p><div class="language-text highlight"><pre><span></span><code><span id="__span-10-1"><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>dev-key-12345
 </span></code></pre></div>
 <strong>Scopes:</strong> <code>read</code>, <code>write</code>
 <strong>Use for:</strong> Development, build pipelines, automation</p>
-<h3 id="admin-key">Admin Key<a class="headerlink" href="#admin-key" title="Permanent link">&para;</a></h3>
+<h3 id="admin-key">Admin Key<a class="headerlink" href="#admin-key" title="Anchor link to this section">&para;</a></h3>
 <p><div class="language-text highlight"><pre><span></span><code><span id="__span-11-1"><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>admin-key-99999
 </span></code></pre></div>
 <strong>Scopes:</strong> <code>read</code>, <code>write</code>, <code>admin</code>
 <strong>Use for:</strong> Administrative tasks, maintenance, cleanup</p>
 <hr />
-<h2 id="default-users">Default Users<a class="headerlink" href="#default-users" title="Permanent link">&para;</a></h2>
+<h2 id="default-users">Default Users<a class="headerlink" href="#default-users" title="Anchor link to this section">&para;</a></h2>
 <p>Development environment includes default users:</p>
-<h3 id="admin-user">Admin User<a class="headerlink" href="#admin-user" title="Permanent link">&para;</a></h3>
+<h3 id="admin-user">Admin User<a class="headerlink" href="#admin-user" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><strong>Username:</strong> <code>admin</code></li>
 <li><strong>Password:</strong> <code>admin123</code></li>
 <li><strong>Scopes:</strong> <code>read</code>, <code>write</code>, <code>admin</code></li>
 </ul>
-<h3 id="regular-user">Regular User<a class="headerlink" href="#regular-user" title="Permanent link">&para;</a></h3>
+<h3 id="regular-user">Regular User<a class="headerlink" href="#regular-user" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><strong>Username:</strong> <code>user</code></li>
 <li><strong>Password:</strong> <code>user123</code></li>
 <li><strong>Scopes:</strong> <code>read</code>, <code>write</code></li>
 </ul>
-<h3 id="read-only-user">Read-Only User<a class="headerlink" href="#read-only-user" title="Permanent link">&para;</a></h3>
+<h3 id="read-only-user">Read-Only User<a class="headerlink" href="#read-only-user" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li><strong>Username:</strong> <code>readonly</code></li>
 <li><strong>Password:</strong> <code>readonly123</code></li>
@@ -1978,8 +1699,8 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </ul>
 <p><strong>⚠️ Change these credentials in production!</strong></p>
 <hr />
-<h2 id="managing-api-keys">Managing API Keys<a class="headerlink" href="#managing-api-keys" title="Permanent link">&para;</a></h2>
-<h3 id="creating-api-keys">Creating API Keys<a class="headerlink" href="#creating-api-keys" title="Permanent link">&para;</a></h3>
+<h2 id="managing-api-keys">Managing API Keys<a class="headerlink" href="#managing-api-keys" title="Anchor link to this section">&para;</a></h2>
+<h3 id="creating-api-keys">Creating API Keys<a class="headerlink" href="#creating-api-keys" title="Anchor link to this section">&para;</a></h3>
 <p>API keys can be created via the API (requires admin scope):</p>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-12-1"><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/users/<span class="o">{</span>user_id<span class="o">}</span>/tokens<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-12-2"><a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: admin-key-99999&quot;</span><span class="w"> </span><span class="se">\</span>
@@ -1999,17 +1720,17 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-13-6"><a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a><span class="w">  </span><span class="nt">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2026-02-14T17:30:00Z&quot;</span>
 </span><span id="__span-13-7"><a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h3 id="listing-api-keys">Listing API Keys<a class="headerlink" href="#listing-api-keys" title="Permanent link">&para;</a></h3>
+<h3 id="listing-api-keys">Listing API Keys<a class="headerlink" href="#listing-api-keys" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-14-1"><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a>curl<span class="w"> </span>http://localhost:8080/users/<span class="o">{</span>user_id<span class="o">}</span>/tokens<span class="w"> </span><span class="se">\</span>
 </span><span id="__span-14-2"><a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: admin-key-99999&quot;</span>
 </span></code></pre></div>
-<h3 id="revoking-api-keys">Revoking API Keys<a class="headerlink" href="#revoking-api-keys" title="Permanent link">&para;</a></h3>
+<h3 id="revoking-api-keys">Revoking API Keys<a class="headerlink" href="#revoking-api-keys" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-15-1"><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>curl<span class="w"> </span>-X<span class="w"> </span>DELETE<span class="w"> </span>http://localhost:8080/users/<span class="o">{</span>user_id<span class="o">}</span>/tokens/<span class="o">{</span>token_id<span class="o">}</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-15-2"><a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;X-API-Key: admin-key-99999&quot;</span>
 </span></code></pre></div>
 <hr />
-<h2 id="integration-examples">Integration Examples<a class="headerlink" href="#integration-examples" title="Permanent link">&para;</a></h2>
-<h3 id="concourse-ci-pipeline">Concourse CI Pipeline<a class="headerlink" href="#concourse-ci-pipeline" title="Permanent link">&para;</a></h3>
+<h2 id="integration-examples">Integration Examples<a class="headerlink" href="#integration-examples" title="Anchor link to this section">&para;</a></h2>
+<h3 id="concourse-ci-pipeline">Concourse CI Pipeline<a class="headerlink" href="#concourse-ci-pipeline" title="Anchor link to this section">&para;</a></h3>
 <div class="language-yaml highlight"><pre><span></span><code><span id="__span-16-1"><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="nt">resources</span><span class="p">:</span>
 </span><span id="__span-16-2"><a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a><span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">buildstate-api</span>
 </span><span id="__span-16-3"><a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="w">    </span><span class="nt">type</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">http-api</span>
@@ -2044,7 +1765,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-16-32"><a id="__codelineno-16-32" name="__codelineno-16-32" href="#__codelineno-16-32"></a><span class="w">        </span><span class="nt">params</span><span class="p">:</span>
 </span><span id="__span-16-33"><a id="__codelineno-16-33" name="__codelineno-16-33" href="#__codelineno-16-33"></a><span class="w">          </span><span class="nt">API_KEY</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">((buildstate-api-key))</span>
 </span></code></pre></div>
-<h3 id="python-script">Python Script<a class="headerlink" href="#python-script" title="Permanent link">&para;</a></h3>
+<h3 id="python-script">Python Script<a class="headerlink" href="#python-script" title="Anchor link to this section">&para;</a></h3>
 <div class="language-python highlight"><pre><span></span><code><span id="__span-17-1"><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 </span><span id="__span-17-2"><a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">requests</span>
 </span><span id="__span-17-3"><a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
@@ -2072,7 +1793,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-17-25"><a id="__codelineno-17-25" name="__codelineno-17-25" href="#__codelineno-17-25"></a><span class="n">build</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 </span><span id="__span-17-26"><a id="__codelineno-17-26" name="__codelineno-17-26" href="#__codelineno-17-26"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Created build: </span><span class="si">{</span><span class="n">build</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </span></code></pre></div>
-<h3 id="shell-script">Shell Script<a class="headerlink" href="#shell-script" title="Permanent link">&para;</a></h3>
+<h3 id="shell-script">Shell Script<a class="headerlink" href="#shell-script" title="Anchor link to this section">&para;</a></h3>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-18-1"><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="ch">#!/bin/bash</span>
 </span><span id="__span-18-2"><a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a><span class="nb">set</span><span class="w"> </span>-euo<span class="w"> </span>pipefail
 </span><span id="__span-18-3"><a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a>
@@ -2110,8 +1831,8 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-18-35"><a id="__codelineno-18-35" name="__codelineno-18-35" href="#__codelineno-18-35"></a><span class="s1">}&#39;</span>
 </span></code></pre></div>
 <hr />
-<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Permanent link">&para;</a></h2>
-<h3 id="authentication-errors">Authentication Errors<a class="headerlink" href="#authentication-errors" title="Permanent link">&para;</a></h3>
+<h2 id="error-handling">Error Handling<a class="headerlink" href="#error-handling" title="Anchor link to this section">&para;</a></h2>
+<h3 id="authentication-errors">Authentication Errors<a class="headerlink" href="#authentication-errors" title="Anchor link to this section">&para;</a></h3>
 <p><strong>No authentication provided:</strong>
 <div class="language-http highlight"><pre><span></span><code><span id="__span-19-1"><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">401</span> <span class="ne">Unauthorized</span>
 </span></code></pre></div>
@@ -2133,7 +1854,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-24-2"><a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a><span class="w">  </span><span class="nt">&quot;detail&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Token has expired&quot;</span>
 </span><span id="__span-24-3"><a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="p">}</span>
 </span></code></pre></div></p>
-<h3 id="authorization-errors">Authorization Errors<a class="headerlink" href="#authorization-errors" title="Permanent link">&para;</a></h3>
+<h3 id="authorization-errors">Authorization Errors<a class="headerlink" href="#authorization-errors" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Insufficient permissions:</strong>
 <div class="language-http highlight"><pre><span></span><code><span id="__span-25-1"><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kr">HTTP</span><span class="o">/</span><span class="m">1.1</span> <span class="m">403</span> <span class="ne">Forbidden</span>
 </span></code></pre></div>
@@ -2147,8 +1868,8 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-27-3"><a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="p">}</span>
 </span></code></pre></div>
 <hr />
-<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Permanent link">&para;</a></h2>
-<h3 id="for-development">For Development<a class="headerlink" href="#for-development" title="Permanent link">&para;</a></h3>
+<h2 id="best-practices">Best Practices<a class="headerlink" href="#best-practices" title="Anchor link to this section">&para;</a></h2>
+<h3 id="for-development">For Development<a class="headerlink" href="#for-development" title="Anchor link to this section">&para;</a></h3>
 <ol>
 <li>
 <p><strong>Use separate keys for different environments</strong>
@@ -2169,7 +1890,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span></code></pre></div></p>
 </li>
 </ol>
-<h3 id="for-production">For Production<a class="headerlink" href="#for-production" title="Permanent link">&para;</a></h3>
+<h3 id="for-production">For Production<a class="headerlink" href="#for-production" title="Anchor link to this section">&para;</a></h3>
 <ol>
 <li><strong>Use secret management systems</strong></li>
 <li>AWS Secrets Manager</li>
@@ -2208,7 +1929,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 <li>Never send API keys over unencrypted connections</li>
 <li>Use TLS 1.2 or higher</li>
 </ol>
-<h3 id="for-cicd-pipelines">For CI/CD Pipelines<a class="headerlink" href="#for-cicd-pipelines" title="Permanent link">&para;</a></h3>
+<h3 id="for-cicd-pipelines">For CI/CD Pipelines<a class="headerlink" href="#for-cicd-pipelines" title="Anchor link to this section">&para;</a></h3>
 <ol>
 <li>
 <p><strong>Store keys as secrets</strong>
@@ -2240,8 +1961,8 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </li>
 </ol>
 <hr />
-<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
-<h3 id="api-key-security">API Key Security<a class="headerlink" href="#api-key-security" title="Permanent link">&para;</a></h3>
+<h2 id="security-considerations">Security Considerations<a class="headerlink" href="#security-considerations" title="Anchor link to this section">&para;</a></h2>
+<h3 id="api-key-security">API Key Security<a class="headerlink" href="#api-key-security" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li>✅ Store in environment variables or secret managers</li>
 <li>✅ Use HTTPS in production</li>
@@ -2253,7 +1974,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 <li>❌ Never include keys in URLs</li>
 <li>❌ Never expose keys in error messages</li>
 </ul>
-<h3 id="jwt-token-security">JWT Token Security<a class="headerlink" href="#jwt-token-security" title="Permanent link">&para;</a></h3>
+<h3 id="jwt-token-security">JWT Token Security<a class="headerlink" href="#jwt-token-security" title="Anchor link to this section">&para;</a></h3>
 <ul>
 <li>✅ Short expiration times (1 hour default)</li>
 <li>✅ Refresh tokens regularly</li>
@@ -2263,7 +1984,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 <li>❌ Never send tokens in URLs</li>
 <li>❌ Don't include sensitive data in token payload</li>
 </ul>
-<h3 id="general-security">General Security<a class="headerlink" href="#general-security" title="Permanent link">&para;</a></h3>
+<h3 id="general-security">General Security<a class="headerlink" href="#general-security" title="Anchor link to this section">&para;</a></h3>
 <ol>
 <li><strong>Use HTTPS in production</strong></li>
 <li>Prevents man-in-the-middle attacks</li>
@@ -2292,8 +2013,8 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 <li>Remove unused accounts</li>
 </ol>
 <hr />
-<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Permanent link">&para;</a></h2>
-<h3 id="authentication-required-error">"Authentication required" error<a class="headerlink" href="#authentication-required-error" title="Permanent link">&para;</a></h3>
+<h2 id="troubleshooting">Troubleshooting<a class="headerlink" href="#troubleshooting" title="Anchor link to this section">&para;</a></h2>
+<h3 id="authentication-required-error">"Authentication required" error<a class="headerlink" href="#authentication-required-error" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Cause:</strong> No authentication provided</p>
 <p><strong>Solution:</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-33-1"><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># Add API key header</span>
@@ -2302,13 +2023,13 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-33-4"><a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="c1"># Or use Bearer token</span>
 </span><span id="__span-33-5"><a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a>curl<span class="w"> </span>-H<span class="w"> </span><span class="s2">&quot;Authorization: Bearer your-token&quot;</span><span class="w"> </span>http://localhost:8080/platforms/
 </span></code></pre></div></p>
-<h3 id="invalid-api-key-error">"Invalid API key" error<a class="headerlink" href="#invalid-api-key-error" title="Permanent link">&para;</a></h3>
+<h3 id="invalid-api-key-error">"Invalid API key" error<a class="headerlink" href="#invalid-api-key-error" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Cause:</strong> API key is incorrect or revoked</p>
 <p><strong>Solution:</strong>
 1. Verify the API key is correct
 2. Check if key has been revoked
 3. Request a new key from admin</p>
-<h3 id="token-has-expired-error">"Token has expired" error<a class="headerlink" href="#token-has-expired-error" title="Permanent link">&para;</a></h3>
+<h3 id="token-has-expired-error">"Token has expired" error<a class="headerlink" href="#token-has-expired-error" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Cause:</strong> JWT token has expired (default: 1 hour)</p>
 <p><strong>Solution:</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-34-1"><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="c1"># Get a new token</span>
@@ -2316,15 +2037,15 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 </span><span id="__span-34-3"><a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">  </span>-H<span class="w"> </span><span class="s2">&quot;Content-Type: application/x-www-form-urlencoded&quot;</span><span class="w"> </span><span class="se">\</span>
 </span><span id="__span-34-4"><a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">  </span>-d<span class="w"> </span><span class="s2">&quot;username=admin&amp;password=admin123&quot;</span>
 </span></code></pre></div></p>
-<h3 id="permission-denied-errors">"Permission denied" errors<a class="headerlink" href="#permission-denied-errors" title="Permanent link">&para;</a></h3>
+<h3 id="permission-denied-errors">"Permission denied" errors<a class="headerlink" href="#permission-denied-errors" title="Anchor link to this section">&para;</a></h3>
 <p><strong>Cause:</strong> Insufficient scopes for the operation</p>
 <p><strong>Solution:</strong>
 1. Check required scope for the endpoint
 2. Request appropriate API key from admin
 3. Verify user has correct permissions</p>
 <hr />
-<h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Permanent link">&para;</a></h2>
-<h3 id="from-password-to-api-keys">From Password to API Keys<a class="headerlink" href="#from-password-to-api-keys" title="Permanent link">&para;</a></h3>
+<h2 id="migration-guide">Migration Guide<a class="headerlink" href="#migration-guide" title="Anchor link to this section">&para;</a></h2>
+<h3 id="from-password-to-api-keys">From Password to API Keys<a class="headerlink" href="#from-password-to-api-keys" title="Anchor link to this section">&para;</a></h3>
 <p>If you're currently using username/password in scripts:</p>
 <p><strong>Before:</strong>
 <div class="language-bash highlight"><pre><span></span><code><span id="__span-35-1"><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nv">TOKEN</span><span class="o">=</span><span class="k">$(</span>curl<span class="w"> </span>-X<span class="w"> </span>POST<span class="w"> </span>http://localhost:8080/token<span class="w"> </span><span class="se">\</span>
@@ -2341,7 +2062,7 @@ See the <a href="../../bldst_cli/README.md">CLI README</a> for details.</p>
 - Better for automation
 - No password exposure</p>
 <hr />
-<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Permanent link">&para;</a></h2>
+<h2 id="faq">FAQ<a class="headerlink" href="#faq" title="Anchor link to this section">&para;</a></h2>
 <p><strong>Q: Should I use API keys or JWT tokens?</strong>
 A: Use API keys for automation and scripts, JWT tokens for interactive use.</p>
 <p><strong>Q: How long do JWT tokens last?</strong>
@@ -2357,7 +2078,7 @@ A: All their API keys are automatically revoked.</p>
 <p><strong>Q: How do I check what scopes my API key has?</strong>
 A: Contact your administrator or check the API key listing.</p>
 <hr />
-<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Permanent link">&para;</a></h2>
+<h2 id="additional-resources">Additional Resources<a class="headerlink" href="#additional-resources" title="Anchor link to this section">&para;</a></h2>
 <ul>
 <li><a href="API-REFERENCE.md">API Reference</a> - Complete endpoint documentation</li>
 <li><a href="../../bldst_cli/README.md">CLI Documentation</a> - CLI usage and configuration</li>
@@ -2408,11 +2129,16 @@ A: Contact your administrator or check the API key listing.</p>
     
     
     
-      
-      
-    
-    <a href="https://github.com/VirtuallyScott/state-builds" target="_blank" rel="noopener" title="github.com" class="md-social__link">
+    <a href="https://github.com/VirtuallyScott/state-builds" target="_blank" rel="noopener" title="GitHub Repository" class="md-social__link">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M165.9 397.4c0 2-2.3 3.6-5.2 3.6-3.3.3-5.6-1.3-5.6-3.6 0-2 2.3-3.6 5.2-3.6 3-.3 5.6 1.3 5.6 3.6m-31.1-4.5c-.7 2 1.3 4.3 4.3 4.9 2.6 1 5.6 0 6.2-2s-1.3-4.3-4.3-5.2c-2.6-.7-5.5.3-6.2 2.3m44.2-1.7c-2.9.7-4.9 2.6-4.6 4.9.3 2 2.9 3.3 5.9 2.6 2.9-.7 4.9-2.6 4.6-4.6-.3-1.9-3-3.2-5.9-2.9M244.8 8C106.1 8 0 113.3 0 252c0 110.9 69.8 205.8 169.5 239.2 12.8 2.3 17.3-5.6 17.3-12.1 0-6.2-.3-40.4-.3-61.4 0 0-70 15-84.7-29.8 0 0-11.4-29.1-27.8-36.6 0 0-22.9-15.7 1.6-15.4 0 0 24.9 2 38.6 25.8 21.9 38.6 58.6 27.5 72.9 20.9 2.3-16 8.8-27.1 16-33.7-55.9-6.2-112.3-14.3-112.3-110.5 0-27.5 7.6-41.3 23.6-58.9-2.6-6.5-11.1-33.3 2.6-67.9 20.9-6.5 69 27 69 27 20-5.6 41.5-8.5 62.8-8.5s42.8 2.9 62.8 8.5c0 0 48.1-33.6 69-27 13.7 34.7 5.2 61.4 2.6 67.9 16 17.7 25.8 31.5 25.8 58.9 0 96.5-58.9 104.2-114.8 110.5 9.2 7.9 17 22.9 17 46.4 0 33.7-.3 75.4-.3 83.6 0 6.5 4.6 14.4 17.3 12.1C428.2 457.8 496 362.9 496 252 496 113.3 383.5 8 244.8 8M97.2 352.9c-1.3 1-1 3.3.7 5.2 1.6 1.6 3.9 2.3 5.2 1 1.3-1 1-3.3-.7-5.2-1.6-1.6-3.9-2.3-5.2-1m-10.8-8.1c-.7 1.3.3 2.9 2.3 3.9 1.6 1 3.6.7 4.3-.7.7-1.3-.3-2.9-2.3-3.9-2-.6-3.6-.3-4.3.7m32.4 35.6c-1.6 1.3-1 4.3 1.3 6.2 2.3 2.3 5.2 2.6 6.5 1 1.3-1.3.7-4.3-1.3-6.2-2.2-2.3-5.2-2.6-6.5-1m-11.4-14.7c-1.6 1-1.6 3.6 0 5.9s4.3 3.3 5.6 2.3c1.6-1.3 1.6-3.9 0-6.2-1.4-2.3-4-3.3-5.6-2"/></svg>
+    </a>
+  
+    
+    
+    
+    
+    <a href="https://virtuallyscott.github.io/state-build-framework/" target="_blank" rel="noopener" title="Documentation Site" class="md-social__link">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><!--! Font Awesome Free 6.7.2 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2024 Fonticons, Inc.--><path d="M156.6 384.9 125.7 354c-8.5-8.5-11.5-20.8-7.7-32.2 3-8.9 7-20.5 11.8-33.8H24c-8.6 0-16.6-4.6-20.9-12.1s-4.2-16.7.2-24.1l52.5-88.5c13-21.9 36.5-35.3 61.9-35.3H200c2.4-4 4.8-7.7 7.2-11.3C289.1-4.1 411.1-8.1 483.9 5.3c11.6 2.1 20.6 11.2 22.8 22.8 13.4 72.9 9.3 194.8-111.4 276.7-3.5 2.4-7.3 4.8-11.3 7.2v82.3c0 25.4-13.4 49-35.3 61.9l-88.5 52.5c-7.4 4.4-16.6 4.5-24.1.2S224 496.7 224 488V380.8c-14.1 4.9-26.4 8.9-35.7 11.9-11.2 3.6-23.4.5-31.8-7.8zM384 168a40 40 0 1 0 0-80 40 40 0 1 0 0 80"/></svg>
     </a>
   
 </div>
@@ -2426,8 +2152,10 @@ A: Contact your administrator or check the API key listing.</p>
       <div class="md-dialog__inner md-typeset"></div>
     </div>
     
+      <div class="md-progress" data-md-component="progress" role="progressbar"></div>
     
-    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.top", "toc.follow", "search.suggest", "search.highlight", "content.tabs.link", "content.code.copy"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.instant.prefetch", "navigation.instant.progress", "navigation.tracking", "navigation.sections", "navigation.expand", "navigation.path", "navigation.indexes", "navigation.top", "navigation.tabs", "navigation.tabs.sticky", "toc.follow", "toc.integrate", "search.suggest", "search.highlight", "search.share", "content.tabs.link", "content.code.copy", "content.code.annotate", "content.tooltips"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": {"default": "stable", "provider": "mike"}}</script>
     
     
       <script src="../../assets/javascripts/bundle.f13b1293.min.js"></script>
