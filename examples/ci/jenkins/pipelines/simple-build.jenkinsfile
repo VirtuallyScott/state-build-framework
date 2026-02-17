@@ -1,0 +1,131 @@
+// Simple Build State Tracking Example
+//
+// This example shows basic build state tracking through a simple build process.
+// Perfect for getting started with the Build State API.
+
+@Library('buildstate-lib') _
+
+pipeline {
+    agent any
+    
+    environment {
+        // Build State API Configuration
+        BUILDSTATE_API_URL = 'https://buildstate-api.example.com'
+        BUILDSTATE_API_KEY = credentials('buildstate-api-key')  // Store in Jenkins credentials
+        
+        // Project Configuration
+        PROJECT_ID = 'my-project-uuid'
+        PLATFORM = 'aws'
+        OS_VERSION = 'ubuntu-22.04'
+    }
+    
+    stages {
+        stage('Initialize') {
+            steps {
+                script {
+                    echo "Starting simple build with state tracking..."
+                    
+                    // Start build state tracking
+                    buildState.start(
+                        project: env.PROJECT_ID,
+                        name: "Simple-Build-${env.BUILD_NUMBER}",
+                        platform: env.PLATFORM,
+                        osVersion: env.OS_VERSION,
+                        metadata: [
+                            jenkins_job: env.JOB_NAME,
+                            jenkins_build: env.BUILD_NUMBER,
+                            jenkins_url: env.BUILD_URL
+                        ]
+                    )
+                    
+                    echo "Build state tracking initialized"
+                }
+            }
+        }
+        
+        stage('Prepare Environment') {
+            steps {
+                script {
+                    buildState.updateState(100, 'Preparing build environment')
+                    
+                    // Your environment preparation steps
+                    sh 'echo "Installing dependencies..."'
+                    sleep 2  // Simulate work
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                script {
+                    buildState.updateState(200, 'Building application')
+                    
+                    // Your build steps
+                    sh '''
+                        echo "Compiling application..."
+                        # Add your build commands here
+                    '''
+                    sleep 3  // Simulate build
+                }
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                script {
+                    buildState.updateState(300, 'Running tests')
+                    
+                    // Your test steps
+                    sh '''
+                        echo "Running test suite..."
+                        # Add your test commands here
+                    '''
+                    sleep 2  // Simulate tests
+                }
+            }
+        }
+        
+        stage('Package') {
+            steps {
+                script {
+                    buildState.updateState(400, 'Packaging artifacts')
+                    
+                    // Your packaging steps
+                    sh '''
+                        echo "Creating deployment package..."
+                        # Add your packaging commands here
+                    '''
+                    sleep 1  // Simulate packaging
+                }
+            }
+        }
+        
+        stage('Complete') {
+            steps {
+                script {
+                    // Mark build as complete
+                    buildState.complete('Build completed successfully')
+                    
+                    echo "Build completed! Check the Build State API for details."
+                }
+            }
+        }
+    }
+    
+    post {
+        failure {
+            script {
+                // Record build failure
+                def errorMsg = "Build failed at stage: ${env.STAGE_NAME}"
+                buildState.fail(errorMsg)
+                echo "Build failure recorded in Build State API"
+            }
+        }
+        
+        always {
+            script {
+                echo "Build State tracking completed"
+            }
+        }
+    }
+}

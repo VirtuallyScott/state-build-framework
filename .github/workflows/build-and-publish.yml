@@ -1,0 +1,239 @@
+name: Build and Publish Containers
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    tags:
+      - 'v*'
+  pull_request:
+    branches:
+      - main
+      - develop
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (optional, uses VERSION file by default)'
+        required: false
+        type: string
+
+env:
+  REGISTRY: ghcr.io
+  # Will be set to ghcr.io/<owner>/<repo>
+  IMAGE_BASE: ghcr.io/${{ github.repository_owner }}
+
+jobs:
+  version:
+    name: Determine Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      version_full: ${{ steps.version.outputs.version_full }}
+      
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Determine version
+        id: version
+        run: |
+          # Use input version if provided
+          if [ -n "${{ inputs.version }}" ]; then
+            VERSION="${{ inputs.version }}"
+            echo "Using input version: $VERSION"
+          # Use git tag if this is a tag push
+          elif [[ "${{ github.ref }}" == refs/tags/v* ]]; then
+            REF="${{ github.ref }}"
+            VERSION="${REF#refs/tags/v}"
+            echo "Using tag version: $VERSION"
+          # Otherwise use VERSION file
+          else
+            VERSION=$(cat VERSION)
+            echo "Using VERSION file: $VERSION"
+          fi
+          
+          # Get git SHA for full version
+          GIT_SHA=$(git rev-parse --short HEAD)
+          VERSION_FULL="${VERSION}+${GIT_SHA}"
+          
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version_full=${VERSION_FULL}" >> $GITHUB_OUTPUT
+          echo "Version: $VERSION"
+          echo "Full Version: $VERSION_FULL"
+
+  build-api:
+    name: Build API Service
+    needs: version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_BASE }}/state-builds-api
+          tags: |
+            # Tag with semantic version
+            type=raw,value=${{ needs.version.outputs.version }}
+            # Tag with full version (version+sha)
+            type=raw,value=${{ needs.version.outputs.version_full }}
+            # Tag with branch name
+            type=ref,event=branch
+            # Tag with PR number
+            type=ref,event=pr
+            # Tag latest for main branch
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            # Tag develop for develop branch
+            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api_service
+          file: ./api_service/docker/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ needs.version.outputs.version_full }}
+
+  build-nginx:
+    name: Build Nginx Load Balancer
+    needs: version
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.IMAGE_BASE }}/state-builds-nginx
+          tags: |
+            type=raw,value=${{ needs.version.outputs.version }}
+            type=raw,value=${{ needs.version.outputs.version_full }}
+            type=ref,event=branch
+            type=ref,event=pr
+            type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+            type=raw,value=develop,enable=${{ github.ref == 'refs/heads/develop' }}
+      
+      - name: Build and push
+        uses: docker/build-push-action@v5
+        with:
+          context: ./api_service
+          file: ./api_service/docker/nginx.Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          build-args: |
+            VERSION=${{ needs.version.outputs.version_full }}
+
+  build-cli:
+    name: Build CLI (Python Package)
+    needs: version
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: |
+          cd bldst_cli
+          pip install build twine
+      
+      - name: Update version in pyproject.toml
+        run: |
+          cd bldst_cli
+          # Update version in pyproject.toml
+          sed -i "s/^version = .*/version = \"${{ needs.version.outputs.version }}\"/" pyproject.toml
+      
+      - name: Build package
+        run: |
+          cd bldst_cli
+          python -m build
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: python-package
+          path: bldst_cli/dist/
+      
+      # Optional: Publish to PyPI on tag
+      # - name: Publish to PyPI
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   env:
+      #     TWINE_USERNAME: __token__
+      #     TWINE_PASSWORD: ${{ secrets.PYPI_API_TOKEN }}
+      #   run: |
+      #     cd bldst_cli
+      #     twine upload dist/*
+
+  summary:
+    name: Build Summary
+    needs: [version, build-api, build-nginx, build-cli]
+    runs-on: ubuntu-latest
+    if: always()
+    
+    steps:
+      - name: Summary
+        run: |
+          echo "# Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ needs.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Full Version:** ${{ needs.version.outputs.version_full }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Ref:** ${{ github.ref }}" >> $GITHUB_STEP_SUMMARY
+          echo "**SHA:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Images Built" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.IMAGE_BASE }}/state-builds-api:${{ needs.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- \`${{ env.IMAGE_BASE }}/state-builds-nginx:${{ needs.version.outputs.version }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "## Pull Images" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`bash" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ env.IMAGE_BASE }}/state-builds-api:${{ needs.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "docker pull ${{ env.IMAGE_BASE }}/state-builds-nginx:${{ needs.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
